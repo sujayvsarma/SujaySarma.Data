@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34714.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SujaySarma.Data.Core", "SujaySarma.Data.Core\SujaySarma.Data.Core.csproj", "{1DF2696D-DAC8-4FB9-9103-9EA968651C17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SujaySarma.Data.Azure.Tables", "SujaySarma.Data.Azure.Tables\SujaySarma.Data.Azure.Tables.csproj", "{E38DE1B0-784E-4097-8DF8-60128D287A3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SujaySarma.Data.Files.TokenLimitedFiles", "SujaySarma.Data.Files.TokenLimitedFiles\SujaySarma.Data.Files.TokenLimitedFiles.csproj", "{FAD74327-B29D-4026-A3A7-FA0B14994131}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SujaySarma.Data.SqlServer", "SujaySarma.Data.SqlServer\SujaySarma.Data.SqlServer.csproj", "{079B1591-B175-4979-ADB9-0D31769EE9F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SujaySarma.Data.Health", "SujaySarma.Data.Health\SujaySarma.Data.Health.csproj", "{6E9F857B-0216-4F4A-B7EE-951C2EE8BDEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SujaySarma.Data.WindowsRegistry", "SujaySarma.Data.WindowsRegistry\SujaySarma.Data.WindowsRegistry.csproj", "{1188E689-0894-4E33-98A9-3314A0190018}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1DF2696D-DAC8-4FB9-9103-9EA968651C17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DF2696D-DAC8-4FB9-9103-9EA968651C17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DF2696D-DAC8-4FB9-9103-9EA968651C17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DF2696D-DAC8-4FB9-9103-9EA968651C17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E38DE1B0-784E-4097-8DF8-60128D287A3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E38DE1B0-784E-4097-8DF8-60128D287A3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E38DE1B0-784E-4097-8DF8-60128D287A3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E38DE1B0-784E-4097-8DF8-60128D287A3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAD74327-B29D-4026-A3A7-FA0B14994131}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAD74327-B29D-4026-A3A7-FA0B14994131}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAD74327-B29D-4026-A3A7-FA0B14994131}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAD74327-B29D-4026-A3A7-FA0B14994131}.Release|Any CPU.Build.0 = Release|Any CPU
+		{079B1591-B175-4979-ADB9-0D31769EE9F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{079B1591-B175-4979-ADB9-0D31769EE9F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{079B1591-B175-4979-ADB9-0D31769EE9F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{079B1591-B175-4979-ADB9-0D31769EE9F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E9F857B-0216-4F4A-B7EE-951C2EE8BDEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E9F857B-0216-4F4A-B7EE-951C2EE8BDEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E9F857B-0216-4F4A-B7EE-951C2EE8BDEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E9F857B-0216-4F4A-B7EE-951C2EE8BDEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1188E689-0894-4E33-98A9-3314A0190018}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1188E689-0894-4E33-98A9-3314A0190018}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1188E689-0894-4E33-98A9-3314A0190018}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1188E689-0894-4E33-98A9-3314A0190018}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {74B9AFD9-1C8E-4F8D-BC68-090547E049DA}
+	EndGlobalSection
+EndGlobal
