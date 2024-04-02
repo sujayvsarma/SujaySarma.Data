@@ -1,0 +1,219 @@
+using System.Collections.Generic;
+
+using Azure.Data.Tables;
+
+using SujaySarma.Data.Azure.Tables.Serialisation;
+using SujaySarma.Data.Core.Reflection;
+
+namespace SujaySarma.Data.Azure.Tables
+{
+
+    /*
+        Query operations (Synchronous)
+    */
+
+    public partial class AzureTablesContext
+    {
+
+        /// <summary>
+        /// Execute a query against the given table and return the raw table entities
+        /// </summary>
+        /// <param name="tableName">Name of the Azure Table to query</param>
+        /// <param name="selectColumns">List of names of columns to select from the table</param>
+        /// <param name="partitionKey">PartitionKey in the table</param>
+        /// <param name="rowKey">RowKey in the table</param>
+        /// <param name="filter">Pre-composed filter string (Where clause)</param>
+        public List<TableEntity> ExecuteQueryRaw(string tableName, List<string> selectColumns, string? partitionKey = null, string? rowKey = null, string? filter = null)
+        {
+            // For the public surface, deleted rows will never be returned.
+            return ExecuteQueryImpl(tableName, selectColumns, partitionKey, rowKey, filter, false);
+        }
+
+        /// <summary>
+        /// Execute a query against the table attached to <typeparamref name="TObject"/> and return the raw table entities
+        /// </summary>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
+        /// <param name="partitionKey">PartitionKey in the table</param>
+        /// <param name="rowKey">RowKey in the table</param>
+        /// <param name="filter">Pre-composed filter string (Where clause)</param>
+        /// <returns>List of <see cref="TableEntity"/> objects</returns>
+        public List<TableEntity> ExecuteQueryRaw<TObject>(string? partitionKey = null, string? rowKey = null, string? filter = null)
+        {
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+            return ExecuteQueryRaw(typeInfo.ContainerDefinition.Name, 
+                    PrepareQueryColumnsList(typeInfo), 
+                    partitionKey, 
+                    rowKey, 
+                    filter
+                );
+        }
+
+        /// <summary>
+        /// Execute a query against the table attached to <typeparamref name="TObject"/> and returns hydrated .NET entitites
+        /// </summary>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
+        /// <param name="partitionKey">PartitionKey in the table</param>
+        /// <param name="rowKey">RowKey in the table</param>
+        /// <param name="filter">Pre-composed filter string (Where clause)</param>
+        /// <returns>List of <typeparamref name="TObject"/> objects</returns>
+        public List<TObject> ExecuteQuery<TObject>(string? partitionKey = null, string? rowKey = null, string? filter = null)
+        {
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+
+            // We use the Yield return variant here to improve memory management and performance
+            IEnumerable<TableEntity> entities = ExecuteQueryImplYielder(
+                    typeInfo.ContainerDefinition.Name, 
+                    PrepareQueryColumnsList(typeInfo), 
+                    partitionKey, 
+                    rowKey, 
+                    filter
+                );
+
+            List<TObject> items = new List<TObject>();
+            foreach(TableEntity entity in entities)
+            {
+                items.Add(AzureTablesSerialiser.Deserialise<TObject>(entity));
+            }
+
+            return items;
+        }
+
+
+        /// <summary>
+        /// Execute a query against the given table and return the raw table entities
+        /// </summary>
+        /// <param name="tableName">Name of the Azure Table to query</param>
+        /// <param name="selectColumns">List of names of columns to select from the table</param>
+        /// <param name="partitionKey">PartitionKey in the table</param>
+        /// <param name="rowKey">RowKey in the table</param>
+        /// <param name="filter">Pre-composed filter string (Where clause)</param>
+        public List<TableEntity> ExecuteQueryRaw(string tableName, List<string> selectColumns, object? partitionKey = null, object? rowKey = null, string? filter = null)
+        {
+            // For the public surface, deleted rows will never be returned.
+            return ExecuteQueryImpl(
+                    tableName, 
+                    selectColumns, 
+                    (string?)ReflectionUtils.ConvertValueIfRequired(partitionKey, typeof(string)), 
+                    (string?)ReflectionUtils.ConvertValueIfRequired(rowKey, typeof(string)), 
+                    filter, 
+                    false
+                );
+        }
+
+        /// <summary>
+        /// Execute a query against the table attached to <typeparamref name="TObject"/> and return the raw table entities
+        /// </summary>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
+        /// <param name="partitionKey">PartitionKey in the table</param>
+        /// <param name="rowKey">RowKey in the table</param>
+        /// <param name="filter">Pre-composed filter string (Where clause)</param>
+        /// <returns>List of <see cref="TableEntity"/> objects</returns>
+        public List<TableEntity> ExecuteQueryRaw<TObject>(object? partitionKey = null, object? rowKey = null, string? filter = null)
+        {
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+            return ExecuteQueryRaw(typeInfo.ContainerDefinition.Name,
+                    PrepareQueryColumnsList(typeInfo),
+                    (string?)ReflectionUtils.ConvertValueIfRequired(partitionKey, typeof(string)),
+                    (string?)ReflectionUtils.ConvertValueIfRequired(rowKey, typeof(string)),
+                    filter
+                );
+        }
+
+        /// <summary>
+        /// Execute a query against the table attached to <typeparamref name="TObject"/> and returns hydrated .NET entitites
+        /// </summary>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
+        /// <param name="partitionKey">PartitionKey in the table</param>
+        /// <param name="rowKey">RowKey in the table</param>
+        /// <param name="filter">Pre-composed filter string (Where clause)</param>
+        /// <returns>List of <typeparamref name="TObject"/> objects</returns>
+        public List<TObject> ExecuteQuery<TObject>(object? partitionKey = null, object? rowKey = null, string? filter = null)
+        {
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+
+            // We use the Yield return variant here to improve memory management and performance
+            IEnumerable<TableEntity> entities = ExecuteQueryImplYielder(
+                    typeInfo.ContainerDefinition.Name,
+                    PrepareQueryColumnsList(typeInfo),
+                    (string?)ReflectionUtils.ConvertValueIfRequired(partitionKey, typeof(string)),
+                    (string?)ReflectionUtils.ConvertValueIfRequired(rowKey, typeof(string)),
+                    filter
+                );
+
+            List<TObject> items = new List<TObject>();
+            foreach (TableEntity entity in entities)
+            {
+                items.Add(AzureTablesSerialiser.Deserialise<TObject>(entity));
+            }
+
+            return items;
+        }
+
+        /// <summary>
+        /// Execute the query against the <see cref="TableClient"/>
+        /// </summary>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
+        /// <param name="partitionKey">PartitionKey in the table</param>
+        /// <param name="rowKey">RowKey in the table</param>
+        /// <param name="filter">Pre-composed filter string (Where clause)</param>
+        /// <returns>List of <typeparamref name="TObject"/> objects</returns>
+        public List<TObject> Select<TObject>(string? partitionKey = null, string? rowKey = null, string? filter = null)
+            where TObject : class
+            => ExecuteQuery<TObject>(
+                    partitionKey,
+                    rowKey,
+                    filter
+                );
+
+        /// <summary>
+        /// Execute the query against the <see cref="TableClient"/>
+        /// </summary>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
+        /// <param name="partitionKey">PartitionKey in the table</param>
+        /// <param name="rowKey">RowKey in the table</param>
+        /// <param name="filter">Pre-composed filter string (Where clause)</param>
+        /// <returns>List of <typeparamref name="TObject"/> objects</returns>
+        public List<TObject> Select<TObject>(object? partitionKey = null, object? rowKey = null, string? filter = null)
+            where TObject : class
+            => ExecuteQuery<TObject>(
+                    (string?)ReflectionUtils.ConvertValueIfRequired(partitionKey, typeof(string)),
+                    (string?)ReflectionUtils.ConvertValueIfRequired(rowKey, typeof(string)),
+                    filter
+                );
+
+        /// <summary>
+        /// Execute the query against the <see cref="TableClient"/> and retrieve the only result. If there were no results returned, returns NULL.
+        /// </summary>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
+        /// <param name="partitionKey">(Optional) Value of PartitionKey</param>
+        /// <param name="rowKey">(Optional) Value of RowKey</param>
+        /// <param name="filter">(Optional) A valid OData filter string</param>
+        /// <returns>A single business object or Null</returns>
+        public TObject? SelectOnlyResultOrNull<TObject>(string? partitionKey = null, string? rowKey = null, string? filter = null)
+            where TObject : class
+        {
+            List<TObject> data = Select<TObject>(partitionKey, rowKey, filter);
+            if (data.Count == 0)
+            {
+                return null;
+            }
+            return data[0];
+        }
+
+        /// <summary>
+        /// Execute the query against the <see cref="TableClient"/> and retrieve the only result. If there were no results returned, returns NULL.
+        /// </summary>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
+        /// <param name="partitionKey">(Optional) Value of PartitionKey</param>
+        /// <param name="rowKey">(Optional) Value of RowKey</param>
+        /// <param name="filter">(Optional) A valid OData filter string</param>
+        /// <returns>A single business object or Null</returns>
+        public TObject? SelectOnlyResultOrNull<TObject>(object? partitionKey = null, object? rowKey = null, string? filter = null)
+            where TObject : class
+            => SelectOnlyResultOrNull<TObject>(
+                    (string?)ReflectionUtils.ConvertValueIfRequired(partitionKey, typeof(string)),
+                    (string?)ReflectionUtils.ConvertValueIfRequired(rowKey, typeof(string)),
+                    filter                    
+                );
+    }
+}

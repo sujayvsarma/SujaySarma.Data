@@ -1,40 +1,34 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Azure.Data.Tables;
 using Azure.Data.Tables.Models;
 
-using SujaySarma.Data.Azure.Tables.Reflection;
-
 namespace SujaySarma.Data.Azure.Tables
 {
 
     /*
-        This file performs non-generics, Asynchronous operations
+        Table-level operations (Asynchronous)
     */
 
-    /// <summary>
-    /// A completely connection-less approach to interacting with Azure Tables. Supports both 
-    /// Azure Storage Tables and Azure Cosmos DB with Tables API.
-    /// </summary>
     public partial class AzureTablesContext
     {
-        #region Table-level operations
 
         /// <summary>
         /// List all tables
         /// </summary>
         /// <returns>List of names of all tables</returns>
-        public async IAsyncEnumerable<string> ListTablesAsync()
+        public async Task<List<string>> ListTablesAsync()
         {
-            await foreach(TableItem table in _serviceClient.QueryAsync())
+            List<string> tableNames = new List<string>();
+            await foreach (TableItem table in _serviceClient.QueryAsync())
             {
-                yield return table.Name;
+                tableNames.Add(table.Name);
             }
-        }
 
+            return tableNames;
+        }
 
         /// <summary>
         /// Drop table -- does not check if it already exists, may throw an error.
@@ -56,17 +50,29 @@ namespace SujaySarma.Data.Azure.Tables
         /// </summary>
         /// <param name="tableName">Name of table to check</param>
         public async Task<bool> TableExistsAsync(string tableName)
-            => await _serviceClient.QueryAsync($"TableName eq '{tableName}'").AnyAsync();
+        {
+            await foreach(TableItem table in _serviceClient.QueryAsync($"TableName eq '{tableName}'"))
+            {
+                if (table.Name.Equals(tableName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
 
+            return false;
+        }
 
         /// <summary>
         /// Clear all rows from a table -- works by dropping the table. Caller must ensure that 
         /// nothing else tries to write to the table until this call returns.
         /// </summary>
         /// <param name="tableName">Name of table to clear</param>
+        /// <remarks>
+        ///     This method will sleep for 1000ms between table deletes
+        /// </remarks>
         public async Task ClearTableAsync(string tableName)
         {
-            if (_serviceClient.Query($"TableName eq '{tableName}'").Any())
+            if (await TableExistsAsync(tableName))
             {
                 await _serviceClient.DeleteTableAsync(tableName);
 
@@ -93,37 +99,27 @@ namespace SujaySarma.Data.Azure.Tables
                 throw new ArgumentNullException(nameof(partitionKey));
             }
 
-            TableClient client = GetTableReference(tableName);
-            List<TableTransactionAction> batch = new();
 
             // fetch only base Entity fields
-            string filter = $"PartitionKey eq '{partitionKey}'";
-            List<string> columns = new() { "PartitionKey", "RowKey", "ETag" };
+            string filter = $"{ReservedNames.PartitionKey} eq '{partitionKey}'";
+            List<string> columns = new() { ReservedNames.PartitionKey, ReservedNames.RowKey, ReservedNames.ETag };
             if (useSoftDelete)
             {
                 // dont fetch already soft-deleted rows
-                filter = $"{filter} and {TypeMetadata.ISDELETED_COLUMN_NAME} eq false";
+                filter = $"{filter} and {SujaySarma.Data.Core.ReservedNames.IsDeleted} eq false";
 
                 // ensure we fetch the soft-delete column if it should exist
-                columns.Add(TypeMetadata.ISDELETED_COLUMN_NAME);
+                columns.Add(SujaySarma.Data.Core.ReservedNames.IsDeleted);
             }
 
-            foreach (TableEntity e in client.Query<TableEntity>(filter, select: columns))
-            {
-                if (useSoftDelete)
-                {
-                    e[TypeMetadata.ISDELETED_COLUMN_NAME] = true;
-                    batch.Add(new TableTransactionAction(TableTransactionActionType.UpdateMerge, e));
-                }
-                else
-                {
-                    batch.Add(new TableTransactionAction(TableTransactionActionType.Delete, e));
-                }
-            }
-
-            await client.SubmitTransactionAsync(batch);
+            // Potentially huge number of records to clear. Let's use our auto-batching logic!
+            await ExecuteNonQueryAsyncImpl(tableName, 
+                    await ExecuteQueryAsyncImpl(tableName, columns, filter: filter), 
+                    ((useSoftDelete == true) ? TableTransactionActionType.UpdateMerge : TableTransactionActionType.Delete),
+                    
+                    // We are already setting the right flag in the inline-IF in the previous parameter
+                    DeleteAction.NotApplicable
+                );
         }
-
-        #endregion
     }
 }

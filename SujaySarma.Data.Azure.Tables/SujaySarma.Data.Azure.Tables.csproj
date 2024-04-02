@@ -42,27 +42,27 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
-	  <NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
-	  <NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
-	  <NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
-	  <NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
-	  <NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
-	  <NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

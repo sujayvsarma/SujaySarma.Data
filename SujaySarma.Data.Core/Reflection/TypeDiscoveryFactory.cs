@@ -31,7 +31,7 @@ namespace SujaySarma.Data.Core.Reflection
         /// </summary>
         /// <typeparam name="TObject">Type to resolve</typeparam>
         /// <returns>Type resolution information. Will be Null if appropriate attribute decorations were missing.</returns>
-        public static ContainerTypeInformation? Resolve<TObject>()
+        public static ContainerTypeInformation Resolve<TObject>()
             => Resolve(typeof(TObject));
 
         /// <summary>
@@ -39,21 +39,22 @@ namespace SujaySarma.Data.Core.Reflection
         /// </summary>
         /// <param name="type">Type to resolve</param>
         /// <returns>Type resolution information. Will be Null if appropriate attribute decorations were missing.</returns>
-        public static ContainerTypeInformation? Resolve(Type type)
+        public static ContainerTypeInformation Resolve(Type type)
         {
+            ContainerTypeInformation information = default!;
+
             lock (_syncLockObject)
             {
-                if (_localCache.TryGetValue(type.Name, out ContainerTypeInformation? information))
+                if (_localCache.TryGetValue(type.Name, out ContainerTypeInformation? info1))
                 {
-                    return information;
+                    information = info1;
                 }
-
-                if ((_memoryCache != null) && _memoryCache.TryGetValue(type.Name, out information))
+                else if ((_memoryCache != null) && _memoryCache.TryGetValue(type.Name, out ContainerTypeInformation? info2))
                 {
-                    return information;
+                    // Not Null because TryGetValue would have returned TRUE therefore!
+                    information = info2!;
                 }
-
-                if (_distributedCache != null)
+                else if (_distributedCache != null)
                 {
                     // This is the longest operation in this function
                     byte[]? data = _distributedCache.Get(type.Name);
@@ -61,26 +62,32 @@ namespace SujaySarma.Data.Core.Reflection
                     if ((data != null) && (data.Length > 0))
                     {
                         string json = System.Text.Encoding.UTF8.GetString(data);
-                        return JsonSerializer.Deserialize<ContainerTypeInformation>(json);
+                        ContainerTypeInformation? info3 = JsonSerializer.Deserialize<ContainerTypeInformation>(json);
+                        if (info3 != null)
+                        {
+                            information = info3;
+                        }
                     }
                 }
-
-                information = new ContainerTypeInformation(type);
-                if (information != null)
+                else
                 {
-                    _localCache.Add(information.Name, information);
-
-                    _memoryCache?.Set<ContainerTypeInformation>(information.Name, information);
-
-                    if (_distributedCache != null)
+                    ContainerTypeInformation? info4 = new ContainerTypeInformation(type);
+                    if (info4 != null)
                     {
-                        string json = JsonSerializer.Serialize<ContainerTypeInformation>(information);
-                        _distributedCache.Set(information.Name, System.Text.Encoding.UTF8.GetBytes(json));
-                    }
-                }
+                        _localCache.Add(information.Name, info4);
 
-                return information;
+                        _memoryCache?.Set<ContainerTypeInformation>(info4.Name, info4);
+
+                        if (_distributedCache != null)
+                        {
+                            string json = JsonSerializer.Serialize<ContainerTypeInformation>(info4);
+                            _distributedCache.Set(info4.Name, System.Text.Encoding.UTF8.GetBytes(json));
+                        }
+                    }
+                }                
             }
+
+            return information;
         }
 
         /// <summary>

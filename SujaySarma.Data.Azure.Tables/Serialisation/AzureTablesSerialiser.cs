@@ -89,12 +89,11 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
         /// <returns>The serialised instance of a <see cref="TableEntity"/></returns>
         public static TableEntity Serialise(object instance, bool metadataOnly = false, bool setSoftDeleteValue = false)
         {
-            TableEntity entity = new TableEntity();
-
             Type targetType = instance.GetType();
             ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve(targetType)
                                 ?? throw new TypeLoadException($"The type '{targetType.Name}' does not seem to have the appropriate attribute decorations.");
 
+            TableEntity entity = new TableEntity();
             if (typeInfo.ContainerDefinition.UseSoftDelete)
             {
                 entity[SujaySarma.Data.Core.ReservedNames.IsDeleted] = setSoftDeleteValue;
@@ -106,9 +105,9 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
 
                 if (member.Value.ContainerMemberDefinition is PartitionKeyAttribute pk)
                 {
-                    string? pkVal = (string?)ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, typeof(string), false) 
+                    string? pkVal = (string?)ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, typeof(string), false)
                                         ?? ((pk.DefaultValueProviderFunction != null) ? (string)pk.DefaultValueProviderFunction() : null);
-                    
+
                     if (string.IsNullOrWhiteSpace(pkVal))
                     {
                         throw new ArgumentNullException($"PartitionKey '{pk.Name}' cannot contain Null, Empty or whitespace value");
@@ -141,7 +140,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
                     entity.ETag = new ETag(etVal);
                 }
                 // We don't serialise LastModified because that field is not "writeable"
-                else if ((! metadataOnly) && member.Value.ContainerMemberDefinition is TableColumnAttribute tableColumn)
+                else if ((!metadataOnly) && member.Value.ContainerMemberDefinition is TableColumnAttribute tableColumn)
                 {
                     entity[tableColumn.CreateQualifiedName()] = ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, jsonSerialiseIfNot: true);
                 }
@@ -150,5 +149,80 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
             return entity;
         }
 
+        /// <summary>
+        /// Serialise a collection of <paramref name="objects"/> into a collection of <see cref="TableEntity"/>
+        /// </summary>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
+        /// <param name="objects">The collection of .NET classes, structures or records to serialise</param>
+        /// <param name="metadataOnly">When set, does not serialise (custom) columns. This is used during DELETE operations when the entire object is not required.</param>
+        /// <param name="setSoftDeleteValue">The value to set into the 'IsDeleted' column</param>
+        /// <returns>The serialised collection of <see cref="TableEntity"/></returns>
+        public static List<TableEntity> Serialise<TObject>(IEnumerable<TObject> objects, bool metadataOnly = false, bool setSoftDeleteValue = false)
+        {
+            Type targetType = typeof(TObject);
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve(targetType)
+                                ?? throw new TypeLoadException($"The type '{targetType.Name}' does not seem to have the appropriate attribute decorations.");
+
+            List<TableEntity> entities = new List<TableEntity>();
+            foreach (TObject instance in objects)
+            {
+                TableEntity entity = new TableEntity();
+                if (typeInfo.ContainerDefinition.UseSoftDelete)
+                {
+                    entity[SujaySarma.Data.Core.ReservedNames.IsDeleted] = setSoftDeleteValue;
+                }
+
+                foreach (KeyValuePair<string, ContainerMemberTypeInformation> member in typeInfo.Members)
+                {
+                    object? value = ReflectionUtils.GetValue(instance, member.Value);
+
+                    if (member.Value.ContainerMemberDefinition is PartitionKeyAttribute pk)
+                    {
+                        string? pkVal = (string?)ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, typeof(string), false)
+                                            ?? ((pk.DefaultValueProviderFunction != null) ? (string)pk.DefaultValueProviderFunction() : null);
+
+                        if (string.IsNullOrWhiteSpace(pkVal))
+                        {
+                            throw new ArgumentNullException($"PartitionKey '{pk.Name}' cannot contain Null, Empty or whitespace value");
+                        }
+
+                        entity.PartitionKey = pkVal;
+                    }
+                    else if (member.Value.ContainerMemberDefinition is RowKeyAttribute rk)
+                    {
+                        string? rkVal = (string?)ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, typeof(string), false)
+                                            ?? ((rk.DefaultValueProviderFunction != null) ? (string)rk.DefaultValueProviderFunction() : null);
+
+                        if (string.IsNullOrWhiteSpace(rkVal))
+                        {
+                            throw new ArgumentNullException($"RowKey '{rk.Name}' cannot contain Null, Empty or whitespace value");
+                        }
+
+                        entity.RowKey = rkVal;
+                    }
+                    else if (member.Value.ContainerMemberDefinition is ETagAttribute eTag)
+                    {
+                        string? etVal = (string?)ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, typeof(string), false)
+                                            ?? ((eTag.DefaultValueProviderFunction != null) ? (string)eTag.DefaultValueProviderFunction() : null);
+
+                        if (string.IsNullOrWhiteSpace(etVal))
+                        {
+                            throw new ArgumentNullException($"ETag '{eTag.Name}' cannot contain Null, Empty or whitespace value");
+                        }
+
+                        entity.ETag = new ETag(etVal);
+                    }
+                    // We don't serialise LastModified because that field is not "writeable"
+                    else if ((!metadataOnly) && member.Value.ContainerMemberDefinition is TableColumnAttribute tableColumn)
+                    {
+                        entity[tableColumn.CreateQualifiedName()] = ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, jsonSerialiseIfNot: true);
+                    }
+                }
+
+                entities.Add(entity);
+            }
+
+            return entities;
+        }
     }
 }

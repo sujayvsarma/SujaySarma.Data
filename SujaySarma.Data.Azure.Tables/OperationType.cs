@@ -1,33 +1,31 @@
 ﻿namespace SujaySarma.Data.Azure.Tables
 {
     /// <summary>
-    /// Type of CRUD operation to be performed
+    /// Mode of update
     /// </summary>
-    public enum OperationType
+    public enum UpdateModes
     {
         /// <summary>
-        /// Unknown operation
+        /// Merge record in place. 
+        /// Will not insert or update any records if the indicated record is missing.
         /// </summary>
-        Unknown = 0,
+        Merge = 0,
 
         /// <summary>
-        /// Insert new rows
+        /// Completely replace existing record.
+        /// Will not insert or update any records if the indicated record is missing.
         /// </summary>
-        Insert,
+        Replace = 1,
 
         /// <summary>
-        /// Update existing rows
+        /// Merge record in place. 
+        /// If record is missing, inserts the provided data.
         /// </summary>
-        Update,
+        InsertIfMissingOrMerge = 2,
 
         /// <summary>
-        /// Insert or update rows
-        /// </summary>
-        Upsert,
-
-        /// <summary>
-        /// Delete existing rows
-        /// </summary>
-        Delete
+        /// Completely replace existing record.
+        /// If record is missing, inserts the provided data.
+        InsertIfMissingOrReplace = 4
     }
 }
