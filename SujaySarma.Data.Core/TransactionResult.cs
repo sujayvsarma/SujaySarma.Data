@@ -6,12 +6,12 @@ namespace SujaySarma.Data.Core
     /// Results of a transaction or operation
     /// </summary>
     /// <typeparam name="TEntity">Type of entities involved in the transaction</typeparam>
-    public class TransactionResult<TEntity>
+    public sealed class TransactionResult<TEntity>
     {
         /// <summary>
         /// A default instance of the result
         /// </summary>
-        public static TransactionResult<TEntity> Default = new TransactionResult<TEntity>();
+        public static readonly TransactionResult<TEntity> Default = new TransactionResult<TEntity>();
 
         /// <summary>
         /// Total number of entities

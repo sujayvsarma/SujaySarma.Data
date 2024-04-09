@@ -54,7 +54,7 @@ namespace SujaySarma.Data.Azure.Tables.Reflection
         /// <summary>
         /// List of types that are compatible with Azure Tables
         /// </summary>
-        private static Type[] compatibleTypes = new Type[]
+        private static readonly Type[] compatibleTypes = new Type[]
         {
             typeof(string),
             typeof(byte[]),

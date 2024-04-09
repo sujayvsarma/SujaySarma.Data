@@ -11,22 +11,31 @@ namespace SujaySarma.Data.Core.Reflection
     ///     This class cannot be instantiated outside this library as all its constructors are internal or private. 
     ///     Instead, callers must use the <see cref="TypeDiscoveryFactory"/> class.
     /// </remarks>
-    public class ContainerTypeInformation
+    public sealed class ContainerTypeInformation
     {
         /// <summary>
         /// Name of the class
         /// </summary>
-        public string Name { get; private set; }
+        public string Name 
+        { 
+            get; init; 
+        }
 
         /// <summary>
         /// Definition of the container system
         /// </summary>
-        public IContainerAttribute ContainerDefinition { get; private set; }
+        public IContainerAttribute ContainerDefinition 
+        { 
+            get; init; 
+        }
 
         /// <summary>
         /// Resolved information about this container type's properties and fields
         /// </summary>
-        public Dictionary<string, ContainerMemberTypeInformation> Members { get; private set; }
+        public Dictionary<string, ContainerMemberTypeInformation> Members 
+        { 
+            get; init; 
+        }
 
 
         /// <summary>

@@ -11,7 +11,10 @@ namespace SujaySarma.Data.Core
         /// Toggle whether the date/time provided will be a local timestamp (server time if this is a server application) 
         /// or the Utc time.
         /// </summary>
-        public DateTimeKind DateTimeKind { get; init; }
+        public DateTimeKind DateTimeKind 
+        { 
+            get; init; 
+        }
 
 
         /// <summary>

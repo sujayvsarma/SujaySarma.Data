@@ -9,22 +9,34 @@ namespace SujaySarma.Data.Core.Reflection
     /// <remarks>
     ///     This class cannot be instantiated outside this library as all its constructors are internal or private. 
     /// </remarks>
-    public class ContainerMemberTypeInformation
+    public sealed class ContainerMemberTypeInformation
     {
         /// <summary>
         /// Name of the property or field member
         /// </summary>
-        public string Name { get; private set; }
+        public string Name 
+        { 
+            get; 
+            init; 
+        }
 
         /// <summary>
         /// Definition of the container system
         /// </summary>
-        public IContainerMemberAttribute ContainerMemberDefinition { get; private set; }
+        public IContainerMemberAttribute ContainerMemberDefinition 
+        { 
+            get; 
+            init; 
+        }
 
         /// <summary>
         /// The field or property's information from reflection
         /// </summary>
-        public MemberInfo FieldOrPropertyInfo { get; private set; }
+        public MemberInfo FieldOrPropertyInfo 
+        { 
+            get; 
+            init; 
+        }
 
         /// <summary>
         /// Initialise for a property

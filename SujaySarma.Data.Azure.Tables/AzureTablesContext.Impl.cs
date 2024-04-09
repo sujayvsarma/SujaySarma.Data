@@ -215,7 +215,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <param name="exception">The <see cref="Exception"/></param>
         /// <param name="results">The current results info (<see cref="TransactionBatchManager{TEntity}"/>)</param>
         /// <param name="batch">The current transaction batch</param>
-        private void UpdateResultsAndBatch(string partitionKey, Exception exception, TransactionResult<TableEntity> results, List<TableTransactionAction> batch)
+        private static void UpdateResultsAndBatch(string partitionKey, Exception exception, TransactionResult<TableEntity> results, List<TableTransactionAction> batch)
         {
             results.Messages.Add($"-> PartitionKey = '{partitionKey}'");
             results.Messages.Add(exception.Message);
@@ -233,7 +233,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <param name="ttfe">The <see cref="TableTransactionFailedException"/></param>
         /// <param name="results">The current results info (<see cref="TransactionBatchManager{TEntity}"/>)</param>
         /// <param name="batch">The current transaction batch</param>
-        private void UpdateResultsAndBatch(string partitionKey, TableTransactionFailedException ttfe, TransactionResult<TableEntity> results, List<TableTransactionAction> batch)
+        private static void UpdateResultsAndBatch(string partitionKey, TableTransactionFailedException ttfe, TransactionResult<TableEntity> results, List<TableTransactionAction> batch)
         {
             results.Messages.Add($"-> PartitionKey = '{partitionKey}'");
             results.Messages.Add(ttfe.Message);
@@ -269,7 +269,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <param name="operationType">Type of non-query action</param>
         /// <param name="deleteAction">If a delete operation, whether to perform a soft or a hard delete</param>
         /// <returns>Dictionary where the Key is a PartitionKey and the Value is a collection of <see cref="TransactionBatchManager{TEntity}"/> objects for that PartitionKey</returns>
-        private Dictionary<string, TransactionBatchManager<TableTransactionAction>> GroupEntitiesByPartitionKey(List<TableEntity> entities, TableTransactionActionType operationType, DeleteAction deleteAction = DeleteAction.NotApplicable)
+        private static Dictionary<string, TransactionBatchManager<TableTransactionAction>> GroupEntitiesByPartitionKey(List<TableEntity> entities, TableTransactionActionType operationType, DeleteAction deleteAction = DeleteAction.NotApplicable)
         {
             Dictionary<string, TransactionBatchManager<TableTransactionAction>> results = new Dictionary<string, TransactionBatchManager<TableTransactionAction>>();
 
@@ -310,7 +310,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <param name="filter">Pre-composed string with query filter (Where clause) if applicable</param>
         /// <param name="includeSoftDeletedRows">When set, includes columns with IsDeleted=TRUE</param>
         /// <returns>Composed filter string (returns a <see cref="StringBuilder"/> instead of a <see cref="string"/> for better memory management)</returns>
-        private StringBuilder PrepareQueryFilterString(string? partitionKey = null, string? rowKey = null, string? filter = null, bool includeSoftDeletedRows = false)
+        private static StringBuilder PrepareQueryFilterString(string? partitionKey = null, string? rowKey = null, string? filter = null, bool includeSoftDeletedRows = false)
         {
             StringBuilder query = new StringBuilder();
 
@@ -352,7 +352,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// </summary>
         /// <param name="container">Discovered type information of the top-level (Table) object</param>
         /// <returns>List of column names</returns>
-        private List<string> PrepareQueryColumnsList(ContainerTypeInformation container)
+        private static List<string> PrepareQueryColumnsList(ContainerTypeInformation container)
         {
             List<string> columnNames = new List<string>();
             columnNames.AddRange(ReservedNames.All);
@@ -390,6 +390,6 @@ namespace SujaySarma.Data.Azure.Tables
         /// <summary>
         /// Size of a transactional batch. This is hard-coded at Azure Tables end.
         /// </summary>
-        private static int TRANSACTION_BATCH_SIZE = 100;
+        private static readonly int TRANSACTION_BATCH_SIZE = 100;
     }
 }

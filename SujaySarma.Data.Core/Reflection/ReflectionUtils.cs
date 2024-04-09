@@ -10,7 +10,7 @@ namespace SujaySarma.Data.Core.Reflection
     /// <summary>
     /// Functions that retrieve or set values using reflection
     /// </summary>
-    public partial class ReflectionUtils
+    public sealed class ReflectionUtils
     {
 
         /// <summary>
@@ -21,17 +21,27 @@ namespace SujaySarma.Data.Core.Reflection
         /// <returns>The value, which may be Null.</returns>
         public static object? GetValue(object? instance, ContainerMemberTypeInformation member)
         {
+            object? value = null;
             if (member.FieldOrPropertyInfo is FieldInfo field)
             {
-                return field.GetValue(field.IsStatic ? null : instance);
+                value = field.GetValue(field.IsStatic ? null : instance);
             }
             else if (member.FieldOrPropertyInfo is PropertyInfo property)
             {
                 // properties are never 'static'
-                return property.GetValue(instance);
+                value = property.GetValue(instance);
             }
 
-            return null;
+            // if value is null or default, try calling the default value function to get a better answer
+            if ((value == null) || (value == default))
+            {
+                if (member.ContainerMemberDefinition.DefaultValueProviderFunction != null)
+                {
+                    value = member.ContainerMemberDefinition.DefaultValueProviderFunction();
+                }
+            }
+
+            return value;
         }
 
         /// <summary>
@@ -40,14 +50,23 @@ namespace SujaySarma.Data.Core.Reflection
         /// <param name="instance">Instance of object</param>
         /// <param name="member">Member property or field</param>
         /// <param name="value">Value to set</param>
-        public static void SetValue(object instance, MemberInfo member, object? value)
+        public static void SetValue(object instance, ContainerMemberTypeInformation member, object? value)
         {
-            if (member is FieldInfo field)
+            // if value is null or default, try calling the default value function to get a better answer
+            if ((value == null) || (value == default))
+            {
+                if (member.ContainerMemberDefinition.DefaultValueProviderFunction != null)
+                {
+                    value = member.ContainerMemberDefinition.DefaultValueProviderFunction();
+                }
+            }
+
+            if (member.FieldOrPropertyInfo is FieldInfo field)
             {
                 value = ConvertValueIfRequired(value, field.FieldType);
                 field.SetValue(instance, value);
             }
-            else if (member is PropertyInfo property)
+            else if (member.FieldOrPropertyInfo is PropertyInfo property)
             {
                 value = ConvertValueIfRequired(value, property.PropertyType);
                 property.SetValue(instance, value);
@@ -63,7 +82,7 @@ namespace SujaySarma.Data.Core.Reflection
         [return: NotNullIfNotNull(nameof(value))]
         public static object? ConvertValueIfRequired(object? value, Type targetClrType)
         {
-            if (value == default)
+            if ((value == default) || (value == DBNull.Value))
             {
                 return default;
             }
@@ -78,6 +97,25 @@ namespace SujaySarma.Data.Core.Reflection
                 return ConvertTo(destinationClrType, value);
             }
             return value;
+        }
+
+        /// <summary>
+        /// Returns the data type of the Field or Property
+        /// </summary>
+        /// <param name="memberInfo">A <see cref="FieldInfo"/> or <see cref="PropertyInfo"/></param>
+        /// <returns>The type of the underlying member. If the provided <paramref name="memberInfo"/> is not a <see cref="FieldInfo"/> or <see cref="PropertyInfo"/>, will return "<see cref="object"/>"</returns>
+        public static Type GetFieldOrPropertyDataType(MemberInfo memberInfo)
+        {
+            if (memberInfo is FieldInfo field)
+            {
+                return field.FieldType;
+            }
+            else if (memberInfo is PropertyInfo property)
+            {
+                return property.PropertyType;
+            }
+
+            return typeof(object);
         }
 
         /// <summary>

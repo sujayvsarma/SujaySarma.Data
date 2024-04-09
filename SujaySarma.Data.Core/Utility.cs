@@ -55,5 +55,23 @@ namespace SujaySarma.Data.Core
             return false;
         }
 
+        /// <summary>
+        /// Throw the <see cref="ObjectDisposedException"/> if the object has been previously disposed.
+        /// </summary>
+        /// <param name="obj">Object to throw the exception on</param>
+        /// <param name="isDisposed">Value of the internally maintained 'isDisposed' flag</param>
+        /// <param name="nameOfDisposedObject">Class-name of the disposable object</param>
+        public static void ThrowIfDisposed(this object obj, bool isDisposed, string nameOfDisposedObject)
+        {
+#if NET7_0_OR_GREATER
+            ObjectDisposedException.ThrowIf((isDisposed == true), this);
+#else
+            if (isDisposed)
+            {
+                throw new ObjectDisposedException(nameOfDisposedObject);
+            }
+#endif
+        }
+
     }
 }

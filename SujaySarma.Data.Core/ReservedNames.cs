@@ -8,7 +8,7 @@
         /// <summary>
         /// The IsDeleted column or field name used in Soft-Deletes
         /// </summary>
-        public static string IsDeleted = "IsDeleted";
+        public static readonly string IsDeleted = "IsDeleted";
 
     }
 }

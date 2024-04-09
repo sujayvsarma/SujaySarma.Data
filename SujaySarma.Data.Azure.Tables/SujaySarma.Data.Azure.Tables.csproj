@@ -6,15 +6,13 @@
 		<Nullable>enable</Nullable>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<Description>
-			Use this SDK to simplify your solutions that store or query data from Azure Storage Tables or Cosmos DB. 
-			Use the library seamlessly on your local development machine using Azure Development Storage (now Azurite). 
-			This package is maintained very regularly as I (the author) use it in almost all of my tools and apps. 
-			Bugs found (or reported) are rectified very quickly, typically the same day. 
-			New features and API are added regularly. 
-			Source code is available on request (send me an e-mail).
+		<Description>Use this SDK to simplify your solutions that store or query data from Azure Storage Tables or Cosmos DB. 
+Use the library seamlessly on your local development machine using Azure Development Storage (now Azurite). 
+This package is maintained very regularly as I (the author) use it in almost all of my tools and apps. 
+Bugs found (or reported) are rectified very quickly, typically the same day. 
+New features and API are added regularly. 
 		</Description>
-		<Copyright>(c) 2023 Sujay V Sarma. All Rights Reserved.</Copyright>
+		<Copyright>(c) 2024 Sujay V Sarma. All Rights Reserved.</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageTags>azure,tables,azure storage tables,cosmos,cosmosdb,tables api,sujay,sujaysarma,sujay sarma</PackageTags>
 		<PackageReleaseNotes>
@@ -42,27 +40,27 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
-	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
-	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
-	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
-	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
-	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
-	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+	  <NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

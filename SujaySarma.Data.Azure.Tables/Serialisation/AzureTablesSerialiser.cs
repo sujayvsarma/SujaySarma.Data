@@ -45,19 +45,19 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
             {
                 if (member.Value.ContainerMemberDefinition is PartitionKeyAttribute)
                 {
-                    ReflectionUtils.SetValue(instance, member.Value.FieldOrPropertyInfo, entity.PartitionKey);
+                    ReflectionUtils.SetValue(instance, member.Value, entity.PartitionKey);
                 }
                 else if (member.Value.ContainerMemberDefinition is RowKeyAttribute)
                 {
-                    ReflectionUtils.SetValue(instance, member.Value.FieldOrPropertyInfo, entity.RowKey);
+                    ReflectionUtils.SetValue(instance, member.Value, entity.RowKey);
                 }
                 else if (member.Value.ContainerMemberDefinition is ETagAttribute)
                 {
-                    ReflectionUtils.SetValue(instance, member.Value.FieldOrPropertyInfo, entity.ETag);
+                    ReflectionUtils.SetValue(instance, member.Value, entity.ETag);
                 }
                 else if (member.Value.ContainerMemberDefinition is TimestampAttribute)
                 {
-                    ReflectionUtils.SetValue(instance, member.Value.FieldOrPropertyInfo, entity.Timestamp);
+                    ReflectionUtils.SetValue(instance, member.Value, entity.Timestamp);
                 }
                 else if (member.Value.ContainerMemberDefinition is TableColumnAttribute tableColumn)
                 {
@@ -73,7 +73,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
                             });
                         }
                     }
-                    ReflectionUtils.SetValue(instance, member.Value.FieldOrPropertyInfo, value);
+                    ReflectionUtils.SetValue(instance, member.Value, value);
                 }
             }
 

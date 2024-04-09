@@ -6,7 +6,7 @@ namespace SujaySarma.Data.Core
     /// Manages sets of data for a transaction
     /// </summary>
     /// <typeparam name="TEntity">Type of the data entity</typeparam>
-    public class TransactionBatchManager<TEntity>
+    public sealed class TransactionBatchManager<TEntity>
     {
         /// <summary>
         /// Returns the number of items left in the collection
@@ -56,7 +56,7 @@ namespace SujaySarma.Data.Core
         /// <summary>
         /// Initialise
         /// </summary>
-        /// <param name="batchSize">Size of a batch</param>
+        /// <param name="batchSize">The maximum number of items permitted in a batch</param>
         /// <param name="entities">The entities to manage through batches</param>
         public TransactionBatchManager(int batchSize, IEnumerable<TEntity> entities)
         {
@@ -67,14 +67,21 @@ namespace SujaySarma.Data.Core
         /// <summary>
         /// Initialise
         /// </summary>
-        /// <param name="batchSize">Size of a batch</param>
+        /// <param name="batchSize">The maximum number of items permitted in a batch</param>
         public TransactionBatchManager(int batchSize)
         {
             _batchSize = batchSize;
             _allEntities = new List<TEntity>();
         }
 
-        private List<TEntity> _allEntities;
-        private int _batchSize;
+        /// <summary>
+        /// Collection of all entities added to be "batch-managed"
+        /// </summary>
+        private readonly List<TEntity> _allEntities;
+        
+        /// <summary>
+        /// The maximum number of items permitted in a batch
+        /// </summary>
+        private readonly int _batchSize;
     }
 }

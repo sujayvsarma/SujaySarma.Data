@@ -9,7 +9,10 @@
         /// <summary>
         /// The name of the underlying container (eg: name of the table in a database).
         /// </summary>
-        string Name { get; init; }
+        string Name 
+        { 
+            get; init; 
+        }
 
 
         /// <summary>
@@ -22,7 +25,10 @@
         ///     from that container shall not yield this row, even when the calling code explicitly queries 
         ///     for deleted rows, making it consistent with rows that are actually (hard) deleted from the container.
         /// </remarks>
-        bool UseSoftDelete { get; set; }
+        bool UseSoftDelete 
+        { 
+            get; set; 
+        }
 
 
         /// <summary>

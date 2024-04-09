@@ -17,26 +17,38 @@ namespace SujaySarma.Data.Core
         /// <summary>
         /// The name of the underlying column (eg: name of the table column).
         /// </summary>
-        public string Name { get; init; }
+        public string Name
+        {
+            get; init;
+        }
 
         /// <summary>
         /// Controls the inclusion of a column/field in data-modification 
         /// (insert, update and delete) operations.
         /// </summary>
-        public DataModificationInclusionBehaviour IncludeInDataModificationOperation { get; set; }
+        public DataModificationInclusionBehaviour IncludeInDataModificationOperation
+        {
+            get; set;
+        }
 
         /// <summary>
         /// When the value of the property or field is an <seealso cref="System.Enum" /> type, this value controls 
         /// how that column is serialised.
         /// </summary>
-        public EnumSerializationBehaviour EnumSerializationStrategy { get; set; }
+        public EnumSerializationBehaviour EnumSerializationStrategy
+        {
+            get; set;
+        }
 
         /// <summary>
         /// When set on a complex type or a type where we have no data-conversion implementation, 
         /// allows the property or field value use Json for storage and retrieval. Setting this value 
         /// to TRUE makes sense only if the underlying column/field is a <seealso cref="string"/> type.
         /// </summary>
-        public bool AllowSerializationAsJson { get; set; }
+        public bool AllowSerializationAsJson
+        {
+            get; set;
+        }
 
         /// <summary>
         /// This function is called to retrieve the usable name for the container-member. Implementing attributes can use it 
@@ -44,7 +56,7 @@ namespace SujaySarma.Data.Core
         /// provide a different or better name for the operation.
         /// </summary>
         /// <returns>The qualified or usable name to use for the container-member</returns>
-        public string CreateQualifiedName()
+        public virtual string CreateQualifiedName()
             => Name;
 
         /// <summary>

@@ -1,10 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<Description>Use this SDK to simplify your solutions that store or query data from Token-limited flat files. Token-limited files are flat-file "tables" that store data with each column seperated by "tokens". A token maybe a comma, semi-colon, space, or anything else the creator or programmer of that file deems appropriate for their needs.
+		</Description>
+		<Copyright>(c) 2024 Sujay V Sarma. All Rights Reserved.</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageTags>sdk,csv,comma seperated,tab seperated,delimited,tab delimited,file,reader,parser,writer,sujay,sujaysarma,sujay sarma</PackageTags>
+		<PackageReleaseNotes>
+			Version 9.0.0 - Revamped dependency system. Now combined with other SujaySarma.Data.* libraries
+		</PackageReleaseNotes>
+		<Version>9.0.0</Version>
+		<AssemblyVersion>9.0.0.0</AssemblyVersion>
+		<FileVersion>9.0.0.0</FileVersion>
+		<Authors>Sujay V. Sarma</Authors>
+		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Title>Sujay Sarma's Token-limited Flat-files Reader/Writer SDK (comma, semi-colon, space, custom-tokens supported)</Title>
+		<PackageIcon>logo.png</PackageIcon>
+		<IncludeSymbols>False</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>embedded</DebugType>
@@ -15,27 +36,42 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;</NoWarn>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="logo.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\SujaySarma.Data.Core\SujaySarma.Data.Core.csproj" />
+	</ItemGroup>
 
 </Project>

@@ -16,17 +16,6 @@ namespace SujaySarma.Data.Core.Reflection
     public static class TypeDiscoveryFactory
     {
         /// <summary>
-        /// When set, allows enumeration and resolution of properties and fields that are not 
-        /// decorated with an <see cref="IContainerMemberAttribute"/>.
-        /// </summary>
-        public static bool AllowResolutionOfUndecoratedMembers
-        {
-            get;
-            set;
-        }
-
-
-        /// <summary>
         /// Resolve the type information for the provided object
         /// </summary>
         /// <typeparam name="TObject">Type to resolve</typeparam>
@@ -157,7 +146,7 @@ namespace SujaySarma.Data.Core.Reflection
         /// <summary>
         /// Local cache that maintains the type information
         /// </summary>
-        private static Dictionary<string, ContainerTypeInformation> _localCache;
+        private static readonly Dictionary<string, ContainerTypeInformation> _localCache;
 
         /// <summary>
         /// IMemoryCache that maintains the type information
@@ -172,6 +161,6 @@ namespace SujaySarma.Data.Core.Reflection
         /// <summary>
         /// An object for sync locking
         /// </summary>
-        private static object _syncLockObject;
+        private static readonly object _syncLockObject;
     }
 }

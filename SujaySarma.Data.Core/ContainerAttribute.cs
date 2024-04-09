@@ -15,7 +15,10 @@ namespace SujaySarma.Data.Core
         /// <summary>
         /// The name of the underlying container (eg: name of the table in a database).
         /// </summary>
-        public string Name { get; init; }
+        public string Name 
+        { 
+            get; init; 
+        }
 
 
         /// <summary>
@@ -28,7 +31,10 @@ namespace SujaySarma.Data.Core
         ///     from that container shall not yield this row, even when the calling code explicitly queries 
         ///     for deleted rows, making it consistent with rows that are actually (hard) deleted from the container.
         /// </remarks>
-        public bool UseSoftDelete { get; set; }
+        public bool UseSoftDelete 
+        { 
+            get; set; 
+        }
 
 
         /// <summary>
