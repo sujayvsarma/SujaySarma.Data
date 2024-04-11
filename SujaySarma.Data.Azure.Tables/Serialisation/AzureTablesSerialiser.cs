@@ -15,7 +15,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
     /// <summary>
     /// Serialise/Deserialise data between the .NET and Azure Tables
     /// </summary>
-    public static class AzureTablesSerialiser
+    internal static class AzureTablesSerialiser
     {
         /// <summary>
         /// Read an <see cref="TableEntity"> and populate information into a .NET class, record or struct.

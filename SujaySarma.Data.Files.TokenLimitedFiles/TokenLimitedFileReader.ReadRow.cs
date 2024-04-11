@@ -170,7 +170,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         /// </summary>
         /// <param name="readResultValue">The value returned by a <see cref="StreamReader"/>'s <see cref="StreamReader.Read()"/></param>
         /// <returns>Character equivalent</returns>
-        private char GetValidCharacterFromResult(int readResultValue)
+        private static char GetValidCharacterFromResult(int readResultValue)
         {
             if (readResultValue < 0)
             {
@@ -356,7 +356,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
             /// <summary>
             /// Returns if the <see cref="ThisFieldQuoteCount"/> is an even number
             /// </summary>
-            public bool HasMatchedQuotes
+            public readonly bool HasMatchedQuotes
                 => (((ThisFieldQuoteCount % 2) == 0) ? true : false);
 
             /// <summary>

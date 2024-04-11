@@ -43,7 +43,7 @@ namespace SujaySarma.Data.Core
         /// provide a different or better name for the operation.
         /// </summary>
         /// <returns>The qualified or usable name to use for the container</returns>
-        public string CreateQualifiedName()
+        public virtual string CreateQualifiedName()
             => Name;
 
         /// <summary>

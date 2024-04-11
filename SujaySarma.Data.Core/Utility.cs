@@ -64,7 +64,7 @@ namespace SujaySarma.Data.Core
         public static void ThrowIfDisposed(this object obj, bool isDisposed, string nameOfDisposedObject)
         {
 #if NET7_0_OR_GREATER
-            ObjectDisposedException.ThrowIf((isDisposed == true), this);
+            ObjectDisposedException.ThrowIf((isDisposed == true), obj);
 #else
             if (isDisposed)
             {

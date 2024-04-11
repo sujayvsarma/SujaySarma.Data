@@ -67,11 +67,7 @@ namespace SujaySarma.Data.Health.Types
         {
             get
             {
-                if (_initial_version_cached == null)
-                {
-                    _initial_version_cached = new HealthObjectVersionInfo();
-                }
-
+                _initial_version_cached ??= new HealthObjectVersionInfo();
                 return _initial_version_cached;
             }
         }

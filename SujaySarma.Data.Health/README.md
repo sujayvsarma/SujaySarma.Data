@@ -5,7 +5,9 @@
 
 Library                      | Current version
 -----------------------------|------------------
-SujaySarma.Data.Health       | Version 8.0.0
+SujaySarma.Data.Health       | Version 9.0.0
+
+> Version 9.0.0 is a revamped version that takes on a dependency on SujaySarma.Data.Core.
 
 ## NuGet Package
 https://www.nuget.org/packages/SujaySarma.Data.Health
@@ -17,7 +19,7 @@ https://github.com/sujayvsarma/SujaySarma.Data.Health
 
 Version | Changes
 --------|----------
-8.0.0   | Initial version.
+9.0.0   | This version
 
 See [Change log](https://github.com/sujayvsarma/SujaySarma.Data.Health/blob/master/CHANGELOG.md) for more details.
 

@@ -78,7 +78,7 @@ namespace SujaySarma.Data.Health.BaseTypes
         /// <param name="contextualKey">Key to be used for encryption</param>
         /// <param name="information">Information to be encrypted</param>
         /// <returns>Encrypted information</returns>
-        public string Encrypt(string contextualKey, string information)
+        public static string Encrypt(string contextualKey, string information)
         {
             byte[] clearBytes = Encoding.UTF8.GetBytes(information);
             Rfc2898DeriveBytes saltBytes = new(contextualKey, 32, 3, HashAlgorithmName.SHA1);
@@ -107,7 +107,7 @@ namespace SujaySarma.Data.Health.BaseTypes
         /// <param name="contextualKey">Key to be used for decryption</param>
         /// <param name="information">Information to be decrypted</param>
         /// <returns>Decrypted information</returns>
-        public string Decrypt(string contextualKey, string information)
+        public static string Decrypt(string contextualKey, string information)
         {
             byte[] codedBytes = Convert.FromBase64String(information);
             Rfc2898DeriveBytes saltBytes = new(contextualKey, 32, 3, HashAlgorithmName.SHA1);

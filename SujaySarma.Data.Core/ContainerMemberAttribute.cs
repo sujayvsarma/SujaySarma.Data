@@ -41,6 +41,14 @@ namespace SujaySarma.Data.Core
         }
 
         /// <summary>
+        /// When set, this column shall act as a key in the WHERE clause. 
+        /// </summary>
+        public bool IsSearchKey
+        {
+            get; set;
+        }
+
+        /// <summary>
         /// When set on a complex type or a type where we have no data-conversion implementation, 
         /// allows the property or field value use Json for storage and retrieval. Setting this value 
         /// to TRUE makes sense only if the underlying column/field is a <seealso cref="string"/> type.
@@ -84,6 +92,7 @@ namespace SujaySarma.Data.Core
             IncludeInDataModificationOperation = DataModificationInclusionBehaviour.Inserts | DataModificationInclusionBehaviour.Updates | DataModificationInclusionBehaviour.Deletes;
             EnumSerializationStrategy = EnumSerializationBehaviour.AsInt;
             AllowSerializationAsJson = true;
+            IsSearchKey = false;
 
             // We don't provide a default value here
             DefaultValueProviderFunction = null;
