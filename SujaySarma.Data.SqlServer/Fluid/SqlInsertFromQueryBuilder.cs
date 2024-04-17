@@ -99,7 +99,6 @@ namespace SujaySarma.Data.SqlServer.Fluid
         /// <typeparam name="TTable">Type of CLR object</typeparam>
         /// <returns>Created instance of SqlInsertFromQueryBuilder</returns>
         public static SqlInsertFromQueryBuilder IntoTable<TTable>()
-            where TTable : class
             => new SqlInsertFromQueryBuilder(typeof(TTable));
 
         /// <inheritdoc />

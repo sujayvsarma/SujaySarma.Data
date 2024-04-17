@@ -110,8 +110,7 @@ namespace SujaySarma.Data.SqlServer.Fluid
         /// <typeparam name="TTable">Type of CLR object</typeparam>
         /// <returns>Created instance of SqlInsertFromQueryBuilder</returns>
         public static SqlUpdateWithJoinsBuilder IntoTable<TTable>()
-            where TTable : class
-            => new(typeof(TTable));
+            => new SqlUpdateWithJoinsBuilder(typeof(TTable));
 
         /// <summary>
         /// Collection of WHERE conditions

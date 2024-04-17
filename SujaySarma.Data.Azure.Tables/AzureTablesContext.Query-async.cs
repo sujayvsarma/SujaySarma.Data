@@ -158,8 +158,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <param name="rowKey">RowKey in the table</param>
         /// <param name="filter">Pre-composed filter string (Where clause)</param>
         /// <returns>List of <typeparamref name="TObject"/> objects</returns>
-        public async Task<List<TObject>> SelectAsync<TObject>(string? partitionKey = null, string? rowKey = null, string? filter = null)
-            where TObject : class
+        public async Task<List<TObject>> SelectAsync<TObject>(string? partitionKey = null, string? rowKey = null, string? filter = null)            
             => await ExecuteQueryAsync<TObject>(
                     partitionKey,
                     rowKey,
@@ -174,8 +173,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <param name="rowKey">RowKey in the table</param>
         /// <param name="filter">Pre-composed filter string (Where clause)</param>
         /// <returns>List of <typeparamref name="TObject"/> objects</returns>
-        public async Task<List<TObject>> SelectAsync<TObject>(object? partitionKey = null, object? rowKey = null, string? filter = null)
-            where TObject : class
+        public async Task<List<TObject>> SelectAsync<TObject>(object? partitionKey = null, object? rowKey = null, string? filter = null)            
             => await ExecuteQueryAsync<TObject>(
                     (string?)ReflectionUtils.ConvertValueIfRequired(partitionKey, typeof(string)),
                     (string?)ReflectionUtils.ConvertValueIfRequired(rowKey, typeof(string)),
@@ -190,13 +188,12 @@ namespace SujaySarma.Data.Azure.Tables
         /// <param name="rowKey">(Optional) Value of RowKey</param>
         /// <param name="filter">(Optional) A valid OData filter string</param>
         /// <returns>A single business object or Null</returns>
-        public async Task<TObject?> SelectOnlyResultOrNullAsync<TObject>(string? partitionKey = null, string? rowKey = null, string? filter = null)
-            where TObject : class
+        public async Task<TObject?> SelectOnlyResultOrNullAsync<TObject>(string? partitionKey = null, string? rowKey = null, string? filter = null)            
         {
             List<TObject> data = await SelectAsync<TObject>(partitionKey, rowKey, filter);
             if (data.Count == 0)
             {
-                return null;
+                return default(TObject);
             }
             return data[0];
         }
@@ -209,8 +206,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <param name="rowKey">(Optional) Value of RowKey</param>
         /// <param name="filter">(Optional) A valid OData filter string</param>
         /// <returns>A single business object or Null</returns>
-        public async Task<TObject?> SelectOnlyResultOrNullAsync<TObject>(object? partitionKey = null, object? rowKey = null, string? filter = null)
-            where TObject : class
+        public async Task<TObject?> SelectOnlyResultOrNullAsync<TObject>(object? partitionKey = null, object? rowKey = null, string? filter = null)            
             => await SelectOnlyResultOrNullAsync<TObject>(
                     (string?)ReflectionUtils.ConvertValueIfRequired(partitionKey, typeof(string)),
                     (string?)ReflectionUtils.ConvertValueIfRequired(rowKey, typeof(string)),

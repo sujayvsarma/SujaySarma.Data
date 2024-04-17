@@ -81,7 +81,7 @@ namespace SujaySarma.Data.SqlServer
 
             if (clrValue is IEnumerable e)
             {
-                List<string> strings = new();
+                List<string> strings = new List<string>();
                 foreach (object element in e)
                 {
                     strings.Add(GetSQLStringValue(element));

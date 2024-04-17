@@ -97,5 +97,25 @@ namespace SujaySarma.Data.Core
             // We don't provide a default value here
             DefaultValueProviderFunction = null;
         }
+
+        /// <summary>
+        /// Defines a data container member, for example a column in a table.
+        /// </summary>
+        /// <remarks>
+        ///     This constructor lets you have an empty <see cref="Name"/>.
+        /// </remarks>
+        protected ContainerMemberAttribute()
+        {
+            Name = string.Empty;
+
+            // Set defaults
+            IncludeInDataModificationOperation = DataModificationInclusionBehaviour.Inserts | DataModificationInclusionBehaviour.Updates | DataModificationInclusionBehaviour.Deletes;
+            EnumSerializationStrategy = EnumSerializationBehaviour.AsInt;
+            AllowSerializationAsJson = true;
+            IsSearchKey = false;
+
+            // We don't provide a default value here
+            DefaultValueProviderFunction = null;
+        }
     }
 }

@@ -22,18 +22,18 @@ namespace SujaySarma.Data.SqlServer
         public async Task CreateTableAsync<TObject>()
         {
             ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
-            List<string> statements = new()
+            List<string> statements = new List<string>()
             {
                 "CREATE TABLE",
                 metadata.ContainerDefinition.CreateQualifiedName(),
                 "("
             }, 
-            primaryKeys = new(),
-            columns = new();
+            primaryKeys = new List<string>(),
+            columns = new List<string>();
 
             foreach(ContainerMemberTypeInformation member in metadata.Members.Values)
             {
-                List<string> columnDefinition = new()
+                List<string> columnDefinition = new List<string>()
                 {
                     member.ContainerMemberDefinition.CreateQualifiedName()
                 };

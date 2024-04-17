@@ -46,7 +46,7 @@ namespace SujaySarma.Data.SqlServer.Fluid.Tools
 
             if (!found)
             {
-                TypeTableAliasMap map = new()
+                TypeTableAliasMap map = new TypeTableAliasMap()
                 {
                     Alias = $"t{tableId}",
                     ClrObjectType = typeOfClrObject,
@@ -153,7 +153,7 @@ namespace SujaySarma.Data.SqlServer.Fluid.Tools
         /// <returns>Dictionary with a string key (full table name) and string value (table alias as applicable)</returns>
         public Dictionary<string, string> ToParserMapFormat()
         {
-            Dictionary<string, string> result = new();
+            Dictionary<string, string> result = new Dictionary<string, string>();
             foreach (TypeTableAliasMap obj in _list)
             {
                 result.Add(obj.GetQualifiedTableName(), obj.Alias);

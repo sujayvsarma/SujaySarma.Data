@@ -17,7 +17,7 @@ namespace SujaySarma.Data.SqlServer
         public bool IsConnectable()
         {
             bool result = false;
-            using (SqlConnection cn = new(_connectionString))
+            using (SqlConnection cn = new SqlConnection(_connectionString))
             {
                 try
                 {
@@ -43,7 +43,7 @@ namespace SujaySarma.Data.SqlServer
             bool result = false;
 
             string connectionStringWithoutRetry = _connectionString + ";ConnectRetryCount=0";
-            using (SqlConnection cn = new(connectionStringWithoutRetry))
+            using (SqlConnection cn = new SqlConnection(connectionStringWithoutRetry))
             {
                 try
                 {

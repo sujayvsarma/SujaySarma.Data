@@ -56,47 +56,43 @@ namespace SujaySarma.Data.SqlServer
 
 
         /// <summary>
-        /// Create an instance of the given <typeparamref name="T"/> type and populate it using the provided <see cref="DataRow"/>
+        /// Create an instance of the given <typeparamref name="TObject"/> type and populate it using the provided <see cref="DataRow"/>
         /// </summary>
-        /// <typeparam name="T">Type of business object</typeparam>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
         /// <param name="row"><see cref="DataRow"/> containing data to populate into the instance</param>
         /// <returns>Instance of object. Never NULL</returns>
-        public static T? HydrateFrom<T>(DataRow row)
-            where T : class
-            => (T?)HydrateFrom(typeof(T), row);
+        public static TObject? HydrateFrom<TObject>(DataRow row)           
+            => (TObject?)HydrateFrom(typeof(TObject), row);
 
         /// <summary>
         /// Use the provided <paramref name="tableContext"/> to perform the query in <paramref name="queryBuilder"/>
         /// </summary>
-        /// <typeparam name="T">Type of object to return</typeparam>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
         /// <param name="queryBuilder">Instance of SqlQueryBuilder with the necessary parameters</param>
         /// <param name="tableContext">SqlTableContext to use to perform the query</param>
         /// <returns>IEnumerable collection of [T] returned by the query</returns>
-        public static IEnumerable<T> Query<T>(this SqlQueryBuilder queryBuilder, SqlTableContext tableContext)
-            where T : class
-            => tableContext.Select<T>(queryBuilder);
+        public static IEnumerable<TObject> Query<TObject>(this SqlQueryBuilder queryBuilder, SqlTableContext tableContext)           
+            => tableContext.Select<TObject>(queryBuilder);
 
         /// <summary>
         /// Use the provided <paramref name="tableContext"/> to perform the query in <paramref name="queryBuilder"/>
         /// </summary>
-        /// <typeparam name="T">Type of object to return</typeparam>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
         /// <param name="queryBuilder">Instance of SqlQueryBuilder with the necessary parameters</param>
         /// <param name="tableContext">SqlTableContext to use to perform the query</param>
         /// <returns>Single instance [T] or NULL as returned by the query</returns>
-        public static T? QueryOneOrNull<T>(this SqlQueryBuilder queryBuilder, SqlTableContext tableContext)
-            where T : class
-            => tableContext.SelectOnlyResultOrNull<T>(queryBuilder);
+        public static TObject? QueryOneOrNull<TObject>(this SqlQueryBuilder queryBuilder, SqlTableContext tableContext)           
+            => tableContext.SelectOnlyResultOrNull<TObject>(queryBuilder);
 
 
         /// <summary>
         /// Execute the INSERT query provided in <paramref name="insertBuilder"/> against the <paramref name="tableContext"/>
         /// </summary>
-        /// <typeparam name="T">Type of objects in the INSERT</typeparam>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
         /// <param name="insertBuilder">Instance of SqlInsertBuilder</param>
         /// <param name="tableContext">SqlTableContext to use to execute the query</param>
         /// <returns>Number of rows affected on the SQL Server</returns>
-        public static async Task<int> ExecuteAsync<T>(this SqlInsertBuilder<T> insertBuilder, SqlTableContext tableContext)
-            where T : class
+        public static async Task<int> ExecuteAsync<TObject>(this SqlInsertBuilder<TObject> insertBuilder, SqlTableContext tableContext)           
             => await tableContext.ExecuteNonQueryAsync(insertBuilder.Build());
 
         /// <summary>
@@ -111,12 +107,11 @@ namespace SujaySarma.Data.SqlServer
         /// <summary>
         /// Execute the UPDATE query provided in <paramref name="updateBuilder"/> against the <paramref name="tableContext"/>
         /// </summary>
-        /// <typeparam name="T">Type of objects in the UPDATE</typeparam>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
         /// <param name="updateBuilder">Instance of SqlUpdateBuilder</param>
         /// <param name="tableContext">SqlTableContext to use to execute the query</param>
         /// <returns>Number of rows affected on the SQL Server</returns>
-        public static async Task<int> ExecuteAsync<T>(this SqlUpdateBuilder<T> updateBuilder, SqlTableContext tableContext)
-            where T : class
+        public static async Task<int> ExecuteAsync<TObject>(this SqlUpdateBuilder<TObject> updateBuilder, SqlTableContext tableContext)           
             => await tableContext.ExecuteNonQueryAsync(updateBuilder.Build());
 
         /// <summary>
@@ -131,12 +126,11 @@ namespace SujaySarma.Data.SqlServer
         /// <summary>
         /// Execute the DELETE query provided in <paramref name="deleteBuilder"/> against the <paramref name="tableContext"/>
         /// </summary>
-        /// <typeparam name="T">Type of objects in the DELETE</typeparam>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
         /// <param name="deleteBuilder">Instance of SqlDeleteBuilder</param>
         /// <param name="tableContext">SqlTableContext to use to execute the query</param>
         /// <returns>Number of rows affected on the SQL Server</returns>
-        public static async Task<int> ExecuteAsync<T>(this SqlDeleteBuilder<T> deleteBuilder, SqlTableContext tableContext)
-            where T : class
+        public static async Task<int> ExecuteAsync<TObject>(this SqlDeleteBuilder<TObject> deleteBuilder, SqlTableContext tableContext)           
             => await tableContext.ExecuteNonQueryAsync(deleteBuilder.Build());
 
 

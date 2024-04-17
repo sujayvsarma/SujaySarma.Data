@@ -22,7 +22,6 @@ namespace SujaySarma.Data.SqlServer.Fluid.Tools
         /// <param name="direction">Direction of sorting</param>
         /// <returns>Self-instance</returns>
         public SqlTableOrderByCollection Add<TTable, TResult>(Expression<Func<TTable, TResult>> selector, SortOrderEnum direction = SortOrderEnum.ASC)
-            where TTable : class
         {
             _aliasMapCollection.TryAdd<TTable>();
             SqlLambdaVisitor parser = new SqlLambdaVisitor(_aliasMapCollection);

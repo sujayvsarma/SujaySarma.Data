@@ -74,6 +74,30 @@ namespace SujaySarma.Data.Core.Reflection
         }
 
         /// <summary>
+        /// Set the value of a property or field
+        /// </summary>
+        /// <param name="instance">Instance of object</param>
+        /// <param name="field">Member property or field</param>
+        /// <param name="value">Value to set</param>
+        public static void SetValue(object instance, FieldInfo field, object? value)
+        {
+            value = ConvertValueIfRequired(value, field.FieldType);
+            field.SetValue(instance, value);
+        }
+
+        /// <summary>
+        /// Set the value of a property or field
+        /// </summary>
+        /// <param name="instance">Instance of object</param>
+        /// <param name="property">Member property or field</param>
+        /// <param name="value">Value to set</param>
+        public static void SetValue(object instance, PropertyInfo property, object? value)
+        {
+            value = ConvertValueIfRequired(value, property.PropertyType);
+            property.SetValue(instance, value);
+        }
+
+        /// <summary>
         /// Convert the given <paramref name="value"/> to the <paramref name="targetClrType"/> if a type-conversion is required.
         /// </summary>
         /// <param name="value">Value that might need a conversion</param>

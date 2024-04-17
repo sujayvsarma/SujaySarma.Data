@@ -15,10 +15,10 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         /// Field delimiter. Default is comma (',').
         /// </summary>
         public char Delimiter 
-        { 
-            get; init; 
+        {
+            get => _options.Delimiter;
         
-        } = ',';
+        }
 
         /// <summary>
         /// Returns the current text encoding being used
@@ -61,39 +61,35 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         /// Initialize reader with a stream and other options
         /// </summary>
         /// <param name="stream">Stream to open the reader on</param>
-        /// <param name="encoding">Specific encoding. NULL to auto-detect</param>
-        /// <param name="autoDetectEncoding">If set, auto-detects</param>
-        /// <param name="bufferSize">Minimum stream buffer size</param>
-        /// <param name="leaveStreamOpen">Set to dispose the stream when this object is disposed</param>
-        public TokenLimitedFileReader(Stream stream, Encoding? encoding = default, bool autoDetectEncoding = true, int bufferSize = -1, bool leaveStreamOpen = false)
+        /// <param name="options">Options for the reader</param>
+        public TokenLimitedFileReader(Stream stream, TokenLimitedFileOptions options)
         {
-            _reader = new(stream, encoding, autoDetectEncoding, bufferSize, leaveStreamOpen);
-            _leaveStreamOpenOnDispose = leaveStreamOpen;
+            _reader = new StreamReader(stream, options.TextEncoding, options.AutoDetectEncoding, options.BufferSize, options.LeaveFileOrStreamOpen);
+
             _state = new ReaderState();
+            _options = options;
         }
 
         /// <summary>
         /// Initialize reader with path to file and other options
         /// </summary>
         /// <param name="path">Path to file (absolute preferred)</param>
-        /// <param name="encoding">Specific encoding. NULL for autodetect</param>
-        /// <param name="autoDetectEncoding">If set, auto-detects</param>
-        /// <param name="leaveStreamOpen">Set to dispose the stream when this object is disposed</param>
-        public TokenLimitedFileReader(string path, Encoding? encoding = default, bool autoDetectEncoding = true, bool leaveStreamOpen = false)
+        /// <param name="options">Options for the reader</param>
+        public TokenLimitedFileReader(string path, TokenLimitedFileOptions options)
         {
-            if (encoding == default) { encoding = Encoding.UTF8; }
-            FileStreamOptions options = new()
+            if (options.TextEncoding == default) { options.TextEncoding = Encoding.UTF8; }
+            FileStreamOptions streamOptions = new FileStreamOptions()
             {
                 Access = FileAccess.Read,
                 Mode = FileMode.Open,
                 Options = FileOptions.SequentialScan,
                 Share = FileShare.Read,
-                BufferSize = 4096
+                BufferSize = options.BufferSize
             };
 
-            _reader = new(path, encoding, autoDetectEncoding, options);
-            _leaveStreamOpenOnDispose = leaveStreamOpen;
+            _reader = new StreamReader(path, options.TextEncoding, options.AutoDetectEncoding, streamOptions);
             _state = new ReaderState();
+            _options = options;
         }
 
         /// <summary>
@@ -102,10 +98,9 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         private ulong ROWS_READ = 0;
 
         /// <summary>
-        /// When set, we do not close the '_reader' stream when we are disposed. 
-        /// This should be set to TRUE if the stream is shared by other "readers" (eg: in a Http Pipeline)
+        /// Options for this reader instance
         /// </summary>
-        private readonly bool _leaveStreamOpenOnDispose = false;
+        private readonly TokenLimitedFileOptions _options;
 
         /// <summary>
         /// The stream that we are writing the token-limited data into
@@ -120,7 +115,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
             {
                 isDisposed = true;
 
-                if (!_leaveStreamOpenOnDispose)
+                if (! _options.LeaveFileOrStreamOpen)
                 {
                     _reader.Close();
                 }

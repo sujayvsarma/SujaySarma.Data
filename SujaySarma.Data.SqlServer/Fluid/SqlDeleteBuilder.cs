@@ -9,7 +9,6 @@ namespace SujaySarma.Data.SqlServer.Fluid
     /// </summary>
     /// <typeparam name="TTable">Type of business object mapped to the table being deleted from</typeparam>
     public class SqlDeleteBuilder<TTable> : SqlFluidStatementBuilder
-        where TTable : class
     {
 
         /// <summary>

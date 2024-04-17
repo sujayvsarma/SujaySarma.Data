@@ -84,7 +84,7 @@ namespace SujaySarma.Data.Azure.Tables
 
             // fetch only base Entity fields
             string filter = $"{ReservedNames.PartitionKey} eq '{partitionKey}'";
-            List<string> columns = new() { ReservedNames.PartitionKey, ReservedNames.RowKey, ReservedNames.ETag };
+            List<string> columns = new List<string>() { ReservedNames.PartitionKey, ReservedNames.RowKey, ReservedNames.ETag };
             if (useSoftDelete)
             {
                 // dont fetch already soft-deleted rows

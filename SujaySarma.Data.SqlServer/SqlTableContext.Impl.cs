@@ -190,7 +190,6 @@ namespace SujaySarma.Data.SqlServer
 
                 DumpGeneratedSqlToConsole(cmd.CommandText);
 
-#pragma warning disable IDE0034 // Use 'default' instead of 'default(T)'
                 object? v = await cmd.ExecuteScalarAsync();
                 if ((v == null) || (v is DBNull) || (v == DBNull.Value))
                 {
@@ -204,7 +203,6 @@ namespace SujaySarma.Data.SqlServer
             }
 
             return default(TObject);
-#pragma warning restore IDE0034 // Use 'default' instead of 'default(T)'
         }
 
         /// <summary>

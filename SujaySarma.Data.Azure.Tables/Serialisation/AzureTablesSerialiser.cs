@@ -20,11 +20,11 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
         /// <summary>
         /// Read an <see cref="TableEntity"> and populate information into a .NET class, record or struct.
         /// </summary>
-        /// <typeparamref name="T">Type of a class, record or struct</typeparamref>
+        /// <typeparamref name="TObject">Type of a class, record or struct</typeparamref>
         /// <param name="entity">Azure Tables Entity</param>
-        public static T Deserialise<T>(TableEntity entity)
+        public static TObject Deserialise<TObject>(TableEntity entity)
         {
-            return (T)Deserialise(entity, typeof(T));
+            return (TObject)Deserialise(entity, typeof(TObject));
         }
 
         /// <summary>

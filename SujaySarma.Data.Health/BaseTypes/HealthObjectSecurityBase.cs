@@ -66,9 +66,9 @@ namespace SujaySarma.Data.Health.BaseTypes
             PermitPermanentDelete = false;
             AuditAccess = false;
 
-            ReadPrincipals = new();
-            WritePrincipals = new();
-            DenyPrincipals = new();
+            ReadPrincipals = new List<string>();
+            WritePrincipals = new List<string>();
+            DenyPrincipals = new List<string>();
         }
 
 
@@ -81,16 +81,16 @@ namespace SujaySarma.Data.Health.BaseTypes
         public static string Encrypt(string contextualKey, string information)
         {
             byte[] clearBytes = Encoding.UTF8.GetBytes(information);
-            Rfc2898DeriveBytes saltBytes = new(contextualKey, 32, 3, HashAlgorithmName.SHA1);
+            Rfc2898DeriveBytes saltBytes = new Rfc2898DeriveBytes(contextualKey, 32, 3, HashAlgorithmName.SHA1);
 
             Aes crypt = Aes.Create();
             crypt.Key = saltBytes.GetBytes(32);
             crypt.IV = saltBytes.GetBytes(16);
 
             string hash = string.Empty;
-            using (MemoryStream m = new())
+            using (MemoryStream m = new MemoryStream())
             {
-                using (CryptoStream cs = new(m, crypt.CreateEncryptor(), CryptoStreamMode.Write))
+                using (CryptoStream cs = new CryptoStream(m, crypt.CreateEncryptor(), CryptoStreamMode.Write))
                 {
                     cs.Write(clearBytes, 0, clearBytes.Length);
                 }
@@ -110,16 +110,16 @@ namespace SujaySarma.Data.Health.BaseTypes
         public static string Decrypt(string contextualKey, string information)
         {
             byte[] codedBytes = Convert.FromBase64String(information);
-            Rfc2898DeriveBytes saltBytes = new(contextualKey, 32, 3, HashAlgorithmName.SHA1);
+            Rfc2898DeriveBytes saltBytes = new Rfc2898DeriveBytes(contextualKey, 32, 3, HashAlgorithmName.SHA1);
 
             Aes crypt = Aes.Create();
             crypt.Key = saltBytes.GetBytes(32);
             crypt.IV = saltBytes.GetBytes(16);
 
             string hash = string.Empty;
-            using (MemoryStream m = new())
+            using (MemoryStream m = new MemoryStream())
             {
-                using (CryptoStream cs = new(m, crypt.CreateDecryptor(), CryptoStreamMode.Write))
+                using (CryptoStream cs = new CryptoStream(m, crypt.CreateDecryptor(), CryptoStreamMode.Write))
                 {
                     cs.Write(codedBytes, 0, codedBytes.Length);
                 }

@@ -24,7 +24,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns></returns>
         private TableClient GetTableReference(string tableName, bool doNotCreate = false)
         {
-            TableClient tableClient = new(_connectionString, tableName);
+            TableClient tableClient = new TableClient(_connectionString, tableName);
             if (!doNotCreate) { tableClient.CreateIfNotExists(); }
 
             return tableClient;
@@ -34,9 +34,9 @@ namespace SujaySarma.Data.Azure.Tables
         /// Gets the name of the table from the <see cref="Attributes.TableAttribute"/> decorating the 
         /// object defined by <typeparamref name="TObject"/>.
         /// </summary>
-        /// <typeparam name="TObject">Type of object to get table for.</typeparam>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
         /// <returns>Name of the table as specified by the <see cref="Attributes.TableAttribute.TableName"/></returns>
-        private static string GetTableName<TObject>() where TObject : class
+        private static string GetTableName<TObject>()
             => TypeDiscoveryFactory.Resolve<TObject>().Name;
 
 
@@ -72,7 +72,7 @@ namespace SujaySarma.Data.Azure.Tables
             }
 
             _connectionString = connectionString;
-            _serviceClient = new(connectionString);
+            _serviceClient = new TableServiceClient(connectionString);
         }
 
         /// <summary>

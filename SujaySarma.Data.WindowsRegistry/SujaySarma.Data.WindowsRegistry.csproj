@@ -1,10 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net6.0-windows;net7.0-windows;net8.0-windows</TargetFrameworks>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<Description>Use this SDK to simplify your use of the Windows Registry to store and retrieve configuration, state and other information. We use the same practices as in my other SujaySarma.Data.* packages to provide attribute-decoration powered ODM (object-data mapping) services. Use the attributes provided in the library to decorate your .NET classes, structures or records to seamlessly pull or push data between your application(s) and the Windows Registry.</Description>
+		<Copyright>(c) 2024 Sujay V Sarma. All Rights Reserved.</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageTags>windows,registry,windows registry,win32,reg,HKEY_LOCAL_MACHINE,HKEY_CURRENT_USER,HKEY_USERS,sujay,sujaysarma,sujay sarma</PackageTags>
+		<PackageReleaseNotes>v9.0.0 - Initial release</PackageReleaseNotes>
+		<Version>8.9.7</Version>
+		<AssemblyVersion>8.9.7.0</AssemblyVersion>
+		<FileVersion>8.9.7.0</FileVersion>
+		<Authors>Sujay V. Sarma</Authors>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Title>Sujay Sarma's SQL Server Client SDK (SQL Server, SQL Express, LocalDB, SQL Azure, SQL Server on Linux compatible)</Title>
+		<PackageIcon>logo.png</PackageIcon>
+		<IncludeSymbols>False</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PackageProjectUrl>https://github.com/sujayvsarma/SujaySarma.Data.SqlServer</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/sujayvsarma/SujaySarma.Data.SqlServer</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>embedded</DebugType>
@@ -15,27 +36,46 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;IDE0090;IDE0028;IDE0290;IDE0300;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="logo.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\SujaySarma.Data.Core\SujaySarma.Data.Core.csproj" />
+	</ItemGroup>
 
 </Project>

@@ -12,7 +12,6 @@ namespace SujaySarma.Data.SqlServer.Fluid
     /// </summary>
     /// <typeparam name="TTable">Type of business object mapped to the table being updated</typeparam>
     public class SqlUpdateBuilder<TTable> : SqlFluidStatementBuilder
-        where TTable : class
     {
 
         /// <inheritdoc />
@@ -112,7 +111,7 @@ namespace SujaySarma.Data.SqlServer.Fluid
         /// </summary>
         /// <returns>Created instance of SqlQueryBuilder</returns>
         public static SqlUpdateBuilder<TTable> Begin()
-            => new();
+            => new SqlUpdateBuilder<TTable>();
 
         /// <summary>
         /// Collection of WHERE conditions

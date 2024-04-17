@@ -47,8 +47,6 @@ namespace SujaySarma.Data.SqlServer.Fluid.Tools
         /// <param name="joinType">The type of join to perform. Default: INNER JOIN</param>
         /// <returns>Self-instance</returns>
         public SqlTableJoinsCollection Add<TLeft, TRight>(Expression<Func<TLeft, TRight, bool>> onCondition, TypesOfJoinsEnum joinType = TypesOfJoinsEnum.Inner)
-            where TLeft : class
-            where TRight : class
         {
             if (typeof(TLeft) == typeof(TRight))
             {

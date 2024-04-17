@@ -36,7 +36,7 @@ namespace SujaySarma.Data.SqlServer
         /// <summary>
         /// Result parameters
         /// </summary>
-        public Dictionary<string, object?> ReturnParameters { get; set; } = new();
+        public Dictionary<string, object?> ReturnParameters { get; set; } = new Dictionary<string, object?>();
 
         /// <summary>
         /// Return value of sproc

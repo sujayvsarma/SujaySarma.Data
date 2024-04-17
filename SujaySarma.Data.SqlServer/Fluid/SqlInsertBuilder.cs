@@ -12,7 +12,6 @@ namespace SujaySarma.Data.SqlServer.Fluid
     /// </summary>
     /// <typeparam name="TTable">Type of business object mapped to the table being inserted into</typeparam>
     public class SqlInsertBuilder<TTable> : SqlFluidStatementBuilder
-        where TTable : class
     {
 
         /// <inheritdoc />

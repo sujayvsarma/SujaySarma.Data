@@ -18,7 +18,7 @@ namespace SujaySarma.Data.Core.Reflection
         /// <summary>
         /// Resolve the type information for the provided object
         /// </summary>
-        /// <typeparam name="TObject">Type to resolve</typeparam>
+        /// <typeparam name="TObject">Type of .NET class, structure or record to resolve</typeparam>
         /// <returns>Type resolution information. Will be Null if appropriate attribute decorations were missing.</returns>
         public static ContainerTypeInformation Resolve<TObject>()
             => Resolve(typeof(TObject));

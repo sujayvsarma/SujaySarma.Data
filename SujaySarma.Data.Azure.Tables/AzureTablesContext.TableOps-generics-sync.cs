@@ -14,14 +14,14 @@ namespace SujaySarma.Data.Azure.Tables
         /// Drop table attached to the <typeparamref name="TObject"/>.
         /// </summary>
         /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
-        public void DropTable<TObject>() where TObject : class
+        public void DropTable<TObject>()
             => DropTable(GetTableName<TObject>());
 
         /// <summary>
         /// Create table attached to the <typeparamref name="TObject"/>.
         /// </summary>
         /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
-        public void CreateTable<TObject>() where TObject : class
+        public void CreateTable<TObject>()
             => CreateTable(GetTableName<TObject>());
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// </summary>
         /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
         /// <returns>True if table exists</returns>
-        public bool TableExists<TObject>() where TObject : class
+        public bool TableExists<TObject>()
             => TableExists(GetTableName<TObject>());
 
 
@@ -37,7 +37,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// Clear all rows from a table attached to the <typeparamref name="TObject"/>.
         /// </summary>
         /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
-        public void ClearTable<TObject>() where TObject : class
+        public void ClearTable<TObject>()
             => ClearTable(GetTableName<TObject>());
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// </summary>
         /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
         /// <param name="partitionKey">Partition key to clear data for</param>
-        public void ClearPartition<TObject>(string partitionKey) where TObject : class
+        public void ClearPartition<TObject>(string partitionKey)
         {
             ContainerTypeInformation info = TypeDiscoveryFactory.Resolve<TObject>();
             ClearPartition(info.Name, partitionKey, info.ContainerDefinition.UseSoftDelete);

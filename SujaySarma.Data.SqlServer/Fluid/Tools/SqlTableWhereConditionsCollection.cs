@@ -22,7 +22,6 @@ namespace SujaySarma.Data.SqlServer.Fluid.Tools
         /// <param name="conditionAppendingOperator">Operator to append the current set of conditions to the ones already added</param>
         /// <returns>Self-instance</returns>
         public SqlTableWhereConditionsCollection Add<TTable1>(Expression<Func<TTable1, bool>> conditions, ConditionalClauseOperatorTypesEnum conditionAppendingOperator = ConditionalClauseOperatorTypesEnum.And)
-            where TTable1 : class
         {
             _aliasMapCollection.TryAdd<TTable1>();
             
@@ -39,8 +38,6 @@ namespace SujaySarma.Data.SqlServer.Fluid.Tools
         /// <param name="conditionAppendingOperator">Operator to append the current set of conditions to the ones already added</param>
         /// <returns>Self-instance</returns>
         public SqlTableWhereConditionsCollection Add<TTable1, TTable2>(Expression<Func<TTable1, TTable2, bool>> conditions, ConditionalClauseOperatorTypesEnum conditionAppendingOperator = ConditionalClauseOperatorTypesEnum.And)
-            where TTable1 : class
-            where TTable2 : class
         {
             _aliasMapCollection.TryAdd<TTable1>();
             _aliasMapCollection.TryAdd<TTable2>();
@@ -67,7 +64,7 @@ namespace SujaySarma.Data.SqlServer.Fluid.Tools
         // Implementation for Where condition
         private void AddImpl(Expression condition, ConditionalClauseOperatorTypesEnum conditionJoiningOperator)
         {
-            SqlLambdaVisitor parser = new(_aliasMapCollection);
+            SqlLambdaVisitor parser = new SqlLambdaVisitor(_aliasMapCollection);
             if (_whereConditions.Length > 0)
             {
                 _whereConditions.Append(

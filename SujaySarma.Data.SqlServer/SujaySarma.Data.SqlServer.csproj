@@ -8,14 +8,9 @@
 		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<Description>
-			Use this SDK to avoid having to use Entity Framework (EF) and simplify your time to code complete. This library is built along the
-			familiar lines of my Azure Tables package.  Use the attributes from the 'SujaySarma.Data.SqlServer.Attributes' namespace to decorate
-			your business object classes/records/structs and their properties and fields. The 'SqlTableContext' is your starting point for firing
-			any DML or query operations. To debug query generation, use the methods in the 'SQLScriptGenerator' class -- the outputs of these functions
-			are used in the DML operations.
+		<Description>Use this SDK to avoid having to use Entity Framework (EF) and simplify your time to code complete. This library is built along the familiar lines of my Azure Tables package.  Use the attributes from the 'SujaySarma.Data.SqlServer.Attributes' namespace to decorate your business object classes/records/structs and their properties and fields. The 'SqlTableContext' is your starting point for firing any DML or query operations. To debug query generation, use the methods in the 'SQLScriptGenerator' class -- the outputs of these functions are used in the DML operations.
 		</Description>
-		<Copyright>(c) 2023 Sujay V Sarma. All Rights Reserved.</Copyright>
+		<Copyright>(c) 2024 Sujay V Sarma. All Rights Reserved.</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageTags>sql,sql server,sqlserver,azure sql,sql linux,mssql,mssqlserver,localdb,sqlexpress,sujay,sujaysarma,sujay sarma</PackageTags>
 		<PackageReleaseNotes>
@@ -53,27 +48,27 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
-		<NoWarn>1701;1702;CS8509;CS8524;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
+		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -16,7 +16,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         /// <summary>
         /// Read and return a complete row.
         /// </summary>
-        /// <returns>The row that was read. If no rows were read, it will be NULL.</returns>
+        /// <returns>The row that was read, as an array of component fields. If no rows were read, it will be NULL.</returns>
         /// <remarks>
         ///     Each row of a token-limited flat-file may contain an irregular number of elements. Thus, each call to 
         ///     this function may return a different length of fields. HOWEVER, we will always return at least the 
@@ -73,7 +73,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         /// <summary>
         /// Read and return a complete row.
         /// </summary>
-        /// <returns>The row that was read. If no rows were read, it will be NULL.</returns>
+        /// <returns>The row that was read, as an array of component fields. If no rows were read, it will be NULL.</returns>
         /// <remarks>
         ///     Each row of a token-limited flat-file may contain an irregular number of elements. Thus, each call to 
         ///     this function may return a different length of fields. HOWEVER, we will always return at least the 

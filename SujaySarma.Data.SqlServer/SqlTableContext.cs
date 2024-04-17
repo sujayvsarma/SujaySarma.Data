@@ -21,24 +21,24 @@ namespace SujaySarma.Data.SqlServer
         /// <param name="commandTimeout">[OPTIONAL] Timeout of command. Default of 30 seconds.</param>
         public StoredProcedureExecutionResult ExecuteStoredProcedure(string procedureName, Dictionary<string, object?>? inParameters = null, Dictionary<string, object?>? outParameters = null, int commandTimeout = 30)
         {
-            StoredProcedureExecutionResult result = new()
+            StoredProcedureExecutionResult result = new StoredProcedureExecutionResult()
             {
                 IsError = false,
                 Messages = null,
                 Exception = null,
                 Results = null,
                 ProcedureName = procedureName,
-                ReturnParameters = new(),
+                ReturnParameters = new Dictionary<string, object?>(),
                 ReturnValue = 0
             };
 
             try
             {
-                DataSet ds = new();
-                using SqlConnection cn = new(_connectionString);
+                DataSet ds = new DataSet();
+                using SqlConnection cn = new SqlConnection(_connectionString);
                 cn.Open();
 
-                using SqlCommand cmd = new(procedureName, cn);
+                using SqlCommand cmd = new SqlCommand(procedureName, cn);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandTimeout = commandTimeout;
 
@@ -65,7 +65,7 @@ namespace SujaySarma.Data.SqlServer
 
                 cmd.Parameters.Add(CreateParameter("@returnValue", null, ParameterDirection.ReturnValue));
 
-                using SqlDataAdapter da = new(cmd);
+                using SqlDataAdapter da = new SqlDataAdapter(cmd);
                 da.Fill(ds);
 
                 if (cmd.Parameters["@returnvalue"].Value != null)
@@ -84,7 +84,7 @@ namespace SujaySarma.Data.SqlServer
 
                 if (outParameters != null)
                 {
-                    result.ReturnParameters = new();
+                    result.ReturnParameters = new Dictionary<string, object?>();
                     foreach (string key in outParameters.Keys)
                     {
                         if (cmd.Parameters[key] != null)

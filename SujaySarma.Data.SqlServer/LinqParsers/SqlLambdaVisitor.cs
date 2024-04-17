@@ -241,7 +241,7 @@ namespace SujaySarma.Data.SqlServer.LinqParsers
 
             if (args != null)
             {
-                List<string> list = new();
+                List<string> list = new List<string>();
                 foreach (KeyValuePair<MemberInfo, Expression> item in args)
                 {
                     Visit(item.Value);

@@ -35,7 +35,7 @@ namespace SujaySarma.Data.SqlServer.Fluid
             TypeTableAliasMap primaryTableMap = base.TypeTableMap.GetPrimaryTable();
             if (_selectColumnsList.Count == 0)
             {
-                // We could be here simply because the dev forgot to write .Select<T>() at the end of the fluid loop!
+                // We could be here simply because the dev forgot to write .Select<TObject>() at the end of the fluid loop!
 
                 //NOTE:
                 //  We could do a "*" and avoid the 4 lines of code below. BUT... the class wanting the data 
@@ -94,7 +94,7 @@ namespace SujaySarma.Data.SqlServer.Fluid
         /// <summary>
         /// Register a column selection (may be a literal constant as well).
         /// </summary>
-        /// <typeparam name="TObject">Type of CLR object mapped to the table the column is being selected from.</typeparam>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
         /// <param name="selectors">One or more selectors for the column (eg: u => u.Id). Do NOT use object selectors such as 'u => u' this will result in empty selectors. Instead use the Select[TObject]() overload.</param>
         /// <returns>Self-instance</returns>
         public SqlQueryBuilder Select<TObject>(params Expression<Func<TObject, object>>[] selectors)
@@ -112,7 +112,7 @@ namespace SujaySarma.Data.SqlServer.Fluid
         /// <summary>
         /// Register all columns from the specified <typeparamref name="TObject"/> object.
         /// </summary>
-        /// <typeparam name="TObject">Type of CLR object mapped to the table the column is being selected from</typeparam>
+        /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
         /// <returns>Self-instance</returns>
         public SqlQueryBuilder Select<TObject>()
         {
@@ -182,7 +182,6 @@ namespace SujaySarma.Data.SqlServer.Fluid
         /// <typeparam name="TPrimaryObject">Type of CLR object. Must have the <see cref="Attributes.TableAttribute"/> attribute decoration.</typeparam>
         /// <returns>Created instance of SqlQueryBuilder</returns>
         public static SqlQueryBuilder From<TPrimaryObject>()
-            where TPrimaryObject : class
             => new SqlQueryBuilder(typeof(TPrimaryObject));
 
         /// <summary>
