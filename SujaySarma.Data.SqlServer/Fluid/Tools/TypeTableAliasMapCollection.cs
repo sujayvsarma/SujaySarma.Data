@@ -50,7 +50,7 @@ namespace SujaySarma.Data.SqlServer.Fluid.Tools
                 {
                     Alias = $"t{tableId}",
                     ClrObjectType = typeOfClrObject,
-                    Discovery = TypeDiscoveryFactory.Resolve(typeOfClrObject),
+                    Discovery = TypeDiscoveryFactory.Resolve(typeOfClrObject) ?? throw new TypeLoadException($"Type '{typeOfClrObject.Name}' is not appropriately decorated."),
                     IsPrimaryTable = isPrimaryTable
                 };
 

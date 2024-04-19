@@ -61,16 +61,31 @@ namespace SujaySarma.Data.Core.Reflection
 
             foreach(MemberInfo member in classStructureOrRecordType.GetMembers(MEMBER_ENUMERATION_FLAGS))
             {
-                if (member is PropertyInfo pi)
+                Type IIContainerMemberAttribute = typeof(IContainerMemberAttribute);
+                IContainerMemberAttribute? containerMemberAttribute = null;
+                foreach (Attribute attribute in member.GetCustomAttributes())
                 {
-                    ContainerMemberTypeInformation memberType = new ContainerMemberTypeInformation(pi);
-                    Members.Add(memberType.Name, memberType);
+                    Type tAttribute = attribute.GetType();
+                    if (IIContainerMemberAttribute.IsAssignableFrom(tAttribute) && (!tAttribute.IsInterface))
+                    {
+                        containerMemberAttribute = attribute as IContainerMemberAttribute;
+                        break;
+                    }
                 }
-                else if (member is FieldInfo fi)
+
+                if (containerMemberAttribute != null)
                 {
-                    ContainerMemberTypeInformation memberType = new ContainerMemberTypeInformation(fi);
-                    Members.Add(memberType.Name, memberType);
-                }
+                    if (member is PropertyInfo pi)
+                    {
+                        ContainerMemberTypeInformation memberType = new ContainerMemberTypeInformation(pi, containerMemberAttribute);
+                        Members.Add(memberType.Name, memberType);
+                    }
+                    else if (member is FieldInfo fi)
+                    {
+                        ContainerMemberTypeInformation memberType = new ContainerMemberTypeInformation(fi, containerMemberAttribute);
+                        Members.Add(memberType.Name, memberType);
+                    }
+                }               
             }
         }
 

@@ -21,7 +21,7 @@ namespace SujaySarma.Data.SqlServer
         /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
         public async Task CreateTableAsync<TObject>()
         {
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated."); ;
             List<string> statements = new List<string>()
             {
                 "CREATE TABLE",
@@ -101,7 +101,7 @@ namespace SujaySarma.Data.SqlServer
         /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
         public async Task DropTableAsync<TObject>()
         {
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             string sql = $"DROP TABLE {metadata.ContainerDefinition.CreateQualifiedName()};";
             await ExecuteNonQueryAsync(sql);
         }

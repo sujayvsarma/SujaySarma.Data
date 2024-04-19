@@ -36,6 +36,10 @@ namespace SujaySarma.Data.SqlServer.Fluid
             foreach (TTable item in _updateList)
             {
                 query.Add($"UPDATE [{map.GetQualifiedTableName()}] SET");
+                
+                // cannot pass 'item' byref below, so...
+                object? duplItem = item;
+
                 foreach (ContainerMemberTypeInformation member in map.Discovery.Members.Values)
                 {
                     if ((member.ContainerMemberDefinition.IncludeInDataModificationOperation == Core.Constants.DataModificationInclusionBehaviour.Never) && (! member.ContainerMemberDefinition.IsSearchKey))
@@ -44,7 +48,7 @@ namespace SujaySarma.Data.SqlServer.Fluid
                     }
 
                     string value = ReflectionUtils.GetSQLStringValue(
-                            SujaySarma.Data.Core.Reflection.ReflectionUtils.GetValue(item, member)
+                            SujaySarma.Data.Core.Reflection.ReflectionUtils.GetValue(ref duplItem, member)
                         );
 
                     if (member.ContainerMemberDefinition.IsSearchKey)

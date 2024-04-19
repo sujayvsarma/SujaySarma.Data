@@ -1,3 +1,5 @@
+using System;
+
 using SujaySarma.Data.Core.Reflection;
 
 namespace SujaySarma.Data.Azure.Tables
@@ -47,7 +49,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <param name="partitionKey">Partition key to clear data for</param>
         public void ClearPartition<TObject>(string partitionKey)
         {
-            ContainerTypeInformation info = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation info = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated."); ;
             ClearPartition(info.Name, partitionKey, info.ContainerDefinition.UseSoftDelete);
         }
 

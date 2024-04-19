@@ -18,7 +18,7 @@ namespace SujaySarma.Data.Core
         /// <returns>A new instance of a <see cref="DateTime"/> set to the correct timezone</returns>
         public static DateTime ConvertDateTimeOffsetToDateTime(DateTimeOffset dto)
         {
-            return new DateTime(dto.Year, dto.Month, dto.Day, dto.Hour, dto.Minute, dto.Second, dto.Millisecond, ((dto.Offset.TotalMinutes == 0) ? DateTimeKind.Utc : DateTimeKind.Local));
+            return new DateTime(dto.Ticks, ((dto.Offset.TotalMinutes == 0) ? DateTimeKind.Utc : DateTimeKind.Local));
         }
 
         /// <summary>
@@ -44,8 +44,7 @@ namespace SujaySarma.Data.Core
         /// </remarks>
         public static DateTime ConvertTimeOnlyToDateTime(TimeOnly time, DateTimeKind kind = DateTimeKind.Utc)
         {
-            DateTime defaultDate = default!;
-            return new DateTime(defaultDate.Year, defaultDate.Month, defaultDate.Day, time.Hour, time.Minute, time.Second, time.Millisecond, kind);
+            return new DateTime(time.Ticks, kind);
         }
 
         #endregion
@@ -59,7 +58,7 @@ namespace SujaySarma.Data.Core
         /// <returns>A new instance of <see cref="DateOnly"/></returns>
         public static DateOnly ConvertDateTimeOffsetToDateOnly(DateTimeOffset dto)
         {
-            return new DateOnly(dto.Year, dto.Month, dto.Day);
+            return DateOnly.FromDateTime(dto.DateTime);
         }
 
         /// <summary>
@@ -69,7 +68,7 @@ namespace SujaySarma.Data.Core
         /// <returns>A new instance of <see cref="DateOnly"/></returns>
         public static DateOnly ConvertDateTimeToDateOnly(DateTime dateTime)
         {
-            return new DateOnly(dateTime.Year, dateTime.Month, dateTime.Day);
+            return DateOnly.FromDateTime(dateTime);
         }
 
         /// <summary>
@@ -79,8 +78,7 @@ namespace SujaySarma.Data.Core
         /// <returns>A new <see cref="DateOnly"/> value that is 01/01/0001</returns>
         public static DateOnly ConvertTimeOnlyToDateOnly(TimeOnly _)
         {
-            DateTime defaultDate = default!;
-            return new DateOnly(defaultDate.Year, defaultDate.Month, defaultDate.Day);
+            return new DateOnly();
         }
 
         #endregion
@@ -94,7 +92,7 @@ namespace SujaySarma.Data.Core
         /// <returns>A new instance of <see cref="TimeOnly"/></returns>
         public static TimeOnly ConvertDateTimeOffsetToTimeOnly(DateTimeOffset dto)
         {
-            return new TimeOnly(dto.Hour, dto.Minute, dto.Second, dto.Millisecond);
+            return TimeOnly.FromDateTime(dto.DateTime);
         }
 
         /// <summary>
@@ -104,7 +102,7 @@ namespace SujaySarma.Data.Core
         /// <returns>A new instance of <see cref="DateOnly"/></returns>
         public static TimeOnly ConvertDateTimeToTimeOnly(DateTime dateTime)
         {
-            return new TimeOnly(dateTime.Hour, dateTime.Minute, dateTime.Second, dateTime.Millisecond);
+            return TimeOnly.FromDateTime(dateTime);
         }
 
         /// <summary>
@@ -117,7 +115,7 @@ namespace SujaySarma.Data.Core
             return new TimeOnly(0, 0, 0, 0);
         }
 
-        #endregion
+#endregion
 
         #region *** To DateTimeOffset ***
 
@@ -154,8 +152,7 @@ namespace SujaySarma.Data.Core
         /// <returns>A new instance of a <see cref="DateTimeOffset"/> that is set to Utc</returns>
         public static DateTimeOffset ConvertTimeOnlyToDateTimeOffset(TimeOnly time)
         {
-            DateTime defaultDate = default!;
-            return new DateTimeOffset(defaultDate.Year, defaultDate.Month, defaultDate.Day, time.Hour, time.Minute, time.Second, TimeSpan.Zero);
+            return new DateTimeOffset(time.Ticks, TimeSpan.Zero);
         }
 
 
@@ -168,7 +165,7 @@ namespace SujaySarma.Data.Core
         /// <param name="targetType">Type of result: DateOnly, TimeOnly, DateTime or DateTimeOffset</param>
         /// <param name="result">[Out] Result of the conversion. Will be Null if the return is FALSE</param>
         /// <returns>True if conversion was successful</returns>
-        public static bool Convert(object value, Type targetType, [NotNullWhen(true)] out object? result)
+        public static bool TryConvert(object value, Type targetType, [NotNullWhen(true)] out object? result)
         {
             result = null;
 

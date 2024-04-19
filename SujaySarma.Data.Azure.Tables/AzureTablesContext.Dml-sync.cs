@@ -33,7 +33,7 @@ namespace SujaySarma.Data.Azure.Tables
                 return TransactionResult<TObject>.Default;
             }
 
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             TableEntity entity = AzureTablesSerialiser.Serialise(obj, false);
 
             TransactionResult<TableEntity> execResults = ExecuteNonQueryImpl(
@@ -65,7 +65,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>Results of the transaction</returns>
         public TransactionResult<TObject> Insert<TObject>(IEnumerable<TObject> objects)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             TransactionResult<TableEntity> execResults = ExecuteNonQueryImpl(
                     typeInfo.ContainerDefinition.Name,
                     AzureTablesSerialiser.Serialise<TObject>(objects, false, false),
@@ -115,7 +115,7 @@ namespace SujaySarma.Data.Azure.Tables
                 return TransactionResult<TObject>.Default;
             }
 
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             TableEntity entity = AzureTablesSerialiser.Serialise(obj, false);
 
             TableTransactionActionType tta = mode switch
@@ -156,7 +156,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>Results of the transaction</returns>
         public TransactionResult<TObject> Update<TObject>(IEnumerable<TObject> objects, UpdateModes mode = UpdateModes.Merge)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
 
             TableTransactionActionType tta = mode switch
             {
@@ -216,7 +216,7 @@ namespace SujaySarma.Data.Azure.Tables
                 return TransactionResult<TObject>.Default;
             }
 
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             TableEntity entity = AzureTablesSerialiser.Serialise(obj, false);
 
             TransactionResult<TableEntity> execResults = ExecuteNonQueryImpl(
@@ -249,7 +249,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>Results of the transaction</returns>
         public TransactionResult<TObject> Delete<TObject>(IEnumerable<TObject> objects, bool permanentDelete = false)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
 
             TransactionResult<TableEntity> execResults = ExecuteNonQueryImpl(
                     typeInfo.ContainerDefinition.Name,
@@ -298,7 +298,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>Results of the transaction</returns>
         public TransactionResult<TObject> Delete<TObject>(string? partitionKey = null, string? rowKey = null, string? filter = null, bool permanentDelete = false)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             List<TableEntity> entities = new List<TableEntity>();
             TransactionResult<TObject> result = new TransactionResult<TObject>();
             Type tObject = typeof(TObject);

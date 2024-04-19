@@ -45,19 +45,19 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
             {
                 if (member.Value.ContainerMemberDefinition is PartitionKeyAttribute)
                 {
-                    ReflectionUtils.SetValue(instance, member.Value, entity.PartitionKey);
+                    ReflectionUtils.SetValue(ref instance, member.Value, entity.PartitionKey);
                 }
                 else if (member.Value.ContainerMemberDefinition is RowKeyAttribute)
                 {
-                    ReflectionUtils.SetValue(instance, member.Value, entity.RowKey);
+                    ReflectionUtils.SetValue(ref instance, member.Value, entity.RowKey);
                 }
                 else if (member.Value.ContainerMemberDefinition is ETagAttribute)
                 {
-                    ReflectionUtils.SetValue(instance, member.Value, entity.ETag);
+                    ReflectionUtils.SetValue(ref instance, member.Value, entity.ETag);
                 }
                 else if (member.Value.ContainerMemberDefinition is TimestampAttribute)
                 {
-                    ReflectionUtils.SetValue(instance, member.Value, entity.Timestamp);
+                    ReflectionUtils.SetValue(ref instance, member.Value, entity.Timestamp);
                 }
                 else if (member.Value.ContainerMemberDefinition is TableColumnAttribute tableColumn)
                 {
@@ -73,7 +73,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
                             });
                         }
                     }
-                    ReflectionUtils.SetValue(instance, member.Value, value);
+                    ReflectionUtils.SetValue(ref instance, member.Value, value);
                 }
             }
 
@@ -89,6 +89,11 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
         /// <returns>The serialised instance of a <see cref="TableEntity"/></returns>
         public static TableEntity Serialise(object instance, bool metadataOnly = false, bool setSoftDeleteValue = false)
         {
+            if (instance == null)
+            {
+                return default!;
+            }
+
             Type targetType = instance.GetType();
             ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve(targetType)
                                 ?? throw new TypeLoadException($"The type '{targetType.Name}' does not seem to have the appropriate attribute decorations.");
@@ -99,11 +104,11 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
                 entity[SujaySarma.Data.Core.ReservedNames.IsDeleted] = setSoftDeleteValue;
             }
 
-            foreach (KeyValuePair<string, ContainerMemberTypeInformation> member in typeInfo.Members)
+            foreach (ContainerMemberTypeInformation member in typeInfo.Members.Values)
             {
-                object? value = ReflectionUtils.GetValue(instance, member.Value);
-
-                if (member.Value.ContainerMemberDefinition is PartitionKeyAttribute pk)
+                // Null 'instance' has been weeded out on line1 of this function.
+                object? value = ReflectionUtils.GetValue(ref instance!, member);
+                if (member.ContainerMemberDefinition is PartitionKeyAttribute pk)
                 {
                     string? pkVal = (string?)ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, typeof(string), false)
                                         ?? ((pk.DefaultValueProviderFunction != null) ? (string)pk.DefaultValueProviderFunction() : null);
@@ -115,7 +120,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
 
                     entity.PartitionKey = pkVal;
                 }
-                else if (member.Value.ContainerMemberDefinition is RowKeyAttribute rk)
+                else if (member.ContainerMemberDefinition is RowKeyAttribute rk)
                 {
                     string? rkVal = (string?)ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, typeof(string), false)
                                         ?? ((rk.DefaultValueProviderFunction != null) ? (string)rk.DefaultValueProviderFunction() : null);
@@ -127,7 +132,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
 
                     entity.RowKey = rkVal;
                 }
-                else if (member.Value.ContainerMemberDefinition is ETagAttribute eTag)
+                else if (member.ContainerMemberDefinition is ETagAttribute eTag)
                 {
                     string? etVal = (string?)ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, typeof(string), false)
                                         ?? ((eTag.DefaultValueProviderFunction != null) ? (string)eTag.DefaultValueProviderFunction() : null);
@@ -140,7 +145,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
                     entity.ETag = new ETag(etVal);
                 }
                 // We don't serialise LastModified because that field is not "writeable"
-                else if ((!metadataOnly) && member.Value.ContainerMemberDefinition is TableColumnAttribute tableColumn)
+                else if ((!metadataOnly) && member.ContainerMemberDefinition is TableColumnAttribute tableColumn)
                 {
                     entity[tableColumn.CreateQualifiedName()] = ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, jsonSerialiseIfNot: true);
                 }
@@ -172,11 +177,15 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
                     entity[SujaySarma.Data.Core.ReservedNames.IsDeleted] = setSoftDeleteValue;
                 }
 
-                foreach (KeyValuePair<string, ContainerMemberTypeInformation> member in typeInfo.Members)
-                {
-                    object? value = ReflectionUtils.GetValue(instance, member.Value);
+                // Otherwise we will not be allowed to pass 'instance' ByRef in the innerloop below.
+                // (loop variable!)
+                object? duplInst = instance;
 
-                    if (member.Value.ContainerMemberDefinition is PartitionKeyAttribute pk)
+                foreach (ContainerMemberTypeInformation member in typeInfo.Members.Values)
+                {
+                    object? value = ReflectionUtils.GetValue(ref duplInst, member);
+
+                    if (member.ContainerMemberDefinition is PartitionKeyAttribute pk)
                     {
                         string? pkVal = (string?)ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, typeof(string), false)
                                             ?? ((pk.DefaultValueProviderFunction != null) ? (string)pk.DefaultValueProviderFunction() : null);
@@ -188,7 +197,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
 
                         entity.PartitionKey = pkVal;
                     }
-                    else if (member.Value.ContainerMemberDefinition is RowKeyAttribute rk)
+                    else if (member.ContainerMemberDefinition is RowKeyAttribute rk)
                     {
                         string? rkVal = (string?)ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, typeof(string), false)
                                             ?? ((rk.DefaultValueProviderFunction != null) ? (string)rk.DefaultValueProviderFunction() : null);
@@ -200,7 +209,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
 
                         entity.RowKey = rkVal;
                     }
-                    else if (member.Value.ContainerMemberDefinition is ETagAttribute eTag)
+                    else if (member.ContainerMemberDefinition is ETagAttribute eTag)
                     {
                         string? etVal = (string?)ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, typeof(string), false)
                                             ?? ((eTag.DefaultValueProviderFunction != null) ? (string)eTag.DefaultValueProviderFunction() : null);
@@ -213,7 +222,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
                         entity.ETag = new ETag(etVal);
                     }
                     // We don't serialise LastModified because that field is not "writeable"
-                    else if ((!metadataOnly) && member.Value.ContainerMemberDefinition is TableColumnAttribute tableColumn)
+                    else if ((!metadataOnly) && member.ContainerMemberDefinition is TableColumnAttribute tableColumn)
                     {
                         entity[tableColumn.CreateQualifiedName()] = ReflectionUtilsExtension.EnsureAzureTablesCompatibleValue(value, jsonSerialiseIfNot: true);
                     }

@@ -282,7 +282,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         /// <returns>A <see cref="StringBuilder"/> instance with the column-header row</returns>
         private static StringBuilder BuildRowForColumnHeaders(Type type, char delimiter, bool mustQuote)
         {
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(type);
+            ContainerTypeInformation? metadata = TypeDiscoveryFactory.Resolve(type) ?? throw new TypeLoadException($"Type '{type.Name}' is not appropriately decorated."); ;
             StringBuilder builder = new StringBuilder();
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
             {

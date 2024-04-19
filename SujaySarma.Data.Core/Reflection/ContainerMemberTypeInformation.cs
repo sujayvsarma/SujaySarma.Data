@@ -42,45 +42,24 @@ namespace SujaySarma.Data.Core.Reflection
         /// Initialise for a property
         /// </summary>
         /// <param name="property">PropertyInfo</param>
-        /// <exception cref="TypeLoadException">Thrown when the <paramref name="property"/> is not decorated with an <see cref="IContainerMemberAttribute"/> attribute.</exception>
-        internal ContainerMemberTypeInformation(PropertyInfo property)
+        /// <param name="containerMemberAttribute">The instance of <see cref="IContainerMemberAttribute"/> decorated on this property</param>
+        internal ContainerMemberTypeInformation(PropertyInfo property, IContainerMemberAttribute containerMemberAttribute)
         {
             Name = property.Name;
-            ContainerMemberDefinition = GetContainerMemberAttribute(property) ?? throw new TypeLoadException($"The property '{Name}' is not decorated with a '{nameof(IContainerMemberAttribute)}' attribute.");
+            ContainerMemberDefinition = containerMemberAttribute;
             FieldOrPropertyInfo = property;
         }
 
         /// <summary>
         /// Initialise for a field
         /// </summary>
-        /// <param name="field">PropertyInfo</param>
-        /// <exception cref="TypeLoadException">Thrown when the <paramref name="field"/> is not decorated with an <see cref="IContainerMemberAttribute"/> attribute.</exception>
-        internal ContainerMemberTypeInformation(FieldInfo field)
+        /// <param name="field">FieldInfo</param>
+        /// <param name="containerMemberAttribute">The instance of <see cref="IContainerMemberAttribute"/> decorated on this field</param>
+        internal ContainerMemberTypeInformation(FieldInfo field, IContainerMemberAttribute containerMemberAttribute)
         {
             Name = field.Name;
-            ContainerMemberDefinition = GetContainerMemberAttribute(field) ?? throw new TypeLoadException($"The field '{Name}' is not decorated with a '{nameof(IContainerMemberAttribute)}' attribute.");
+            ContainerMemberDefinition = containerMemberAttribute;
             FieldOrPropertyInfo = field;
-        }
-
-
-        /// <summary>
-        /// Retrieve the IContainerMemberAttribute on the provided type.
-        /// </summary>
-        /// <param name="propertyOrField">Type of a property or field</param>
-        /// <returns>The IContainerMemberAttribute or Null</returns>
-        private static IContainerMemberAttribute? GetContainerMemberAttribute(MemberInfo propertyOrField)
-        {
-            Type IIContainerMemberAttribute = typeof(IContainerMemberAttribute);
-            foreach (Attribute attribute in propertyOrField.GetCustomAttributes())
-            {
-                Type tAttribute = attribute.GetType();
-                if (IIContainerMemberAttribute.IsAssignableFrom(tAttribute) && (!tAttribute.IsInterface))
-                {
-                    return (IContainerMemberAttribute)attribute;
-                }
-            }
-
-            return null;
         }
     }
 }

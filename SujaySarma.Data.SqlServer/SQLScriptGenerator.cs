@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.Data.SqlClient;
@@ -49,7 +50,7 @@ namespace SujaySarma.Data.SqlServer
         public static string GetSelectStatement<TObject>(string? whereClause = null, IDictionary<string, SortOrderEnum>? sorting = null, int? rowCount = null)
         {
             List<string> columnNames = new List<string>(), sortClause = new List<string>();
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
             {
                 if (member.ContainerMemberDefinition.IncludeInDataModificationOperation == Core.Constants.DataModificationInclusionBehaviour.Never)
@@ -114,9 +115,16 @@ namespace SujaySarma.Data.SqlServer
         /// <returns>SQL INSERT string</returns>
         public static string GetInsertStatement<TObject>(TObject instance, Dictionary<string, object?>? AdditionalData = null)
         {
-            List<string> columnNames = new List<string>(), values = new List<string>();
+            if (instance == null)
+            {
+                return string.Empty;
+            }
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
+            object duplInstance = instance;
+
+            List<string> columnNames = new List<string>(), values = new List<string>();
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
             {
                 if (member.ContainerMemberDefinition.IncludeInDataModificationOperation == Core.Constants.DataModificationInclusionBehaviour.Never)
@@ -125,7 +133,7 @@ namespace SujaySarma.Data.SqlServer
                 }
 
                 string sqlValue = ReflectionUtils.GetSQLStringValue(
-                        SujaySarma.Data.Core.Reflection.ReflectionUtils.GetValue(instance, member)
+                        SujaySarma.Data.Core.Reflection.ReflectionUtils.GetValue(ref duplInstance!, member)
                     );
 
                 columnNames.Add(member.ContainerMemberDefinition.CreateQualifiedName());
@@ -163,13 +171,18 @@ namespace SujaySarma.Data.SqlServer
         /// <returns>SQL UPDATE string</returns>
         public static string GetUpdateStatement<TObject>(TObject instance, Dictionary<string, object?>? AdditionalData = null, List<string>? AdditionalConditions = null)
         {
-            List<string> conditions = new List<string>(), updateValues = new List<string>();
+            if (instance == null)
+            {
+                return string.Empty;
+            }
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
+            object duplInstance = instance;
+            List<string> conditions = new List<string>(), updateValues = new List<string>();
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
             {
                 string sqlValue = ReflectionUtils.GetSQLStringValue(
-                        SujaySarma.Data.Core.Reflection.ReflectionUtils.GetValue(instance, member)
+                        SujaySarma.Data.Core.Reflection.ReflectionUtils.GetValue(ref duplInstance!, member)
                     );
 
                 switch (member.ContainerMemberDefinition.IncludeInDataModificationOperation)
@@ -223,10 +236,16 @@ namespace SujaySarma.Data.SqlServer
         /// <returns>SQL MERGE string</returns>
         public static string GetMergeStatement<TObject>(TObject instance)
         {
+            if (instance == null)
+            {
+                return string.Empty;
+            }
+
+            object duplInstance = instance;
             List<string> columnNames = new List<string>(), values = new List<string>(), joinConditions = new List<string>();
             string insertStatement = string.Empty, updateStatement = string.Empty;
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
             {
                 if (member.ContainerMemberDefinition.IncludeInDataModificationOperation == Core.Constants.DataModificationInclusionBehaviour.Never)
@@ -236,7 +255,7 @@ namespace SujaySarma.Data.SqlServer
 
                 string columnName = member.ContainerMemberDefinition.CreateQualifiedName();
                 string sqlValue = ReflectionUtils.GetSQLStringValue(
-                        SujaySarma.Data.Core.Reflection.ReflectionUtils.GetValue(instance, member)
+                        SujaySarma.Data.Core.Reflection.ReflectionUtils.GetValue(ref duplInstance!, member)
                     );
 
                 columnNames.Add(columnName);
@@ -291,9 +310,14 @@ namespace SujaySarma.Data.SqlServer
         /// <returns>SQL DELETE string</returns>
         public static string GetDeleteStatement<TObject>(TObject instance, List<string>? AdditionalConditions = null)
         {
-            List<string> conditions = new List<string>();
+            if (instance == null)
+            {
+                return string.Empty;
+            }
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
+            object duplInstance = instance;
+            List<string> conditions = new List<string>();
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
             {
                 if (member.ContainerMemberDefinition.IncludeInDataModificationOperation == Core.Constants.DataModificationInclusionBehaviour.Never)
@@ -302,7 +326,7 @@ namespace SujaySarma.Data.SqlServer
                 }
 
                 string sqlValue = ReflectionUtils.GetSQLStringValue(
-                        SujaySarma.Data.Core.Reflection.ReflectionUtils.GetValue(instance, member)
+                        SujaySarma.Data.Core.Reflection.ReflectionUtils.GetValue(ref duplInstance!, member)
                     );
 
                 conditions.Add($"({member.ContainerMemberDefinition.CreateQualifiedName()} = {sqlValue})");

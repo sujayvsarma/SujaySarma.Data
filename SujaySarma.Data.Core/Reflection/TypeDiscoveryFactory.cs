@@ -20,7 +20,7 @@ namespace SujaySarma.Data.Core.Reflection
         /// </summary>
         /// <typeparam name="TObject">Type of .NET class, structure or record to resolve</typeparam>
         /// <returns>Type resolution information. Will be Null if appropriate attribute decorations were missing.</returns>
-        public static ContainerTypeInformation Resolve<TObject>()
+        public static ContainerTypeInformation? Resolve<TObject>()
             => Resolve(typeof(TObject));
 
         /// <summary>
@@ -28,9 +28,9 @@ namespace SujaySarma.Data.Core.Reflection
         /// </summary>
         /// <param name="type">Type to resolve</param>
         /// <returns>Type resolution information. Will be Null if appropriate attribute decorations were missing.</returns>
-        public static ContainerTypeInformation Resolve(Type type)
+        public static ContainerTypeInformation? Resolve(Type type)
         {
-            ContainerTypeInformation information = default!;
+            ContainerTypeInformation? information = null;
 
             lock (_syncLockObject)
             {
@@ -38,12 +38,14 @@ namespace SujaySarma.Data.Core.Reflection
                 {
                     information = info1;
                 }
-                else if ((_memoryCache != null) && _memoryCache.TryGetValue(type.Name, out ContainerTypeInformation? info2))
+                
+                if ((information == null) && (_memoryCache != null) && _memoryCache.TryGetValue(type.Name, out ContainerTypeInformation? info2))
                 {
                     // Not Null because TryGetValue would have returned TRUE therefore!
                     information = info2!;
                 }
-                else if (_distributedCache != null)
+                
+                if ((information == null) && (_distributedCache != null))
                 {
                     // This is the longest operation in this function
                     byte[]? data = _distributedCache.Get(type.Name);
@@ -58,12 +60,13 @@ namespace SujaySarma.Data.Core.Reflection
                         }
                     }
                 }
-                else
+                
+                if (information == null)
                 {
                     ContainerTypeInformation? info4 = new ContainerTypeInformation(type);
                     if (info4 != null)
                     {
-                        _localCache.Add(information.Name, info4);
+                        _localCache.Add(info4.Name, info4);
 
                         _memoryCache?.Set<ContainerTypeInformation>(info4.Name, info4);
 
@@ -72,8 +75,10 @@ namespace SujaySarma.Data.Core.Reflection
                             string json = JsonSerializer.Serialize<ContainerTypeInformation>(info4);
                             _distributedCache.Set(info4.Name, System.Text.Encoding.UTF8.GetBytes(json));
                         }
+
+                        information = info4;
                     }
-                }                
+                }          
             }
 
             return information;

@@ -16,15 +16,24 @@ namespace SujaySarma.Data.Core
         /// <param name="nonNullableEquivalent">A non-Nullable type</param>
         /// <returns>True or False</returns>
         /// <example>
-        ///     if (typeof(int?).IsNullableEquivalentOf(int)) { /* ... */ }
+        ///     if (typeof(int?).IsNullableEquivalentOf(typeof(int))) { /* ... */ }
         /// </example>
         public static bool IsNullableEquivalentOf(this Type nullableType, Type nonNullableEquivalent)
         {
-            if ((!nullableType.IsValueType) || (Nullable.GetUnderlyingType(nullableType) == nonNullableEquivalent))
+            if (nullableType.IsValueType)
             {
-                return true;
+                if (Nullable.GetUnderlyingType(nullableType) == nonNullableEquivalent)
+                {
+                    return true;
+                }
             }
-
+            else
+            {
+                if (Nullable.GetUnderlyingType(nullableType) == nonNullableEquivalent)
+                {
+                    return true;
+                }
+            }
             return false;
         }
 

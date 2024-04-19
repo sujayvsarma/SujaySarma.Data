@@ -26,7 +26,7 @@ namespace SujaySarma.Data.WindowsRegistry
         /// <param name="type">Type of .NET class, structure or record</param>
         public static void DropKey(Type type)
         {
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(type);
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(type) ?? throw new TypeLoadException($"Type '{type.Name}' is not appropriately decorated.");
             if (metadata.ContainerDefinition is RegistryKeyNameAttribute kna)
             {
                 kna.ParentKey.DeleteSubKeyTree(kna.CreateQualifiedName());

@@ -9,7 +9,7 @@ namespace SujaySarma.Data.Core
     ///     This is a simple implementation of the <see cref="IContainerAttribute"/> interface and can be used by all 
     ///     data storage and retrieval libraries when they need nothing more than the name of the container.
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = false, Inherited = true)]
     public class ContainerAttribute : Attribute, IContainerAttribute
     {
         /// <summary>

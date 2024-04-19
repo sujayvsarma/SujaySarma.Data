@@ -1,36 +1,23 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
-		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<Description>Use this SDK to simplify your solutions that store or query data from Azure Storage Tables or Cosmos DB. 
-Use the library seamlessly on your local development machine using Azure Development Storage (now Azurite). 
-This package is maintained very regularly as I (the author) use it in almost all of my tools and apps. 
-Bugs found (or reported) are rectified very quickly, typically the same day. 
-New features and API are added regularly. 
-		</Description>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+		<Description>Unit test projects for all the libraries in this solution/repo</Description>
 		<Copyright>(c) 2024 Sujay V Sarma. All Rights Reserved.</Copyright>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageTags>azure,tables,azure storage tables,cosmos,cosmosdb,tables api,sujay,sujaysarma,sujay sarma</PackageTags>
-		<PackageReleaseNotes>
-			Version 9.0.0 - Revamped dependency system. Now combined with other SujaySarma.Data.* libraries
-		</PackageReleaseNotes>
 		<Version>9.0.0</Version>
 		<AssemblyVersion>9.0.0.0</AssemblyVersion>
 		<FileVersion>9.0.0.0</FileVersion>
 		<Authors>Sujay V. Sarma</Authors>
-		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-		<GenerateDocumentationFile>False</GenerateDocumentationFile>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<Title>Sujay Sarma's Azure Tables Client SDK (Azure Storage Tables, Azure Development Storage, Azurite &amp; CosmosDB compatible)</Title>
+		<Title>Unit test project for SujaySarma.Data projects</Title>
 		<PackageIcon>logo.png</PackageIcon>
 		<IncludeSymbols>False</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<PackageProjectUrl>https://github.com/sujayvsarma/SujaySarma.Data</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/sujayvsarma/SujaySarma.Data</RepositoryUrl>
+
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -77,12 +64,22 @@ New features and API are added regularly.
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
-		<PackageReference Include="Azure.Data.Tables" Version="12.8.2" />
+		<PackageReference Include="coverlet.collector" Version="6.0.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\SujaySarma.Data.Azure.Tables\SujaySarma.Data.Azure.Tables.csproj" />
 	  <ProjectReference Include="..\SujaySarma.Data.Core\SujaySarma.Data.Core.csproj" />
+	  <ProjectReference Include="..\SujaySarma.Data.Files.TokenLimitedFiles\SujaySarma.Data.Files.TokenLimitedFiles.csproj" />
+	  <ProjectReference Include="..\SujaySarma.Data.Health\SujaySarma.Data.Health.csproj" />
+	  <ProjectReference Include="..\SujaySarma.Data.SqlServer\SujaySarma.Data.SqlServer.csproj" />
 	</ItemGroup>
 
 </Project>

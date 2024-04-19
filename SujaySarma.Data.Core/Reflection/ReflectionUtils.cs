@@ -19,7 +19,7 @@ namespace SujaySarma.Data.Core.Reflection
         /// <param name="instance">Instance of object to retrieve value for</param>
         /// <param name="member">The member to retrieve the value from</param>
         /// <returns>The value, which may be Null.</returns>
-        public static object? GetValue(object? instance, ContainerMemberTypeInformation member)
+        public static object? GetValue(ref object? instance, ContainerMemberTypeInformation member)
         {
             object? value = null;
             if (member.FieldOrPropertyInfo is FieldInfo field)
@@ -33,7 +33,7 @@ namespace SujaySarma.Data.Core.Reflection
             }
 
             // if value is null or default, try calling the default value function to get a better answer
-            if ((value == null) || (value == default))
+            if ((value == null) || (value.Equals(GetDefaultValue(GetFieldOrPropertyDataType(member.FieldOrPropertyInfo)))))
             {
                 if (member.ContainerMemberDefinition.DefaultValueProviderFunction != null)
                 {
@@ -50,7 +50,7 @@ namespace SujaySarma.Data.Core.Reflection
         /// <param name="instance">Instance of object</param>
         /// <param name="member">Member property or field</param>
         /// <param name="value">Value to set</param>
-        public static void SetValue(object instance, ContainerMemberTypeInformation member, object? value)
+        public static void SetValue(ref object instance, ContainerMemberTypeInformation member, object? value)
         {
             // if value is null or default, try calling the default value function to get a better answer
             if ((value == null) || (value == default))
@@ -79,7 +79,7 @@ namespace SujaySarma.Data.Core.Reflection
         /// <param name="instance">Instance of object</param>
         /// <param name="field">Member property or field</param>
         /// <param name="value">Value to set</param>
-        public static void SetValue(object instance, FieldInfo field, object? value)
+        public static void SetValue(ref object instance, FieldInfo field, object? value)
         {
             value = ConvertValueIfRequired(value, field.FieldType);
             field.SetValue(instance, value);
@@ -91,7 +91,7 @@ namespace SujaySarma.Data.Core.Reflection
         /// <param name="instance">Instance of object</param>
         /// <param name="property">Member property or field</param>
         /// <param name="value">Value to set</param>
-        public static void SetValue(object instance, PropertyInfo property, object? value)
+        public static void SetValue(ref object instance, PropertyInfo property, object? value)
         {
             value = ConvertValueIfRequired(value, property.PropertyType);
             property.SetValue(instance, value);
@@ -172,7 +172,7 @@ namespace SujaySarma.Data.Core.Reflection
             // Pass it to our (rather verbose!) converter system
             if ((destinationType == typeof(DateOnly)) || (destinationType == typeof(TimeOnly)) || (destinationType == typeof(DateTime)) || (destinationType == typeof(DateTimeOffset)))
             {
-                if (DateTimeUtilities.Convert(value, destinationType, out var result))
+                if (DateTimeUtilities.TryConvert(value, destinationType, out var result))
                 {
                     return result;
                 }
@@ -223,5 +223,22 @@ namespace SujaySarma.Data.Core.Reflection
             throw new TypeLoadException($"Could not find type converters for '{destinationType.Name}' type.");
         }
 
+        /// <summary>
+        /// Returns the default value of a Type
+        /// </summary>
+        /// <param name="type">Data type to get default value for</param>
+        /// <returns>A new instance of the <paramref name="type"/></returns>
+        private static object? GetDefaultValue(Type type)
+        {
+            try
+            {
+                return Activator.CreateInstance(type);
+            }
+            catch
+            {
+                // Will fail for things like strings...
+                return default;
+            }
+        }
     }
 }

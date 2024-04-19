@@ -26,7 +26,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
         /// <returns>Instance of type <typeparamref name="TObject"/> populated with data from the registry</returns>
         public static TObject Deserialise<TObject>()
         {
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             return (TObject)DeserialiseImpl(metadata, typeof(TObject));
         }
 
@@ -37,7 +37,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
         /// <returns>Instance of type <paramref name="type"/> populated with data from the registry</returns>
         public static object Deserialise(Type type)
         {
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(type);
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(type) ?? throw new TypeLoadException($"Type '{type.Name}' is not appropriately decorated.");
             return DeserialiseImpl(metadata, type);
         }
 
@@ -69,7 +69,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
                     if (keyValueNames.Any(k => k.Equals(valueName, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         object keyValue = key.GetValue(valueName) ?? default!;
-                        ReflectionUtils.SetValue(instance, member, keyValue);
+                        ReflectionUtils.SetValue(ref instance, member, keyValue);
                         keyValueNames.Remove(valueName);
                     }
                 }
@@ -102,10 +102,10 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
                     if ((keyField != null) && (valueField != null))
                     {
                         string selectedKeyName = keyValueNames[0];
-                        ReflectionUtils.SetValue(instance, keyField, selectedKeyName);
+                        ReflectionUtils.SetValue(ref instance, keyField, selectedKeyName);
 
                         object? value = key.GetValue(selectedKeyName) ?? ((keyPairMember.ContainerMemberDefinition.DefaultValueProviderFunction != null) ? keyPairMember.ContainerMemberDefinition.DefaultValueProviderFunction() : null);
-                        ReflectionUtils.SetValue(instance, valueField, value);
+                        ReflectionUtils.SetValue(ref instance, valueField, value);
                     }
                 }
                 else if (keyPairMemberType == typeof(Dictionary<,>))
@@ -131,7 +131,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
                             );
                     }
 
-                    ReflectionUtils.SetValue(instance, keyPairMember, dict);
+                    ReflectionUtils.SetValue(ref instance, keyPairMember, dict);
                 }
             }
 
@@ -151,7 +151,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
                 return;
             }
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             SerialiseImpl(metadata, instance);
         }
 
@@ -167,7 +167,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
                 return;
             }
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(instance.GetType());
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(instance.GetType()) ?? throw new TypeLoadException($"Type '{instance.GetType().Name}' is not appropriately decorated.");
             SerialiseImpl(metadata, instance);
         }
 
@@ -182,7 +182,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
             RegistryKey key = ((RegistryKeyNameAttribute)metadata.ContainerDefinition).Key;
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
             {
-                object? memberValue = ReflectionUtils.GetValue(instance, member);
+                object? memberValue = ReflectionUtils.GetValue(ref instance!, member);
 
                 if (member.ContainerMemberDefinition is RegistryValueNameAttribute vna)
                 {
@@ -232,7 +232,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
                 return;
             }
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             DeleteImpl(metadata, instance);
         }
 
@@ -248,7 +248,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
                 return;
             }
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(instance.GetType());
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(instance.GetType()) ?? throw new TypeLoadException($"Type '{instance.GetType().Name}' is not appropriately decorated.");
             DeleteImpl(metadata, instance);
         }
 
@@ -270,7 +270,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
                 }
                 else if (member.ContainerMemberDefinition is RegistryValueNamePairAttribute pair)
                 {
-                    object? regKeyPairItemInstance = ReflectionUtils.GetValue(instance, member);
+                    object? regKeyPairItemInstance = ReflectionUtils.GetValue(ref instance!, member);
                     if (regKeyPairItemInstance != null)
                     {
                         // Easiest way is to get Json to do stuff for us

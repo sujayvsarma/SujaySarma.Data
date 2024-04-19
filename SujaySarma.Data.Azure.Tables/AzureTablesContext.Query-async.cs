@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -40,7 +41,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>List of <see cref="TableEntity"/> objects</returns>
         public async Task<List<TableEntity>> ExecuteQueryRawAsync<TObject>(string? partitionKey = null, string? rowKey = null, string? filter = null)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             return await ExecuteQueryRawAsync(typeInfo.ContainerDefinition.Name, 
                     PrepareQueryColumnsList(typeInfo), 
                     partitionKey, 
@@ -59,7 +60,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>List of <typeparamref name="TObject"/> objects</returns>
         public async Task<List<TObject>> ExecuteQueryAsync<TObject>(string? partitionKey = null, string? rowKey = null, string? filter = null)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
 
             // We use the Yield return variant here to improve memory management and performance
             IAsyncEnumerable<TableEntity> entities = ExecuteQueryAsyncImplYielder(
@@ -111,7 +112,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>List of <see cref="TableEntity"/> objects</returns>
         public async Task<List<TableEntity>> ExecuteQueryRawAsync<TObject>(object? partitionKey = null, object? rowKey = null, string? filter = null)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             return await ExecuteQueryRawAsync(typeInfo.ContainerDefinition.Name,
                     PrepareQueryColumnsList(typeInfo),
                     (string?)ReflectionUtils.ConvertValueIfRequired(partitionKey, typeof(string)),
@@ -130,7 +131,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>List of <typeparamref name="TObject"/> objects</returns>
         public async Task<List<TObject>> ExecuteQueryAsync<TObject>(object? partitionKey = null, object? rowKey = null, string? filter = null)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
 
             // We use the Yield return variant here to improve memory management and performance
             IAsyncEnumerable<TableEntity> entities = ExecuteQueryAsyncImplYielder(

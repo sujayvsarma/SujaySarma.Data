@@ -1,4 +1,6 @@
-﻿using Azure.Data.Tables;
+﻿using System;
+
+using Azure.Data.Tables;
 
 using SujaySarma.Data.Core.Reflection;
 
@@ -37,7 +39,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
         /// <returns>Name of the table as specified by the <see cref="Attributes.TableAttribute.TableName"/></returns>
         private static string GetTableName<TObject>()
-            => TypeDiscoveryFactory.Resolve<TObject>().Name;
+            => TypeDiscoveryFactory.Resolve<TObject>()?.Name ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
 
 
         #region Constructors

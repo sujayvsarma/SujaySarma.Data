@@ -47,7 +47,7 @@ namespace SujaySarma.Data.Core
                 return true;
             }
 
-            if ((type == typeof(decimal)) || (type == typeof(double)))
+            if ((type == typeof(Single)) || (type == typeof(float)) || (type == typeof(decimal)) || (type == typeof(double)))
             {
                 return true;
             }

@@ -47,6 +47,10 @@ namespace SujaySarma.Data.SqlServer.Fluid
             foreach (TTable item in _insertSourceList)
             {
                 List<string?> rowValues = new List<string?>();
+
+                // cannot pass 'item' byref below, so...
+                object? duplItem = item;
+
                 foreach (ContainerMemberTypeInformation member in tableMap.Discovery.Members.Values)
                 {
                     if (member.ContainerMemberDefinition.IncludeInDataModificationOperation == DataModificationInclusionBehaviour.Never)
@@ -56,7 +60,7 @@ namespace SujaySarma.Data.SqlServer.Fluid
 
                     rowValues.Add(
                             SujaySarma.Data.SqlServer.ReflectionUtils.GetSQLStringValue(
-                                SujaySarma.Data.Core.Reflection.ReflectionUtils.GetValue(item, member)
+                                SujaySarma.Data.Core.Reflection.ReflectionUtils.GetValue(ref duplItem, member)
                             )
                    );
                 }

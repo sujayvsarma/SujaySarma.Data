@@ -28,7 +28,7 @@ namespace SujaySarma.Data.SqlServer
                 throw new TypeLoadException($"The DataRow passed is not attached to a table, or the table has no schema. Object: '{TObject.Name}'");
             }
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(TObject);
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(TObject) ?? throw new TypeLoadException($"Type '{TObject.Name}' is not appropriately decorated.");
             object instance = Activator.CreateInstance(TObject) ?? new TypeLoadException($"Unable to instantiate object of type '{TObject.Name}'.");
 
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
@@ -47,7 +47,7 @@ namespace SujaySarma.Data.SqlServer
                         value = JsonSerializer.Deserialize($"{value ?? string.Empty}", SujaySarma.Data.Core.Reflection.ReflectionUtils.GetFieldOrPropertyDataType(member.FieldOrPropertyInfo));
                     }
 
-                    SujaySarma.Data.Core.Reflection.ReflectionUtils.SetValue(instance, member, value);
+                    SujaySarma.Data.Core.Reflection.ReflectionUtils.SetValue(ref instance, member, value);
                 }
             }            
 

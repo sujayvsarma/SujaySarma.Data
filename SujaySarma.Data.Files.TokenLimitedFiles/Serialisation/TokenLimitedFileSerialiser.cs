@@ -21,7 +21,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles.Serialisation
         /// <exception cref="TypeLoadException">If an instance of <typeparamref name="TObject"/> cannot be created.</exception>
         public static List<TObject> Transform<TObject>(DataTable table)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
             if (Activator.CreateInstance(typeof(TObject)) == null)
             {
                 throw new TypeLoadException($"Cannot create instance of an object of type '{typeInfo.Name}'");
@@ -30,15 +30,16 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles.Serialisation
             List<TObject> items = new List<TObject>();
             foreach (DataRow row in table.Rows)
             {
-                TObject instance = (TObject?)Activator.CreateInstance(typeof(TObject))!;
+                object instance = Activator.CreateInstance(typeof(TObject))!;
                 foreach (ContainerMemberTypeInformation member in typeInfo.Members.Values)
                 {
                     if (member.ContainerMemberDefinition is FileFieldAttribute ffa)
                     {
-                        ReflectionUtils.SetValue(instance, member, row[ffa.CreateQualifiedName()]);
+                        ReflectionUtils.SetValue(ref instance!, member, row[ffa.CreateQualifiedName()]);
                     }
                 }
-                items.Add(instance);
+
+                items.Add((TObject)instance);
             }
 
             return items;
