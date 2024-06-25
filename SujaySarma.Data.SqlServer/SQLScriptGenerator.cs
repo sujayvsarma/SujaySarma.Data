@@ -50,7 +50,7 @@ namespace SujaySarma.Data.SqlServer
         public static string GetSelectStatement<TObject>(string? whereClause = null, IDictionary<string, SortOrderEnum>? sorting = null, int? rowCount = null)
         {
             List<string> columnNames = new List<string>(), sortClause = new List<string>();
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
             {
                 if (member.ContainerMemberDefinition.IncludeInDataModificationOperation == Core.Constants.DataModificationInclusionBehaviour.Never)
@@ -123,7 +123,7 @@ namespace SujaySarma.Data.SqlServer
             object duplInstance = instance;
 
             List<string> columnNames = new List<string>(), values = new List<string>();
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
 
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
             {
@@ -178,7 +178,7 @@ namespace SujaySarma.Data.SqlServer
 
             object duplInstance = instance;
             List<string> conditions = new List<string>(), updateValues = new List<string>();
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
             {
                 string sqlValue = ReflectionUtils.GetSQLStringValue(
@@ -245,7 +245,7 @@ namespace SujaySarma.Data.SqlServer
             List<string> columnNames = new List<string>(), values = new List<string>(), joinConditions = new List<string>();
             string insertStatement = string.Empty, updateStatement = string.Empty;
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
             {
                 if (member.ContainerMemberDefinition.IncludeInDataModificationOperation == Core.Constants.DataModificationInclusionBehaviour.Never)
@@ -317,7 +317,7 @@ namespace SujaySarma.Data.SqlServer
 
             object duplInstance = instance;
             List<string> conditions = new List<string>();
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
             {
                 if (member.ContainerMemberDefinition.IncludeInDataModificationOperation == Core.Constants.DataModificationInclusionBehaviour.Never)

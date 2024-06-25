@@ -106,8 +106,6 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
             await writer.WriteAsync(headerRow.ToString());
         }
 
-
-
         /// <summary>
         /// Write an entire table to the flatfile
         /// </summary>
@@ -252,7 +250,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
 
                 if (table.Columns[i].ColumnName.Contains(delimiter) || mustQuote)
                 {
-                    builder.Append($"\"{table.Columns[i].ColumnName}\"");
+                    builder.Append($"{QUOTE}{table.Columns[i].ColumnName}{QUOTE}");
                 }
                 else
                 {
@@ -282,7 +280,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         /// <returns>A <see cref="StringBuilder"/> instance with the column-header row</returns>
         private static StringBuilder BuildRowForColumnHeaders(Type type, char delimiter, bool mustQuote)
         {
-            ContainerTypeInformation? metadata = TypeDiscoveryFactory.Resolve(type) ?? throw new TypeLoadException($"Type '{type.Name}' is not appropriately decorated."); ;
+            ContainerTypeInformation? metadata = TypeDiscoveryFactory.Resolve(type);
             StringBuilder builder = new StringBuilder();
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
             {
@@ -296,7 +294,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
                     string columnName = ffa.CreateQualifiedName();
                     if (columnName.Contains(delimiter) || mustQuote)
                     {
-                        builder.Append($"\"{columnName}\"");
+                        builder.Append($"{QUOTE}{columnName}{QUOTE}");
                     }
                     else
                     {
@@ -339,7 +337,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
                 string stringValue = (string?)ReflectionUtils.ConvertValueIfRequired(item, typeof(string)) ?? string.Empty;
                 if (stringValue.Contains(delimiter) || mustQuote)
                 {
-                    builder.Append($"\"{stringValue}\"");
+                    builder.Append($"{QUOTE}{stringValue}{QUOTE}");
                 }
                 else
                 {

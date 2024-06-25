@@ -89,7 +89,7 @@ namespace SujaySarma.Data.Core
             Name = name;
 
             // Set defaults
-            IncludeInDataModificationOperation = DataModificationInclusionBehaviour.Inserts | DataModificationInclusionBehaviour.Updates | DataModificationInclusionBehaviour.Deletes;
+            IncludeInDataModificationOperation = DataModificationInclusionBehaviour.InsertUpdateAndDelete;
             EnumSerializationStrategy = EnumSerializationBehaviour.AsInt;
             AllowSerializationAsJson = true;
             IsSearchKey = false;
@@ -109,7 +109,7 @@ namespace SujaySarma.Data.Core
             Name = string.Empty;
 
             // Set defaults
-            IncludeInDataModificationOperation = DataModificationInclusionBehaviour.Inserts | DataModificationInclusionBehaviour.Updates | DataModificationInclusionBehaviour.Deletes;
+            IncludeInDataModificationOperation = DataModificationInclusionBehaviour.InsertUpdateAndDelete;
             EnumSerializationStrategy = EnumSerializationBehaviour.AsInt;
             AllowSerializationAsJson = true;
             IsSearchKey = false;

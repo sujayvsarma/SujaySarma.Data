@@ -31,19 +31,36 @@ namespace SujaySarma.Data.Azure.Tables
         }
 
         /// <summary>
-        /// Drop table -- does not check if it already exists, may throw an error.
+        /// Drop table
         /// </summary>
         /// <param name="tableName">Name of table to drop</param>
         public async Task DropTableAsync(string tableName)
-            => await _serviceClient.DeleteTableAsync(tableName);
+        {
+            try
+            {
+                await _serviceClient.DeleteTableAsync(tableName);
+            }
+            catch
+            {
+                // eat any error
+            }
+        }            
 
         /// <summary>
         /// Create a table (only if it does not exist already)
         /// </summary>
         /// <param name="tableName">Name of table to create</param>
         public async Task CreateTableAsync(string tableName)
-            => await _serviceClient.CreateTableIfNotExistsAsync(tableName);
-
+        {
+            try
+            {
+                await _serviceClient.CreateTableIfNotExistsAsync(tableName);
+            }
+            catch
+            {
+                // eat any error
+            }
+        }
 
         /// <summary>
         /// Check if table exists
@@ -99,14 +116,13 @@ namespace SujaySarma.Data.Azure.Tables
                 throw new ArgumentNullException(nameof(partitionKey));
             }
 
-
             // fetch only base Entity fields
             string filter = $"{ReservedNames.PartitionKey} eq '{partitionKey}'";
             List<string> columns = new List<string>() { ReservedNames.PartitionKey, ReservedNames.RowKey, ReservedNames.ETag };
             if (useSoftDelete)
             {
                 // dont fetch already soft-deleted rows
-                filter = $"{filter} and {SujaySarma.Data.Core.ReservedNames.IsDeleted} eq false";
+                filter = $"{filter} and {SujaySarma.Data.Core.ReservedNames.IsDeleted} ne true";        // allow for IsDeleted = NULL
 
                 // ensure we fetch the soft-delete column if it should exist
                 columns.Add(SujaySarma.Data.Core.ReservedNames.IsDeleted);

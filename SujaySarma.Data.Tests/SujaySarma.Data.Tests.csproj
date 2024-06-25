@@ -78,7 +78,6 @@
 	  <ProjectReference Include="..\SujaySarma.Data.Azure.Tables\SujaySarma.Data.Azure.Tables.csproj" />
 	  <ProjectReference Include="..\SujaySarma.Data.Core\SujaySarma.Data.Core.csproj" />
 	  <ProjectReference Include="..\SujaySarma.Data.Files.TokenLimitedFiles\SujaySarma.Data.Files.TokenLimitedFiles.csproj" />
-	  <ProjectReference Include="..\SujaySarma.Data.Health\SujaySarma.Data.Health.csproj" />
 	  <ProjectReference Include="..\SujaySarma.Data.SqlServer\SujaySarma.Data.SqlServer.csproj" />
 	</ItemGroup>
 

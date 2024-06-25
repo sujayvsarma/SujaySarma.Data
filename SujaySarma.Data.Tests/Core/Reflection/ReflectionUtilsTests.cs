@@ -159,9 +159,9 @@ namespace SujaySarma.Data.Tests.Core.Reflection
             _structTarget = new ReflectionTestsStructTarget();
             _recordTarget = new ReflectionTestsRecordTarget(Guid.Empty, DateTime.MinValue, DateTime.MinValue);
 
-            _classMetadata = TypeDiscoveryFactory.Resolve<ReflectionTestsClassTarget>() ?? throw new TypeLoadException($"Cannot resolve attributes for '{nameof(ReflectionTestsClassTarget)}'");
-            _recordMetadata = TypeDiscoveryFactory.Resolve<ReflectionTestsRecordTarget>() ?? throw new TypeLoadException($"Cannot resolve attributes for '{nameof(ReflectionTestsRecordTarget)}'");
-            _structMetadata = TypeDiscoveryFactory.Resolve<ReflectionTestsStructTarget>() ?? throw new TypeLoadException($"Cannot resolve attributes for '{nameof(ReflectionTestsStructTarget)}'");
+            _classMetadata = TypeDiscoveryFactory.Resolve<ReflectionTestsClassTarget>();
+            _recordMetadata = TypeDiscoveryFactory.Resolve<ReflectionTestsRecordTarget>();
+            _structMetadata = TypeDiscoveryFactory.Resolve<ReflectionTestsStructTarget>();
         }
 
         private object _classTarget;

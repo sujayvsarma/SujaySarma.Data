@@ -37,10 +37,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
             object instance = Activator.CreateInstance(targetType)
                                 ?? throw new TypeLoadException($"Cannot create an instance of type '{targetType.Name}'.");
 
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve(targetType)
-                                ?? throw new TypeLoadException($"The type '{targetType.Name}' does not seem to have the appropriate attribute decorations.");
-
-
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve(targetType);
             foreach (KeyValuePair<string, ContainerMemberTypeInformation> member in typeInfo.Members)
             {
                 if (member.Value.ContainerMemberDefinition is PartitionKeyAttribute)
@@ -95,8 +92,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
             }
 
             Type targetType = instance.GetType();
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve(targetType)
-                                ?? throw new TypeLoadException($"The type '{targetType.Name}' does not seem to have the appropriate attribute decorations.");
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve(targetType);
 
             TableEntity entity = new TableEntity();
             if (typeInfo.ContainerDefinition.UseSoftDelete)
@@ -106,7 +102,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
 
             foreach (ContainerMemberTypeInformation member in typeInfo.Members.Values)
             {
-                // Null 'instance' has been weeded out on line1 of this function.
+                // Null 'instance' has been weeded out on line# 1 of this function.
                 object? value = ReflectionUtils.GetValue(ref instance!, member);
                 if (member.ContainerMemberDefinition is PartitionKeyAttribute pk)
                 {
@@ -177,7 +173,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
                     entity[SujaySarma.Data.Core.ReservedNames.IsDeleted] = setSoftDeleteValue;
                 }
 
-                // Otherwise we will not be allowed to pass 'instance' ByRef in the innerloop below.
+                // Otherwise we will not be allowed to pass 'instance' ByRef to ReflUtils.GetValue() in the innerloop below.
                 // (loop variable!)
                 object? duplInst = instance;
 

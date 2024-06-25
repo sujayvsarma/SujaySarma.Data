@@ -20,7 +20,7 @@ namespace SujaySarma.Data.Core.Reflection
         /// </summary>
         /// <typeparam name="TObject">Type of .NET class, structure or record to resolve</typeparam>
         /// <returns>Type resolution information. Will be Null if appropriate attribute decorations were missing.</returns>
-        public static ContainerTypeInformation? Resolve<TObject>()
+        public static ContainerTypeInformation Resolve<TObject>()
             => Resolve(typeof(TObject));
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace SujaySarma.Data.Core.Reflection
         /// </summary>
         /// <param name="type">Type to resolve</param>
         /// <returns>Type resolution information. Will be Null if appropriate attribute decorations were missing.</returns>
-        public static ContainerTypeInformation? Resolve(Type type)
+        public static ContainerTypeInformation Resolve(Type type)
         {
             ContainerTypeInformation? information = null;
 
@@ -63,20 +63,18 @@ namespace SujaySarma.Data.Core.Reflection
                 
                 if (information == null)
                 {
-                    ContainerTypeInformation? info4 = new ContainerTypeInformation(type);
-                    if (info4 != null)
+                    // This will never return NULL, will throw an TypeLoadException if discovery fails.
+                    information = new ContainerTypeInformation(type);
+                    _localCache.Add(information.Name, information);
+
+                    _memoryCache?.Set<ContainerTypeInformation>(information.Name, information);
+
+                    if (_distributedCache != null)
                     {
-                        _localCache.Add(info4.Name, info4);
+                        string json = JsonSerializer.Serialize<ContainerTypeInformation>(information);
 
-                        _memoryCache?.Set<ContainerTypeInformation>(info4.Name, info4);
-
-                        if (_distributedCache != null)
-                        {
-                            string json = JsonSerializer.Serialize<ContainerTypeInformation>(info4);
-                            _distributedCache.Set(info4.Name, System.Text.Encoding.UTF8.GetBytes(json));
-                        }
-
-                        information = info4;
+                        _distributedCacheKeyNames.Add(information.Name);
+                        _distributedCache.Set(information.Name, System.Text.Encoding.UTF8.GetBytes(json));
                     }
                 }          
             }
@@ -101,10 +99,12 @@ namespace SujaySarma.Data.Core.Reflection
 
                 if (_distributedCache != null)
                 {
-                    foreach (string key in _localCache.Keys)
+                    foreach(string key in _distributedCacheKeyNames)
                     {
                         _distributedCache.Remove(key);
                     }
+
+                    _distributedCacheKeyNames.Clear();
                 }
 
                 _localCache.Clear();
@@ -146,6 +146,7 @@ namespace SujaySarma.Data.Core.Reflection
             _syncLockObject = new object();
 
             _localCache = new Dictionary<string, ContainerTypeInformation>();
+            _distributedCacheKeyNames = new List<string>();
         }
 
         /// <summary>
@@ -167,5 +168,8 @@ namespace SujaySarma.Data.Core.Reflection
         /// An object for sync locking
         /// </summary>
         private static readonly object _syncLockObject;
+
+
+        private static readonly List<string> _distributedCacheKeyNames;
     }
 }

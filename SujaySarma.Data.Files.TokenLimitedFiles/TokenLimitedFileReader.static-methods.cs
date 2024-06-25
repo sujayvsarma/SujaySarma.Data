@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 using SujaySarma.Data.Core.Reflection;
@@ -27,32 +26,8 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
             while (!reader.EndOfStream)
             {
                 string?[]? fileRow = reader.ReadRow();
-                if (fileRow != null)
-                {
-                    if (reader._options.HasHeaderRow && (reader.RowCount == reader._options.HeaderRowIndex))
-                    {
-                        for (int i = 0; i < fileRow.Length; i++)
-                        {
-                            table.Columns.Add((string.IsNullOrWhiteSpace(fileRow[i]) ? $"Column {i}" : fileRow[i]), typeof(string));
-                        }
 
-                        continue;
-                    }
-
-                    DataRow newTableRow = table.NewRow();
-                    for (int i = 0; i < fileRow.Length; i++)
-                    {
-                        try
-                        {
-                            newTableRow[i] = ReflectionUtils.ConvertValueIfRequired(fileRow[0], typeof(string));
-                        }
-                        catch
-                        {
-                            newTableRow[i] = fileRow[i]?.ToString();
-                        }
-                    }
-                    table.Rows.Add(newTableRow);
-                }
+                ProcessReadRow(fileRow, table, reader._options, reader.RowCount);
             }
 
             return table;
@@ -70,18 +45,33 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
             while (!reader.EndOfStream)
             {
                 string?[]? fileRow = await reader.ReadRowAsync();
-                if (fileRow != null)
+
+                ProcessReadRow(fileRow, table, reader._options, reader.RowCount);
+            }
+
+            return table;
+        }
+
+        /// <summary>
+        /// Process the row that was read and populate the table with its data
+        /// </summary>
+        /// <param name="fileRow">String array read from file</param>
+        /// <param name="table">DataTable instance to populate with the row or header information</param>
+        /// <param name="options">Copy of the <see cref="TokenLimitedFileOptions"/> as being used by the active <see cref="TokenLimitedFileReader"/></param>
+        /// <param name="currentRowCount">Number of rows ALREADY processed</param>
+        private static void ProcessReadRow(string?[]? fileRow, DataTable table, TokenLimitedFileOptions options, ulong currentRowCount)
+        {
+            if (fileRow != null)
+            {
+                if (options.HasHeaderRow && (currentRowCount == options.HeaderRowIndex))
                 {
-                    if (reader._options.HasHeaderRow && (reader.RowCount == reader._options.HeaderRowIndex))
+                    for (int i = 0; i < fileRow.Length; i++)
                     {
-                        for (int i = 0; i < fileRow.Length; i++)
-                        {
-                            table.Columns.Add((string.IsNullOrWhiteSpace(fileRow[i]) ? $"Column {i}" : fileRow[i]), typeof(string));
-                        }
-
-                        continue;
+                        table.Columns.Add((string.IsNullOrWhiteSpace(fileRow[i]) ? $"Column {i}" : fileRow[i]), typeof(string));
                     }
-
+                }
+                else
+                {
                     DataRow newTableRow = table.NewRow();
                     for (int i = 0; i < fileRow.Length; i++)
                     {
@@ -97,8 +87,6 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
                     table.Rows.Add(newTableRow);
                 }
             }
-
-            return table;
         }
 
         /// <summary>

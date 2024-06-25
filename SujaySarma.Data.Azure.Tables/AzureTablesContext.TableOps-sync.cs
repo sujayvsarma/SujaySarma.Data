@@ -27,14 +27,32 @@ namespace SujaySarma.Data.Azure.Tables
         /// </summary>
         /// <param name="tableName">Name of table to drop</param>
         public void DropTable(string tableName)
-            => _serviceClient.DeleteTable(tableName);
+        {
+            try
+            {
+                _serviceClient.DeleteTable(tableName);
+            }
+            catch
+            {
+                // eat any error
+            }
+        }
 
         /// <summary>
         /// Create a table (only if it does not exist already)
         /// </summary>
         /// <param name="tableName">Name of table to create</param>
         public void CreateTable(string tableName)
-            => _serviceClient.CreateTableIfNotExists(tableName);
+        {
+            try
+            {
+                _serviceClient.CreateTableIfNotExists(tableName);
+            }
+            catch
+            {
+                // eat any error
+            }
+        }
 
 
         /// <summary>
@@ -81,14 +99,13 @@ namespace SujaySarma.Data.Azure.Tables
                 throw new ArgumentNullException(nameof(partitionKey));
             }
 
-
             // fetch only base Entity fields
             string filter = $"{ReservedNames.PartitionKey} eq '{partitionKey}'";
             List<string> columns = new List<string>() { ReservedNames.PartitionKey, ReservedNames.RowKey, ReservedNames.ETag };
             if (useSoftDelete)
             {
                 // dont fetch already soft-deleted rows
-                filter = $"{filter} and {SujaySarma.Data.Core.ReservedNames.IsDeleted} eq false";
+                filter = $"{filter} and {SujaySarma.Data.Core.ReservedNames.IsDeleted} ne true";    // Allow for IsDeleted = NULL
 
                 // ensure we fetch the soft-delete column if it should exist
                 columns.Add(SujaySarma.Data.Core.ReservedNames.IsDeleted);

@@ -125,6 +125,11 @@ namespace SujaySarma.Data.Azure.Tables
                 TotalEntities = entities.Count
             };
 
+            if (operationType != TableTransactionActionType.Delete)
+            {
+                deleteAction = DeleteAction.NotApplicable;
+            }
+
             Dictionary<string, TransactionBatchManager<TableTransactionAction>> groupedByPartitionKey = GroupEntitiesByPartitionKey(entities, operationType, deleteAction);
             TableClient client = GetTableReference(tableName);
 
@@ -173,6 +178,11 @@ namespace SujaySarma.Data.Azure.Tables
             {
                 TotalEntities = entities.Count
             };
+
+            if (operationType != TableTransactionActionType.Delete)
+            {
+                deleteAction = DeleteAction.NotApplicable;
+            }
 
             Dictionary<string, TransactionBatchManager<TableTransactionAction>> groupedByPartitionKey = GroupEntitiesByPartitionKey(entities, operationType, deleteAction);
             TableClient client = GetTableReference(tableName);
@@ -243,20 +253,20 @@ namespace SujaySarma.Data.Azure.Tables
 
             if ((!ttfe.FailedTransactionActionIndex.HasValue) || (batch.Count == 1))
             {
-                // single item in transaction or entire thing failed: hopeless batch!
                 results.Messages.Add($"--> RowKey = '{batch[0].Entity.RowKey}'");
                 results.FailedEntities.Add((TableEntity)batch[0].Entity);
 
+                // single item in transaction or entire thing failed: hopeless batch!
                 batch.Clear();
             }
             else if (ttfe.FailedTransactionActionIndex.HasValue)
             {
-                // The transaction will stop at each point of failure one at a time :-(
-                // Remove the indicated failed item and try the batch again!
 
                 results.Messages.Add($"--> RowKey = '{batch[ttfe.FailedTransactionActionIndex.Value].Entity.RowKey}'");
-                results.FailedEntities.Add((TableEntity)batch[ttfe.FailedTransactionActionIndex.Value].Entity);
 
+                // The transaction will stop at each point of failure one at a time :-(
+                // Remove the indicated failed item and try the batch again!
+                results.FailedEntities.Add((TableEntity)batch[ttfe.FailedTransactionActionIndex.Value].Entity);
                 batch.RemoveAt(ttfe.FailedTransactionActionIndex.Value);
             }
         }
@@ -272,6 +282,11 @@ namespace SujaySarma.Data.Azure.Tables
         private static Dictionary<string, TransactionBatchManager<TableTransactionAction>> GroupEntitiesByPartitionKey(List<TableEntity> entities, TableTransactionActionType operationType, DeleteAction deleteAction = DeleteAction.NotApplicable)
         {
             Dictionary<string, TransactionBatchManager<TableTransactionAction>> results = new Dictionary<string, TransactionBatchManager<TableTransactionAction>>();
+
+            if (operationType != TableTransactionActionType.Delete)
+            {
+                deleteAction = DeleteAction.NotApplicable;
+            }
 
             // Adjust:
             switch (deleteAction)

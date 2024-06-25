@@ -49,7 +49,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <param name="partitionKey">Partition key to clear data for</param>
         public void ClearPartition<TObject>(string partitionKey)
         {
-            ContainerTypeInformation info = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated."); ;
+            ContainerTypeInformation info = TypeDiscoveryFactory.Resolve<TObject>();
             ClearPartition(info.Name, partitionKey, info.ContainerDefinition.UseSoftDelete);
         }
 

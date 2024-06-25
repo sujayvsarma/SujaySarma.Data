@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 using Azure.Data.Tables;
@@ -40,7 +39,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>List of <see cref="TableEntity"/> objects</returns>
         public List<TableEntity> ExecuteQueryRaw<TObject>(string? partitionKey = null, string? rowKey = null, string? filter = null)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
             return ExecuteQueryRaw(typeInfo.ContainerDefinition.Name, 
                     PrepareQueryColumnsList(typeInfo), 
                     partitionKey, 
@@ -59,7 +58,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>List of <typeparamref name="TObject"/> objects</returns>
         public List<TObject> ExecuteQuery<TObject>(string? partitionKey = null, string? rowKey = null, string? filter = null)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
 
             // We use the Yield return variant here to improve memory management and performance
             IEnumerable<TableEntity> entities = ExecuteQueryImplYielder(
@@ -111,7 +110,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>List of <see cref="TableEntity"/> objects</returns>
         public List<TableEntity> ExecuteQueryRaw<TObject>(object? partitionKey = null, object? rowKey = null, string? filter = null)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
             return ExecuteQueryRaw(typeInfo.ContainerDefinition.Name,
                     PrepareQueryColumnsList(typeInfo),
                     (string?)ReflectionUtils.ConvertValueIfRequired(partitionKey, typeof(string)),
@@ -130,7 +129,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>List of <typeparamref name="TObject"/> objects</returns>
         public List<TObject> ExecuteQuery<TObject>(object? partitionKey = null, object? rowKey = null, string? filter = null)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
 
             // We use the Yield return variant here to improve memory management and performance
             IEnumerable<TableEntity> entities = ExecuteQueryImplYielder(

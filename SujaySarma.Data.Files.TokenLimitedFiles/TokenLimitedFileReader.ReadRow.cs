@@ -44,6 +44,11 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
                 }
 
                 _state.NextCharacter = GetValidCharacterFromResult(_reader.Peek());
+                if (_state.NextCharacter == '\0')
+                {
+                    break;
+                }
+
                 ProcessCharacterResult processCharacterResult = ProcessCharacter();
                 if (processCharacterResult == ProcessCharacterResult.FinishRow)
                 {

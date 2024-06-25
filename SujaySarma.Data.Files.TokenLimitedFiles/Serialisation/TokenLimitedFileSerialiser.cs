@@ -21,7 +21,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles.Serialisation
         /// <exception cref="TypeLoadException">If an instance of <typeparamref name="TObject"/> cannot be created.</exception>
         public static List<TObject> Transform<TObject>(DataTable table)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
             if (Activator.CreateInstance(typeof(TObject)) == null)
             {
                 throw new TypeLoadException($"Cannot create instance of an object of type '{typeInfo.Name}'");

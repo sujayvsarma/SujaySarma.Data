@@ -64,7 +64,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         /// <param name="options">Options for the reader</param>
         public TokenLimitedFileReader(Stream stream, TokenLimitedFileOptions options)
         {
-            _reader = new StreamReader(stream, options.TextEncoding, options.AutoDetectEncoding, options.BufferSize, options.LeaveFileOrStreamOpen);
+            _reader = new StreamReader(stream, (options.AutoDetectEncoding ? null : options.TextEncoding), options.AutoDetectEncoding, options.BufferSize, options.LeaveFileOrStreamOpen);
 
             _state = new ReaderState();
             _options = options;
@@ -87,6 +87,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
                 BufferSize = options.BufferSize
             };
 
+            // This overload requires a non-default TextEncoding param.
             _reader = new StreamReader(path, options.TextEncoding, options.AutoDetectEncoding, streamOptions);
             _state = new ReaderState();
             _options = options;

@@ -34,7 +34,7 @@ namespace SujaySarma.Data.Azure.Tables
                 return TransactionResult<TObject>.Default;
             }
 
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
             TableEntity entity = AzureTablesSerialiser.Serialise(obj, false);
 
             TransactionResult<TableEntity> execResults = await ExecuteNonQueryAsyncImpl(
@@ -66,7 +66,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>Results of the transaction</returns>
         public async Task<TransactionResult<TObject>> InsertAsync<TObject>(IEnumerable<TObject> objects)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated."); 
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
             TransactionResult<TableEntity> execResults = await ExecuteNonQueryAsyncImpl(
                     typeInfo.ContainerDefinition.Name,
                     AzureTablesSerialiser.Serialise<TObject>(objects, false, false),
@@ -116,7 +116,7 @@ namespace SujaySarma.Data.Azure.Tables
                 return TransactionResult<TObject>.Default;
             }
 
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
             TableEntity entity = AzureTablesSerialiser.Serialise(obj, false);
 
             TableTransactionActionType tta = mode switch
@@ -157,7 +157,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>Results of the transaction</returns>
         public async Task<TransactionResult<TObject>> UpdateAsync<TObject>(IEnumerable<TObject> objects, UpdateModes mode = UpdateModes.Merge)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
 
             TableTransactionActionType tta = mode switch
             {
@@ -217,7 +217,7 @@ namespace SujaySarma.Data.Azure.Tables
                 return TransactionResult<TObject>.Default;
             }
 
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
             TableEntity entity = AzureTablesSerialiser.Serialise(obj, false);
 
             TransactionResult<TableEntity> execResults = await ExecuteNonQueryAsyncImpl(
@@ -250,7 +250,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>Results of the transaction</returns>
         public async Task<TransactionResult<TObject>> DeleteAsync<TObject>(IEnumerable<TObject> objects, bool permanentDelete = false)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
 
             TransactionResult<TableEntity> execResults = await ExecuteNonQueryAsyncImpl(
                     typeInfo.ContainerDefinition.Name,
@@ -299,13 +299,14 @@ namespace SujaySarma.Data.Azure.Tables
         /// <returns>Results of the transaction</returns>
         public async Task<TransactionResult<TObject>> DeleteAsync<TObject>(string? partitionKey = null, string? rowKey = null, string? filter = null, bool permanentDelete = false)
         {
-            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation typeInfo = TypeDiscoveryFactory.Resolve<TObject>();
             List<TableEntity> entities = new List<TableEntity>();
             TransactionResult<TObject> result = new TransactionResult<TObject>();
             Type tObject = typeof(TObject);
             TransactionResult<TableEntity> execResult;
 
-            await foreach (TableEntity entity in ExecuteQueryAsyncImplYielder(typeInfo.ContainerDefinition.Name, PrepareQueryColumnsList(typeInfo), partitionKey, rowKey, filter, false))
+            IAsyncEnumerable<TableEntity> yielder = ExecuteQueryAsyncImplYielder(typeInfo.ContainerDefinition.Name, PrepareQueryColumnsList(typeInfo), partitionKey, rowKey, filter, false);
+            await foreach (TableEntity entity in yielder)
             {
                 entities.Add(entity);
 
@@ -393,7 +394,8 @@ namespace SujaySarma.Data.Azure.Tables
             TransactionResult<TableEntity> result = new TransactionResult<TableEntity>();
             TransactionResult<TableEntity> execResult;
 
-            await foreach (TableEntity entity in ExecuteQueryAsyncImplYielder(tableName, ReservedNames.All, partitionKey, rowKey, filter, false))
+            IAsyncEnumerable<TableEntity> yielder = ExecuteQueryAsyncImplYielder(tableName, ReservedNames.All, partitionKey, rowKey, filter, false);
+            await foreach (TableEntity entity in yielder)
             {
                 entities.Add(entity);
 

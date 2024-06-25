@@ -19,7 +19,7 @@
         /// <summary>
         /// When used with type-defined backend systems, will attempt to store the value 
         /// according to the underlying field's data type. This may result in costlier I/O as it 
-        /// involves an extra call for type-retrieval and may not be supported on type-free systems 
+        /// involves an extra call for type-retrieval and is not supported on type-free systems 
         /// (eg: flat files).
         /// </summary>
         MatchUnderlyingMember = 2

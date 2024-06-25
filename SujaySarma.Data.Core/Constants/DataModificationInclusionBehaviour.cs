@@ -27,6 +27,16 @@ namespace SujaySarma.Data.Core.Constants
         /// <summary>
         /// Delete operations
         /// </summary>
-        Deletes = 4
+        Deletes = 4,
+
+        /// <summary>
+        /// Both Insert and Update operations
+        /// </summary>
+        InsertsAndUpdates = 8,
+
+        /// <summary>
+        /// All insert, update and delete operations
+        /// </summary>
+        InsertUpdateAndDelete = 16
     }
 }

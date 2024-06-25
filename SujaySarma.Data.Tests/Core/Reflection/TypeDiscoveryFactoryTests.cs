@@ -76,9 +76,9 @@ namespace SujaySarma.Data.Tests.Core.Reflection
             _recordTarget = new ReflectionTestsRecordTarget(Guid.Empty, DateTime.MinValue, DateTime.MinValue);
         }
 
-        private ReflectionTestsClassTarget _classTarget;
-        private ReflectionTestsStructTarget _structTarget;
-        private ReflectionTestsRecordTarget _recordTarget;
+        private readonly ReflectionTestsClassTarget _classTarget;
+        private readonly ReflectionTestsStructTarget _structTarget;
+        private readonly ReflectionTestsRecordTarget _recordTarget;
 
 
         // Dummy!

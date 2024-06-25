@@ -26,7 +26,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
         /// <returns>Instance of type <typeparamref name="TObject"/> populated with data from the registry</returns>
         public static TObject Deserialise<TObject>()
         {
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
             return (TObject)DeserialiseImpl(metadata, typeof(TObject));
         }
 
@@ -37,7 +37,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
         /// <returns>Instance of type <paramref name="type"/> populated with data from the registry</returns>
         public static object Deserialise(Type type)
         {
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(type) ?? throw new TypeLoadException($"Type '{type.Name}' is not appropriately decorated.");
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(type);
             return DeserialiseImpl(metadata, type);
         }
 
@@ -151,7 +151,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
                 return;
             }
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
             SerialiseImpl(metadata, instance);
         }
 
@@ -167,7 +167,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
                 return;
             }
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(instance.GetType()) ?? throw new TypeLoadException($"Type '{instance.GetType().Name}' is not appropriately decorated.");
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(instance.GetType());
             SerialiseImpl(metadata, instance);
         }
 
@@ -232,7 +232,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
                 return;
             }
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
             DeleteImpl(metadata, instance);
         }
 
@@ -248,7 +248,7 @@ namespace SujaySarma.Data.WindowsRegistry.Serialisation
                 return;
             }
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(instance.GetType()) ?? throw new TypeLoadException($"Type '{instance.GetType().Name}' is not appropriately decorated.");
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(instance.GetType());
             DeleteImpl(metadata, instance);
         }
 

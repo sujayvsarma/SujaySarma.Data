@@ -25,7 +25,7 @@ namespace SujaySarma.Data.SqlServer.Serialisation
                 throw new TypeLoadException($"The DataRow passed is not attached to a table, or the table has no schema. Object: '{typeof(TObject).Name}'");
             }
 
-            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>() ?? throw new TypeLoadException($"Type '{typeof(TObject).Name}' is not appropriately decorated.");
+            ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
             object instance = Activator.CreateInstance<TObject>() ?? throw new TypeLoadException($"Unable to create instance of type '{metadata.Name}'.");
 
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)

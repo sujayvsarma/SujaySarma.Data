@@ -28,7 +28,24 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
                 string? element = row[h];
                 if (element != null)
                 {
-                    _writer.Write(element);
+                    if (element.Contains(' '))
+                    {
+                        if (element[0] != QUOTE)
+                        {
+                            _writer.Write(QUOTE);
+                        }
+
+                        _writer.Write(element);
+
+                        if (element[^1] != QUOTE)
+                        {
+                            _writer.Write(QUOTE);
+                        }
+                    }
+                    else
+                    {
+                        _writer.Write(element);
+                    }
                 }
 
                 if (h < (row.Length - 1))
@@ -59,7 +76,24 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
                 string? element = row[h];
                 if (element != null)
                 {
-                    await _writer.WriteAsync(element);
+                    if (element.Contains(' '))
+                    {
+                        if (element[0] != QUOTE)
+                        {
+                            await _writer.WriteAsync(QUOTE);
+                        }
+
+                        await _writer.WriteAsync(element);
+
+                        if (element[^1] != QUOTE)
+                        {
+                            await _writer.WriteAsync(QUOTE);
+                        }
+                    }
+                    else
+                    {
+                        await _writer.WriteAsync(element);
+                    }
                 }
 
                 if (h < (row.Length - 1))
@@ -121,6 +155,11 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         /// </summary>
         public async Task WriteNewLineAsync()
             => await _writer.WriteLineAsync();
+
+        /// <summary>
+        /// The quote character as an interned constant.
+        /// </summary>
+        private static char QUOTE = '\"';
 
     }
 }
