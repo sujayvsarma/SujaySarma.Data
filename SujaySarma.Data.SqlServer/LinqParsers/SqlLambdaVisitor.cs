@@ -82,7 +82,7 @@ namespace SujaySarma.Data.SqlServer.LinqParsers
 
             if (rightOperandSql == "NULL")
             {
-                if (@operator == "==")
+                if (@operator == "=")
                 {
                     @operator = "IS";
                 }

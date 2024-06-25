@@ -3,7 +3,8 @@
 namespace SujaySarma.Data.SqlServer
 {
     /// <summary>
-    /// Debug time only functionality
+    /// Debugging functionality. Since we distribute DLLs only in Release mode, these functions are 
+    /// available and are fully-functional in RELEASE mode! Use with care!!!
     /// </summary>
     public partial class SqlTableContext
     {
@@ -14,12 +15,26 @@ namespace SujaySarma.Data.SqlServer
         /// <param name="sql">SQL to dump</param>
         private static void DumpGeneratedSqlToConsole(string sql)
         {
-#if DEBUG
             if (Environment.GetEnvironmentVariable(DUMP_SQL_FLAG) != null)
             {
                 Console.WriteLine(sql);
             }
-#endif
+        }
+
+        /// <summary>
+        /// Enable the dump generated SQL to console flag
+        /// </summary>
+        public static void EnableDumpSqlToConsole()
+        {
+            Environment.SetEnvironmentVariable(DUMP_SQL_FLAG, "true");
+        }
+
+        /// <summary>
+        /// Disable the dump generated SQL to console flag
+        /// </summary>
+        public static void DisableDumpSqlToConsole()
+        {
+            Environment.SetEnvironmentVariable(DUMP_SQL_FLAG, null);
         }
 
         /// <summary>

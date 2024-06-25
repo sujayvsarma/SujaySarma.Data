@@ -22,7 +22,7 @@ namespace SujaySarma.Data.SqlServer.Serialisation
         {
             if ((row.Table == default) || (row.Table.Columns.Count == 0))
             {
-                throw new TypeLoadException($"The DataRow passed is not attached to a table, or the table has no schema. Object: '{typeof(TObject).Name}'");
+                throw new TypeLoadException($"The DataRow passed is not attached to a table, or the table has no columns defined. Object: '{typeof(TObject).Name}'");
             }
 
             ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();

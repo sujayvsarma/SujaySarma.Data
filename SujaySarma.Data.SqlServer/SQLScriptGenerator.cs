@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.Data.SqlClient;
@@ -120,6 +119,7 @@ namespace SujaySarma.Data.SqlServer
                 return string.Empty;
             }
 
+            // For the byRef pass to the GetValue() call below...
             object duplInstance = instance;
 
             List<string> columnNames = new List<string>(), values = new List<string>();
@@ -176,7 +176,9 @@ namespace SujaySarma.Data.SqlServer
                 return string.Empty;
             }
 
+            // For the byRef pass to the GetValue() call below...
             object duplInstance = instance;
+
             List<string> conditions = new List<string>(), updateValues = new List<string>();
             ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)
@@ -241,7 +243,9 @@ namespace SujaySarma.Data.SqlServer
                 return string.Empty;
             }
 
+            // For the byRef pass to the GetValue() call below...
             object duplInstance = instance;
+
             List<string> columnNames = new List<string>(), values = new List<string>(), joinConditions = new List<string>();
             string insertStatement = string.Empty, updateStatement = string.Empty;
 
@@ -315,7 +319,9 @@ namespace SujaySarma.Data.SqlServer
                 return string.Empty;
             }
 
+            // For the byRef pass to the GetValue() call below...
             object duplInstance = instance;
+            
             List<string> conditions = new List<string>();
             ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve<TObject>();
             foreach (ContainerMemberTypeInformation member in metadata.Members.Values)

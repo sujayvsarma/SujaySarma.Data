@@ -73,8 +73,8 @@ namespace SujaySarma.Data.SqlServer
                     columnDefinition.Add((srcActualType == null) ? $"{sqlType} NOT NULL" : $"{sqlType} NULL");
                 }
 
-                // push to table columns
-                columns.Add(string.Join(' ', columnDefinition));
+                // concat and push to table columns
+                columns.Add(string.Join(", ", columnDefinition));
 
                 if (member.ContainerMemberDefinition.IsSearchKey)
                 {

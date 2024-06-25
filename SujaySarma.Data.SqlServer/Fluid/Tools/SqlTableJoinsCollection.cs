@@ -48,15 +48,15 @@ namespace SujaySarma.Data.SqlServer.Fluid.Tools
         /// <returns>Self-instance</returns>
         public SqlTableJoinsCollection Add<TLeft, TRight>(Expression<Func<TLeft, TRight, bool>> onCondition, TypesOfJoinsEnum joinType = TypesOfJoinsEnum.Inner)
         {
-            if (typeof(TLeft) == typeof(TRight))
+            // TLeft should have already been added!
+            if (_aliasMapCollection.GetMap<TLeft>() == null)
             {
-                throw new ArgumentException("The types of the two tables/CLR objects must be the same.");
+                throw new ArgumentOutOfRangeException(nameof(TLeft), "The 'Left' marked table-object should have already been added, or must be a non-SQL persisted object like a runtime variable or constant.");
             }
 
-            _aliasMapCollection.TryAdd<TLeft>();
             _aliasMapCollection.TryAdd<TRight>();
-
             TypeTableAliasMap rightTable = _aliasMapCollection.GetMap<TRight>()!;
+
             SqlLambdaVisitor parser = new SqlLambdaVisitor(_aliasMapCollection);
             string onConditionSql = parser.ParseToSql(onCondition, false);
             string joinTypeString = joinType switch

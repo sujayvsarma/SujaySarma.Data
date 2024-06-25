@@ -93,12 +93,7 @@ namespace SujaySarma.Data.SqlServer
                 da.Fill(table);
             }
 
-            if ((table.Columns.Count > 0) && (table.Rows.Count > 0))
-            {
-                return table;
-            }
-
-            return new DataTable();
+            return table;
         }
 
         /// <summary>
@@ -123,12 +118,7 @@ namespace SujaySarma.Data.SqlServer
                 da.Fill(ds);
             }
 
-            if (ds.Tables.Count > 0)
-            {
-                return ds;
-            }
-
-            return new DataSet();
+            return ds;
         }
 
         /// <summary>

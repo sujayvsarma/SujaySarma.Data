@@ -25,7 +25,7 @@ namespace SujaySarma.Data.SqlServer
         {
             if ((row.Table == default) || (row.Table.Columns.Count == 0))
             {
-                throw new TypeLoadException($"The DataRow passed is not attached to a table, or the table has no schema. Object: '{TObject.Name}'");
+                throw new TypeLoadException($"The DataRow passed is not attached to a table, or the table has no columns defined. Object: '{TObject.Name}'");
             }
 
             ContainerTypeInformation metadata = TypeDiscoveryFactory.Resolve(TObject);
@@ -132,7 +132,6 @@ namespace SujaySarma.Data.SqlServer
         /// <returns>Number of rows affected on the SQL Server</returns>
         public static async Task<int> ExecuteAsync<TObject>(this SqlDeleteBuilder<TObject> deleteBuilder, SqlTableContext tableContext)           
             => await tableContext.ExecuteNonQueryAsync(deleteBuilder.Build());
-
 
         /// <summary>
         /// Enables dumping of SQL statements to the console/log

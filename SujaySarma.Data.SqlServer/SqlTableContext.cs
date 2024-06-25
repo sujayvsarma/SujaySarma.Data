@@ -35,6 +35,7 @@ namespace SujaySarma.Data.SqlServer
             try
             {
                 DataSet ds = new DataSet();
+
                 using SqlConnection cn = new SqlConnection(_connectionString);
                 cn.Open();
 

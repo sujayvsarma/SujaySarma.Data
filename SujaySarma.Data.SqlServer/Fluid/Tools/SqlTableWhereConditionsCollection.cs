@@ -17,13 +17,13 @@ namespace SujaySarma.Data.SqlServer.Fluid.Tools
         /// <summary>
         /// Register a WHERE clause condition
         /// </summary>
-        /// <typeparam name="TTable1">Type of CLR object for object reference in condition</typeparam>
+        /// <typeparam name="TTable">Type of CLR object for object reference in condition</typeparam>
         /// <param name="conditions">One or more conditions in Lambda Expression form</param>
         /// <param name="conditionAppendingOperator">Operator to append the current set of conditions to the ones already added</param>
         /// <returns>Self-instance</returns>
-        public SqlTableWhereConditionsCollection Add<TTable1>(Expression<Func<TTable1, bool>> conditions, ConditionalClauseOperatorTypesEnum conditionAppendingOperator = ConditionalClauseOperatorTypesEnum.And)
+        public SqlTableWhereConditionsCollection Add<TTable>(Expression<Func<TTable, bool>> conditions, ConditionalClauseOperatorTypesEnum conditionAppendingOperator = ConditionalClauseOperatorTypesEnum.And)
         {
-            _aliasMapCollection.TryAdd<TTable1>();
+            _aliasMapCollection.TryAdd<TTable>();
             
             AddImpl(conditions, conditionAppendingOperator);
             return this;
