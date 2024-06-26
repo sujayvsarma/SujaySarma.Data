@@ -5,17 +5,17 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<Description>Use this SDK to simplify your use of the Windows Registry to store and retrieve configuration, state and other information. We use the same practices as in my other SujaySarma.Data.* packages to provide attribute-decoration powered ODM (object-data mapping) services. Use the attributes provided in the library to decorate your .NET classes, structures or records to seamlessly pull or push data between your application(s) and the Windows Registry.</Description>
 		<Copyright>(c) 2024 Sujay V Sarma. All Rights Reserved.</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageTags>windows,registry,windows registry,win32,reg,HKEY_LOCAL_MACHINE,HKEY_CURRENT_USER,HKEY_USERS,sujay,sujaysarma,sujay sarma</PackageTags>
-		<PackageReleaseNotes>v9.0.0 - Initial release</PackageReleaseNotes>
-		<Version>9.0.0</Version>
-		<AssemblyVersion>9.0.0.0</AssemblyVersion>
-		<FileVersion>9.0.0.0</FileVersion>
+		<PackageReleaseNotes>v9.1.0 - Initial release</PackageReleaseNotes>
+		<Version>9.1.0</Version>
+		<AssemblyVersion>9.1.0.0</AssemblyVersion>
+		<FileVersion>9.1.0.0</FileVersion>
 		<Authors>Sujay V. Sarma</Authors>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Title>Sujay Sarma's SQL Server Client SDK (SQL Server, SQL Express, LocalDB, SQL Azure, SQL Server on Linux compatible)</Title>
@@ -25,6 +25,7 @@
 		<PackageProjectUrl>https://github.com/sujayvsarma/SujaySarma.Data</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/sujayvsarma/SujaySarma.Data</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
+		<PackageOutputPath>$(SolutionDir)Redist</PackageOutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -59,9 +60,13 @@
 		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />
-	</ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-windows|AnyCPU'">
+	  <WarningLevel>7</WarningLevel>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-windows|AnyCPU'">
+	  <WarningLevel>7</WarningLevel>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<None Include="logo.png">

@@ -5,7 +5,7 @@
 
 Library                      | Current version
 -----------------------------|------------------
-SujaySarma.Data.Azure.Tables | Version 9.0.0
+SujaySarma.Data.Azure.Tables | Version 9.1.0
 
 
 > Version 9.0.0 is a revamped version that takes on a dependency on SujaySarma.Data.Core.
@@ -13,6 +13,9 @@ SujaySarma.Data.Azure.Tables | Version 9.0.0
 
 ## NuGet Package
 https://www.nuget.org/packages/SujaySarma.Data.Azure.Tables
+
+## Source Code
+https://github.com/sujayvsarma/SujaySarma.Data/tree/master/SujaySarma.Data.Azure.Tables
 
 ## About this library
 Microsoft keeps changing the library names, calling conventions and provided APIs, too frequently for developers to have a stable and 
@@ -38,7 +41,7 @@ Azure Storage Tables and CosmosDB. Right now, that library is
 - If you need help or spot an issue, file a ticket on the Issues section.
 
 ## Usage
-Please see [this guide](https://github.com/SujaySarma.Data/_docs/Azure.Tables/USAGE.md) for more details.
+Please see [this guide](https://github.com/sujayvsarma/SujaySarma.Data/blob/master/Docs/Azure.Tables/USAGE.md) for more details.
 
 Happy coding!
 

@@ -15,7 +15,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
     public sealed partial class TokenLimitedFileReader
     {
         /// <summary>
-        /// Read content from the <paramref name="reader"/> and return it as a <see cref="DataTable">.
+        /// Read content from the <paramref name="reader"/> and return it as a <see cref="DataTable" />.
         /// </summary>
         /// <param name="reader">An initialised instance of a <see cref="TokenLimitedFileReader"/></param>
         /// <param name="tableName">Name of the table to set on the returned DataTable</param>
@@ -34,7 +34,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         }
 
         /// <summary>
-        /// Read content from the <paramref name="reader"/> and return it as a <see cref="DataTable">.
+        /// Read content from the <paramref name="reader"/> and return it as a <see cref="DataTable" />.
         /// </summary>
         /// <param name="reader">An initialised instance of a <see cref="TokenLimitedFileReader"/></param>
         /// <param name="tableName">Name of the table to set on the returned DataTable</param>
@@ -90,7 +90,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         }
 
         /// <summary>
-        /// Read data from the provided <paramref name="stream"> into a <see cref="DataTable"/>
+        /// Read data from the provided <paramref name="stream" /> into a <see cref="DataTable"/>
         /// </summary>
         /// <param name="stream">Stream to open the reader on</param>
         /// <param name="options">Options for the reader</param>
@@ -103,12 +103,12 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         }
 
         /// <summary>
-        /// Read data from the provided <paramref name="stream"> into a <see cref="DataTable"/>
+        /// Read data from the provided <paramref name="path" /> into a <see cref="DataTable"/>
         /// </summary>
         /// <param name="path">File path to open the reader on</param>
         /// <param name="options">Options for the reader</param>
         /// <param name="tableName">Name of the table to set on the returned DataTable</param>
-        /// <returns>Data from the stream as a DataTable</returns>
+        /// <returns>Data from the path as a DataTable</returns>
         public static DataTable ReadToTable(string path, TokenLimitedFileOptions options, string tableName = "Table 1")
         {
             using TokenLimitedFileReader reader = new TokenLimitedFileReader(path, options);
@@ -116,7 +116,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         }
 
         /// <summary>
-        /// Read data from the provided <paramref name="stream"> into a <see cref="DataTable"/>
+        /// Read data from the provided <paramref name="stream" /> into a <see cref="DataTable"/>
         /// </summary>
         /// <param name="stream">Stream to open the reader on</param>
         /// <param name="tableName">Name of the table to set on the returned DataTable</param>
@@ -129,12 +129,12 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         }
 
         /// <summary>
-        /// Read data from the provided <paramref name="stream"> into a <see cref="DataTable"/>
+        /// Read data from the provided <paramref name="path" /> into a <see cref="DataTable"/>
         /// </summary>
         /// <param name="path">File path to open the reader on</param>
         /// <param name="tableName">Name of the table to set on the returned DataTable</param>
         /// <param name="options">Options for the reader</param>
-        /// <returns>Data from the stream as a DataTable</returns>
+        /// <returns>Data from the path as a DataTable</returns>
         public static async Task<DataTable> ReadToTableAsync(string path, TokenLimitedFileOptions options, string tableName = "Table 1")
         {
             using TokenLimitedFileReader reader = new TokenLimitedFileReader(path, options);

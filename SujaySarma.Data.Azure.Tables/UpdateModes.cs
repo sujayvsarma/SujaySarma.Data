@@ -26,6 +26,7 @@
         /// <summary>
         /// Completely replace existing record.
         /// If record is missing, inserts the provided data.
+        /// </summary>
         InsertIfMissingOrReplace = 4
     }
 }

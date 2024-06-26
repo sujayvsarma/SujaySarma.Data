@@ -18,7 +18,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
     internal static class AzureTablesSerialiser
     {
         /// <summary>
-        /// Read an <see cref="TableEntity"> and populate information into a .NET class, record or struct.
+        /// Read an <see cref="TableEntity" /> and populate information into a .NET class, record or struct.
         /// </summary>
         /// <typeparamref name="TObject">Type of a class, record or struct</typeparamref>
         /// <param name="entity">Azure Tables Entity</param>
@@ -28,7 +28,7 @@ namespace SujaySarma.Data.Azure.Tables.Serialisation
         }
 
         /// <summary>
-        /// Read an <see cref="TableEntity"> and populate information into a .NET class, record or struct.
+        /// Read an <see cref="TableEntity" /> and populate information into a .NET class, record or struct.
         /// </summary>
         /// <param name="entity">Azure Tables Entity</param>
         /// <param name="targetType">Type of the class, record or struct to instantiate/populate</param>

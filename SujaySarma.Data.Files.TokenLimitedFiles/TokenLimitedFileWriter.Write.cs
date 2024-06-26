@@ -159,7 +159,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         /// <summary>
         /// The quote character as an interned constant.
         /// </summary>
-        private static char QUOTE = '\"';
+        private static readonly char QUOTE = '\"';
 
     }
 }

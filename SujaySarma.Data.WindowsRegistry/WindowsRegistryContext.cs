@@ -5,5 +5,8 @@
     /// </summary>
     public static partial class WindowsRegistryContext
     {
+        /*
+            File is purposefully blank. See "sub files" for code!
+        */
     }
 }

@@ -1,46 +1,34 @@
-﻿# Sujay Sarma's SQL Server Client SDK
+﻿# Sujay Sarma's Windows Registry SDK
 ---
-
-(SQL Server, SQL Express, LocalDB, SQL Azure, SQL Server on Linux compatible)
 
 Library                      | Current version
 -----------------------------|------------------
-SujaySarma.Data.SqlServer    | Version 8.9.7
+SujaySarma.Data.WindowsRegistry    | Version 9.1.0
 
 ## NuGet Package
-https://www.nuget.org/packages/SujaySarma.Data.SqlServer
+https://www.nuget.org/packages/SujaySarma.Data.WindowsRegistry
 
 ## Source code
-https://github.com/sujayvsarma/SujaySarma.Data.SqlServer
+https://github.com/sujayvsarma/SujaySarma.Data/tree/master/SujaySarma.Data.WindowsRegistry
 
 ### Changelog
 
 Version | Changes
 --------|----------
-8.9.7 | Addresses security vulnerability in Microsoft.Data.SqlClient
-8.9.6 | Adds support for .NET 6.0+
-8.9.0 | Bug fixes, Adds `Enable|DisableDebugging()`
-8.8.5 | Bug fixes, chain Join/Where/OrderBy statements, removes need for `qb.Select<T>()`
-8.8.0 | Fluid builders, support for Lambda expressions
-8.7.5 | Nullability bug fix in `ExecuteScalarAsync()`.
-8.7.0 | SQL Injection mitigation for `Select()` methods.
-8.5.0 | Added `UpsertAsync()` and `SQLTABLECONTEXT_DUMPSQL` env variable support. 
-8.2.0 | New method `ExecuteStoredProcedure`. Other performance improvements and bug fixes.
-8.0.0 | Initial version.
+9.1.0 | Dependency packages updated
+9.0.0 | Initial version.
 
-See [Change log](https://github.com/sujayvsarma/SujaySarma.Data.SqlServer/blob/master/CHANGELOG.md) for more details.
+See [Change log](https://github.com/sujayvsarma/SujaySarma.Data/blob/master/Docs/WindowsRegistry/CHANGELOG.md) for more details.
 
 ---
 
 ## About this library
-This library simplifies writing data storage and retrieval code against databases hosted on Microsoft SQL Server technologies. You 
-no longer need to use cumbersome frameworks like EntityFramework (EF) to simplify or automate your database interaction and ORM process.
+This library simplifies storage and retrieval of inforamtion from the Windows Registry in a manner consistent with all SujaySarma.Data.* ORM libraries. We treat the Win32 Registry as a "data source" and perform Select, Insert, Update, Delete operations against it.
 
-This library is built on the same lines as my popular [Azure Tables Client SDK](https://www.nuget.org/packages/SujaySarma.Data.Azure.Tables/) and 
-offers a highly simplified and super-performant structure.
+This library provides attributes that you can decorate on your classes, structures and records and let the ORM handle all the details for you!
 
 ## Dependencies
-This package depends on the 'Microsoft.Data.SqlClient' library. And uses 'System.Data' and 'System.Reflection' extensively.
+- None
 
 ## Dependability and Trustworthiness
 
@@ -50,6 +38,6 @@ This package depends on the 'Microsoft.Data.SqlClient' library. And uses 'System
 
 ## Usage
 
-For usage instructions, please refer to [this document](https://github.com/sujayvsarma/SujaySarma.Data.SqlServer/blob/master/USAGE.md)
+For usage instructions, please refer to [this document](https://github.com/sujayvsarma/SujaySarma.Data/blob/master/Docs/WindowsRegistry/USAGE.md)
 Happy coding!
 

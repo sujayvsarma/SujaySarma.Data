@@ -11,15 +11,13 @@
 		<Copyright>(c) 2024 Sujay V Sarma. All Rights Reserved.</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageTags>sdk,csv,comma seperated,tab seperated,delimited,tab delimited,file,reader,parser,writer,sujay,sujaysarma,sujay sarma</PackageTags>
-		<PackageReleaseNotes>
-			Version 9.0.0 - Revamped dependency system. Now combined with other SujaySarma.Data.* libraries
-		</PackageReleaseNotes>
-		<Version>9.0.0</Version>
-		<AssemblyVersion>9.0.0.0</AssemblyVersion>
-		<FileVersion>9.0.0.0</FileVersion>
+		<PackageReleaseNotes>Version 9.1.0 - Revamped dependency system. Now combined with other SujaySarma.Data.* libraries</PackageReleaseNotes>
+		<Version>9.1.0</Version>
+		<AssemblyVersion>9.1.0.0</AssemblyVersion>
+		<FileVersion>9.1.0.0</FileVersion>
 		<Authors>Sujay V. Sarma</Authors>
-		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Title>Sujay Sarma's Token-limited Flat-files Reader/Writer SDK (comma, semi-colon, space, custom-tokens supported)</Title>
 		<PackageIcon>logo.png</PackageIcon>
@@ -27,6 +25,7 @@
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PackageProjectUrl>https://github.com/sujayvsarma/SujaySarma.Data</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/sujayvsarma/SujaySarma.Data</RepositoryUrl>
+		<PackageOutputPath>$(SolutionDir)Redist</PackageOutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -47,6 +46,7 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
 		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
+		<WarningLevel>7</WarningLevel>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
@@ -59,6 +59,7 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
 		<NoWarn>1701;1702;CS8509;CS8524;IDE0017;IDE0034;IDE0090;IDE0028;IDE0290;IDE0300;IDE0305;IDE0075;IDE0063;IDE0301;</NoWarn>
+		<WarningLevel>7</WarningLevel>
 	</PropertyGroup>
 
 	<ItemGroup>

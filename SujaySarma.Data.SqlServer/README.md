@@ -5,18 +5,20 @@
 
 Library                      | Current version
 -----------------------------|------------------
-SujaySarma.Data.SqlServer    | Version 8.9.7
+SujaySarma.Data.SqlServer    | Version 9.1.0
 
 ## NuGet Package
 https://www.nuget.org/packages/SujaySarma.Data.SqlServer
 
 ## Source code
-https://github.com/sujayvsarma/SujaySarma.Data.SqlServer
+https://github.com/sujayvsarma/SujaySarma.Data/tree/master/SujaySarma.Data.SqlServer
 
 ### Changelog
 
 Version | Changes
 --------|----------
+9.1.0 | Dependency packages updates
+9.0.0 | Revamped dependency system with SujaySarma.Data.Core
 8.9.7 | Addresses security vulnerability in Microsoft.Data.SqlClient
 8.9.6 | Adds support for .NET 6.0+
 8.9.0 | Bug fixes, Adds `Enable|DisableDebugging()`
@@ -28,7 +30,7 @@ Version | Changes
 8.2.0 | New method `ExecuteStoredProcedure`. Other performance improvements and bug fixes.
 8.0.0 | Initial version.
 
-See [Change log](https://github.com/sujayvsarma/SujaySarma.Data.SqlServer/blob/master/CHANGELOG.md) for more details.
+See [Change log](https://github.com/sujayvsarma/SujaySarma.Data/blob/master/Docs/SqlServer/CHANGELOG.md) for more details.
 
 ---
 
@@ -50,6 +52,6 @@ This package depends on the 'Microsoft.Data.SqlClient' library. And uses 'System
 
 ## Usage
 
-For usage instructions, please refer to [this document](https://github.com/sujayvsarma/SujaySarma.Data.SqlServer/blob/master/USAGE.md)
+For usage instructions, please refer to [this document](https://github.com/sujayvsarma/SujaySarma.Data/blob/master/Docs/SqlServer/USAGE.md)
 Happy coding!
 

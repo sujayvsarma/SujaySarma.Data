@@ -7,7 +7,6 @@ namespace SujaySarma.Data.WindowsRegistry.Attributes
     /// </summary>
     public class RegistryValueNameAttribute : ContainerMemberAttribute
     {
-
         /// <summary>
         /// Configure the registry value (value under a Key) contained a .NET property or field.
         /// </summary>

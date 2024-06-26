@@ -13,7 +13,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
     {
 
         /// <summary>
-        /// Read content from the flatfile and return it as a <see cref="DataTable">.
+        /// Read content from the flatfile and return it as a <see cref="DataTable" />.
         /// </summary>
         /// <param name="tableName">Name of the table to set on the returned DataTable</param>
         /// <returns>A DataTable containing zero or more rows of data, potentially with column definitions</returns>
@@ -25,7 +25,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
         }
 
         /// <summary>
-        /// Read content from the flatfile and return it as a <see cref="DataTable">.
+        /// Read content from the flatfile and return it as a <see cref="DataTable" />.
         /// </summary>
         /// <param name="tableName">Name of the table to set on the returned DataTable</param>
         /// <returns>A DataTable containing zero or more rows of data, potentially with column definitions</returns>

@@ -309,7 +309,7 @@ namespace SujaySarma.Data.Files.TokenLimitedFiles
 
 
         /// <summary>
-        /// Current state of this reader instance. Initialised in the constructor and reset in <see cref="Close">.
+        /// Current state of this reader instance. Initialised in the constructor and reset in <see cref="Close" />.
         /// </summary>
         private ReaderState _state;
 

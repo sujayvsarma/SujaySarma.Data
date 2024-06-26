@@ -37,7 +37,7 @@ namespace SujaySarma.Data.Azure.Tables
         /// object defined by <typeparamref name="TObject"/>.
         /// </summary>
         /// <typeparam name="TObject">Type of .NET class, structure or record</typeparam>
-        /// <returns>Name of the table as specified by the <see cref="Attributes.TableAttribute.TableName"/></returns>
+        /// <returns>Name of the table as specified by the "TableAttribute.TableName" property</returns>
         private static string GetTableName<TObject>()
             => TypeDiscoveryFactory.Resolve<TObject>().Name;
 
