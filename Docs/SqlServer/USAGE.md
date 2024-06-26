@@ -1,6 +1,8 @@
 ﻿# Getting started
 ---
 
+**FOR INSTRUCTIONS ON USING THE FLUID SYNTAX PROVIDED IN THIS LIBRARY, PLEASE SEE [THIS DOCUMENT](https://github.com/sujayvsarma/SujaySarma.Data/blob/master/Docs/SqlServer/FLUID.md)**
+
 *This document provides documentation on how to get started with this library.*
 
 Write your .NET business object as a `class` or `record`. For example:
