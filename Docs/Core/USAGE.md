@@ -6,8 +6,8 @@ Base attribute types:
 
 Attribute name | Purpose
 ---------------|------------------------
-IContainerAttribute, ContainerAttribute | Define a data container, eg: a table in a database.
-IContainerMemberAttribute, ContainerMemberAttribute | Define a member in a data container, eg: a column in a database table.
+IContainerAttribute, ContainerAttribute | Define a data container, eg: a table in a database. This is used to decorate the class, structure or record.
+IContainerMemberAttribute, ContainerMemberAttribute | Define a member in a data container, eg: a column in a database table. This is used to decorate the properties and fields within a class, structure or record.
 
 Then there are two specialised attribute classes:
 
