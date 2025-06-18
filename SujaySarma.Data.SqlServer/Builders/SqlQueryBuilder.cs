@@ -24,6 +24,11 @@ namespace SujaySarma.Data.SqlServer.Builders
             ClrToTableWithAlias primaryTable = base.Map.GetPrimaryTable()
                 ?? throw new InvalidOperationException("A primary table must be registered using From<T>() before Build() may be called.");
 
+            if (_selectColumns.Count == 0)
+            {
+                throw new InvalidOperationException("There are no columns selected for the query.");
+            }
+
             StringBuilder builder = new StringBuilder();
 
             builder.Append("SELECT ");
@@ -59,7 +64,7 @@ namespace SujaySarma.Data.SqlServer.Builders
                 {
                     if (_tableHints.HasFlag(hint))
                     {
-                        hints.Append($"{hint.ToString().ToUpper()}");
+                        hints.Add($"{hint.ToString().ToUpper()}");
                     }
                 }
 

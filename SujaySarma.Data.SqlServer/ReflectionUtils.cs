@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace SujaySarma.Data.SqlServer
@@ -38,6 +37,30 @@ namespace SujaySarma.Data.SqlServer
         };
 
         /// <summary>
+        /// Type conversion cache used by <see cref="GetSQLStringValue(object?, bool)" />
+        /// </summary>
+        private static readonly Dictionary<Type, Func<object, string>> TypeConversionCache = new()
+        {
+            { typeof(bool), value => (bool)value ? "1" : "0" },
+            { typeof(byte[]), value => "0x" + Convert.ToHexString((byte[])value) },
+            { typeof(char), value => QuoteIfRequired(value!.ToString()!, true) },
+            { typeof(sbyte), value => value.ToString()! },
+            { typeof(byte), value => value.ToString()! },
+            { typeof(short), value => value.ToString()! },
+            { typeof(ushort), value => value.ToString()! },
+            { typeof(int), value => value.ToString()! },
+            { typeof(uint), value => value.ToString()! },
+            { typeof(long), value => value.ToString()! },
+            { typeof(ulong), value => value.ToString()! },
+            { typeof(float), value => ((float)value).ToString("R") },
+            { typeof(double), value => ((double)value).ToString("R") },
+            { typeof(decimal), value => ((decimal)value).ToString("G") },
+            { typeof(string), value => QuoteIfRequired(value.ToString()!, true) },
+            { typeof(DateTime), value => $"'{((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss.fff")}'" },
+            { typeof(Guid), value => $"'{value}'" }
+        };
+
+        /// <summary>
         /// Get the value correctly formatted and appropriately quoted (and escaped) for use in a SQL statement.
         /// </summary>
         /// <param name="clrValue">Value from the CLR object</param>
@@ -50,77 +73,15 @@ namespace SujaySarma.Data.SqlServer
                 return "NULL";
             }
 
-            // Handle byte[] specially, since it needs to be converted to hex format
-            if (clrValue is byte[] inArray)
-            {
-                return "0x" + Convert.ToHexString(inArray);
-            }
-
             Type type = clrValue.GetType();
-            switch (Type.GetTypeCode(type))
+
+            if (TypeConversionCache.TryGetValue(type, out var converter))
             {
-                case TypeCode.Boolean:
-                    return $"{((bool)clrValue ? 1 : 0)}";
-
-                case TypeCode.Char:
-                    return quoteIfRequired($"{clrValue}", quotedStrings);
-
-                case TypeCode.SByte:
-                case TypeCode.Byte:
-                case TypeCode.Int16:
-                case TypeCode.UInt16:
-                case TypeCode.Int32:
-                case TypeCode.UInt32:
-                case TypeCode.Int64:
-                case TypeCode.UInt64:
-                case TypeCode.Single:
-                case TypeCode.Double:
-                case TypeCode.Decimal:
-                    return $"{clrValue}";
-
-                case TypeCode.DateTime:
-                    return quoteIfRequired($"{((DateTime)clrValue).ToUniversalTime():yyyy-MM-ddTHH:mm:ss}Z", quotedStrings);
-
-                case TypeCode.String:
-                    string str = ((string)clrValue).Replace("'", "''");
-                    return quoteIfRequired(str, quotedStrings);
+                return converter(clrValue);
             }
 
-            switch (clrValue)
-            {
-                case DateOnly dateOnly:
-                    return quoteIfRequired($"{dateOnly:yyyy-MM-dd}T00:00:00Z", quotedStrings);
-
-                case TimeOnly timeOnly:
-                    return quoteIfRequired($"01-01-{DateTime.UtcNow.Year}T{timeOnly:HH:mm:ss}Z", quotedStrings);
-
-                case DateTimeOffset dateTimeOffset:
-                    return quoteIfRequired($"{dateTimeOffset.UtcDateTime:yyyy-MM-ddTHH:mm:ss}Z", quotedStrings);
-
-                case Guid guid:
-                    return quoteIfRequired($"{guid:d}", quotedStrings);
-
-                case IEnumerable enumerable:
-                    List<string> values = new List<string>();
-                    foreach (object item in enumerable)
-                    {
-                        values.Add(GetSQLStringValue(item, quotedStrings));
-                    }
-                    return  quoteIfRequired(string.Join(",", (IEnumerable<string>)values), quotedStrings);
-            }
-
-            throw new ArgumentException($"Cannot serialize clrValue of type '{type.Name}'.");
-
-
-            // Nifty helper to reduce LOC
-            static string quoteIfRequired(string val, bool requireQuotes)
-            {
-                if (requireQuotes)
-                {
-                    return $"'{val}'";
-                }
-                return val;
-            }
+            // Fallback for unsupported types
+            return QuoteIfRequired(clrValue.ToString()!, quotedStrings);
         }
 
         /// <summary>
@@ -130,5 +91,14 @@ namespace SujaySarma.Data.SqlServer
         /// <returns>SQL data type as a string</returns>
         public static string GetSqlTypeForClrType(Type clrType)
             => (SqlClrTypeMapping.TryGetValue(clrType, out string? str) ? str : "nvarchar");
+
+        /// <summary>
+        /// Helper to quote and escape strings if required
+        /// </summary>
+        /// <param name="value">String value</param>
+        /// <param name="quotedStrings">When true, returns strings in quoted form</param>
+        /// <returns>Quoted and escaped string</returns>
+        private static string QuoteIfRequired(string value, bool quotedStrings)
+            => (quotedStrings ? $"'{value.Replace("'", "''")}'" : value);
     }
 }

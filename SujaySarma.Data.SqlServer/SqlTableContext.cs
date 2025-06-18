@@ -15,7 +15,7 @@
         /// Initialize - with local SQL Server, connected to TempDB
         /// </summary>
         public SqlTableContext()
-          : this("Data Source=(local);Initial Catalog=tempdb;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=True;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True")
+          : this("Data Source=(local);Initial Catalog=tempdb;Integrated Security=True;Persist Security Info=False;Pooling=True;MultipleActiveResultSets=True;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True")
         {
         }
 
@@ -25,7 +25,7 @@
         /// <param name="databaseName">Name of database to connect to</param>
         /// <returns>Context pointed to <paramref name="databaseName" /> database</returns>
         public static SqlTableContext WithLocalDatabase(string databaseName)
-            => new SqlTableContext($"Data Source=(local);Initial Catalog={databaseName};Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=True;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True");
+            => new SqlTableContext($"Data Source=(local);Initial Catalog={databaseName};Integrated Security=True;Persist Security Info=False;Pooling=True;MultipleActiveResultSets=True;Connect Timeout=60;Encrypt=False;TrustServerCertificate=True");
 
         /// <summary>
         /// Return a context pointed to the server and database specified by the <paramref name="connectionString" />.
