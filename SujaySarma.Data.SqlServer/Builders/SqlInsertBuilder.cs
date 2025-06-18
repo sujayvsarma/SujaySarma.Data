@@ -2,14 +2,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SujaySarma.Data.SqlServer.Builders
 {
     /// <summary>
     /// Helps build a SQL INSERT statement.
+    /// Supports: INSERT INTO VALUES, INSERT INTO FROM, TOP, WITH, injected values, injected columns
     /// </summary>
     public sealed class SqlInsertBuilder : SqlStatementBuilder
     {
@@ -19,6 +18,21 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// <returns>Instance of StringBuilder containing the assembled INSERT statement.</returns>
         public override StringBuilder Build()
         {
+            if (_destinationColumnNames.Count == 0)
+            {
+                throw new InvalidOperationException("No destination columns selected for INSERT.");
+            }
+
+            if ((_columnsWithValues.Count > 0) && (_destinationColumnNames.Count != _columnsWithValues.Count))
+            {
+                throw new InvalidOperationException("There is a mismatch between columns selected for INSERT and the values provided.");
+            }
+
+            if ((_columnsWithValues.Count == 0) && (! _usingDefaultValues))
+            {
+                throw new InvalidOperationException("No values have been provided and DefaultValues() has not been set. Must perform one of the two.");
+            }
+
             StringBuilder builder = new StringBuilder();
             builder.Append("INSERT ");
 
@@ -40,7 +54,7 @@ namespace SujaySarma.Data.SqlServer.Builders
                 {
                     if (_tableHints.HasFlag(hint))
                     {
-                        hints.Append($"{hint.ToString().ToUpper()}");
+                        hints.Add($"{hint.ToString().ToUpper()}");
                     }
                 }
 
@@ -50,45 +64,83 @@ namespace SujaySarma.Data.SqlServer.Builders
                 }
             }
 
+            builder.Append('(').AppendJoin(',', _destinationColumnNames).Append(") ");
+
             if (_usingDefaultValues)
             {
                 builder.Append("DEFAULT VALUES");
             }
             else
             {
-                if (_columnsWithValues.Count == 0)
+                if (_sourceDataQuery != null)
                 {
-                    throw new InvalidOperationException("Columns/values are not provided.");
+                    builder.Append("FROM ");
+                    builder.Append(_sourceDataQuery.ToString());
                 }
-
-                // Get only column names first
-                List<string> columnNames = new List<string>();                
-                foreach(string name in _columnsWithValues[0].Keys)
+                else
                 {
-                    columnNames.Add(name);
-                }
-
-                builder.Append('(').AppendJoin(',', columnNames).Append(") ");
-
-                // now populate values
-                builder.Append("VALUES (");
-                List<string> values = new List<string>();
-                foreach (Dictionary<string, string> item in _columnsWithValues)
-                {
-                    foreach (string name in columnNames)
+                    if (_columnsWithValues.Count == 0)
                     {
-                        values.Add(item[name]);
-                    }
+                        throw new InvalidOperationException("Columns/values are not provided.");
+                    }                  
 
-                    builder.AppendJoin(',', values);
-                    values.Clear();
+                    // now populate values
+                    builder.Append("VALUES (");
+                    List<string> values = new List<string>();
+                    foreach (Dictionary<string, string> item in _columnsWithValues)
+                    {
+                        foreach (string name in _destinationColumnNames)
+                        {
+                            values.Add(item[name]);
+                        }
+
+                        builder.AppendJoin(',', values);
+                        values.Clear();
+                    }
+                    builder.Append(')');
                 }
-                builder.Append(')');
             }
 
             builder.Append(';');
             return builder;
         }
+
+        #region Support for INSERT FROM
+
+        /// <summary>
+        /// Set the datasource as a SQL SELECT query.
+        /// </summary>
+        /// <param name="query">An instance of a SqlQueryBuilder containing the query that will provide the data to insert.</param>
+        /// <returns>Self-instance.</returns>
+        public SqlInsertBuilder From(SqlQueryBuilder query)
+        {
+            _sourceDataQuery = query.Build();
+            return this;
+        }
+
+        /// <summary>
+        /// Set the datasource as a SQL SELECT query.
+        /// </summary>
+        /// <param name="query">An instance of a StringBuilder containing the query that will provide the data to insert.</param>
+        /// <returns>Self-instance.</returns>
+        public SqlInsertBuilder From(StringBuilder query)
+        {
+            _sourceDataQuery = query;
+            return this;
+        }
+
+        /// <summary>
+        /// Set the datasource as a SQL SELECT query.
+        /// </summary>
+        /// <param name="query">A free-form string query that will provide the data to insert.</param>
+        /// <returns>Self-instance.</returns>
+        public SqlInsertBuilder From(string query)
+        {
+            _sourceDataQuery = new StringBuilder(query);
+            return this;
+        }
+
+        #endregion
 
         #region Specify columns and values
 
@@ -121,10 +173,16 @@ namespace SujaySarma.Data.SqlServer.Builders
             Dictionary<string, string> objValues = new Dictionary<string, string>();
             foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
             {
+                string columnName = $"{map.Alias}.{member.Column.CreateQualifiedName()}";
                 objValues.Add(
-                        $"{map.Alias}.{member.Column.CreateQualifiedName()}",
+                        columnName,
                         ReflectionUtils.GetSQLStringValue(Core.ReflectionUtils.GetValue(ref refSource, member))
                     );
+
+                if (! _destinationColumnNames.Contains(columnName))
+                {
+                    _destinationColumnNames.Add(columnName);
+                }
             }
 
             _columnsWithValues.Add(objValues);
@@ -148,15 +206,33 @@ namespace SujaySarma.Data.SqlServer.Builders
             ClrToTableWithAlias map = base.Map.Add<TObject>();
             Dictionary<string, string> objValues = new Dictionary<string, string>();
 
+            /*
+             * There are two approaches to extracting column names here:
+             * 
+             *  1. Extract them in a separate for-loop over map.TypeInfo.Members.Values as we only need the reflected members' TypeInfos.
+             *  
+             *  2. Do them inside the main for (over objList).
+             *  
+             *  We are preferring the #2 method here as it also allows us to deal with dynamic objects (like TObject = a generic TableEntities) 
+             *  that *may* have differing property/field information between each instance of the same base type.
+             * 
+             */
+
             foreach (TObject obj in objList)
             {
-                object? refSource = obj;                
+                object? refSource = obj;
                 foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
                 {
+                    string columnName = $"{map.Alias}.{member.Column.CreateQualifiedName()}";
                     objValues.Add(
-                            $"{map.Alias}.{member.Column.CreateQualifiedName()}",
+                            columnName,
                             ReflectionUtils.GetSQLStringValue(Core.ReflectionUtils.GetValue(ref refSource, member))
                         );
+
+                    if (!_destinationColumnNames.Contains(columnName))
+                    {
+                        _destinationColumnNames.Add(columnName);
+                    }
                 }
                 _columnsWithValues.Add(objValues);
                 objValues.Clear();
@@ -175,6 +251,54 @@ namespace SujaySarma.Data.SqlServer.Builders
         {
             return Values<TObject>((IEnumerable<TObject>)objList);
         }
+
+        /// <summary>
+        /// Values to be inserted into the destination table are picked up from the provided <paramref name="values"/> dictionary.
+        /// </summary>
+        /// <param name="values">An arbitrary dictionary containing name/value pairs.</param>
+        /// <returns>Self-instance.</returns>
+        public SqlInsertBuilder Values(Dictionary<string, object?> values)
+        {
+            Dictionary<string, string> objValues = new Dictionary<string, string>();
+            foreach (KeyValuePair<string, object?> kvp in values)
+            {
+                objValues.Add(kvp.Key, ReflectionUtils.GetSQLStringValue(kvp.Value));
+
+                if (!_destinationColumnNames.Contains(kvp.Key))
+                {
+                    _destinationColumnNames.Add(kvp.Key);
+                }
+            }
+            _columnsWithValues.Add(objValues);
+            return this;
+        }
+
+        /// <summary>
+        /// Provide column name information for the destination table. Names thus provided are not changed and will be used as-is. It is on the 
+        /// caller to provide the right strings. Can be called any number of times to append columns to the existing list.
+        /// </summary>
+        /// <param name="names">A collection of column names.</param>
+        /// <returns>Self-instance.</returns>
+        public SqlInsertBuilder Columns(IEnumerable<string> names)
+        {
+            foreach(string name in names)
+            {
+                if (! _destinationColumnNames.Contains(name))
+                {
+                    _destinationColumnNames.Add(name);
+                }
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Provide column name information for the destination table. Names thus provided are not changed and will be used as-is. It is on the 
+        /// caller to provide the right strings. Can be called any number of times to append columns to the existing list.
+        /// </summary>
+        /// <param name="names">A collection of column names.</param>
+        /// <returns>Self-instance.</returns>
+        public SqlInsertBuilder Columns(params string[] names)
+            => Columns((IEnumerable<string>)names);
 
         #endregion
 
@@ -260,7 +384,9 @@ namespace SujaySarma.Data.SqlServer.Builders
         private SqlInsertBuilder()
             : base()
         {
+            _sourceDataQuery = null;
             _destinationTableName = null;
+            _destinationColumnNames = new List<string>();
             _tableHints = SqlTableHints.None;
             _topCount = uint.MaxValue;
             _topIsPercent = false;
@@ -269,6 +395,8 @@ namespace SujaySarma.Data.SqlServer.Builders
         }
 
         private string? _destinationTableName;
+        private List<string> _destinationColumnNames;
+        private StringBuilder? _sourceDataQuery;
         private SqlTableHints _tableHints;
         private uint _topCount = uint.MaxValue;
         private bool _topIsPercent = false;
