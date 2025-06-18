@@ -1,0 +1,76 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<ApplicationIcon>SS - Favicon.ico</ApplicationIcon>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>D:\Sujay\src\SujaySarma.Data\SujaySarma.Data.snk</AssemblyOriginatorKeyFile>
+		<Title>Sujay Sarma's Sql Server Client SDK</Title>
+		<Authors>Sujay V. Sarma</Authors>
+		<Description>Use this SDK to avoid having to use Entity Framework (EF) and simplify your time to code complete. This library is built along the familiar lines of my Azure Tables package.  Use the attributes from the 'SujaySarma.Data.SqlServer.Attributes' namespace to decorate your business object classes/records/structs and their properties and fields. The 'SqlTableContext' is your starting point for firing any DML or query operations. To debug query generation, use the methods in the 'SQLScriptGenerator' class -- the outputs of these functions are used in the DML operations.</Description>
+		<Copyright>Copyright (c) 2025 and beyond Sujay V Sarma. All Rights Reserved.</Copyright>
+		<PackageProjectUrl>https://github.com/sujayvsarma/SujaySarma.Data</PackageProjectUrl>
+		<PackageIcon>SS Logo.png</PackageIcon>
+		<RepositoryUrl>https://github.com/sujayvsarma/SujaySarma.Data</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>data access,library,sql,sqlserver,sql server,sql-server,msde,azuresql,azure sql,azure,localdb,json,databases</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<AssemblyVersion>9.5.0.0</AssemblyVersion>
+		<FileVersion>9.5.0.0</FileVersion>
+		<Version>$(AssemblyVersion)</Version>
+		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
+		<IncludeSymbols>True</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="README.md" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</Content>
+		<Content Include="SS - Favicon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\SS Logo.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" Condition=" '$(TargetFramework)' == 'net8.0' " />
+		<PackageReference Include="SujaySarma.Data.Core" Version="9.5.0" />
+		<PackageReference Include="System.Data.SqlClient" Version="4.9.0" Condition=" '$(TargetFramework)' == 'net6.0' " />
+	</ItemGroup>
+
+</Project>

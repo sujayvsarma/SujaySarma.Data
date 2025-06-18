@@ -1,0 +1,74 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<ApplicationIcon>SS - Favicon.ico</ApplicationIcon>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>D:\Sujay\src\SujaySarma.Data\SujaySarma.Data.snk</AssemblyOriginatorKeyFile>
+		<Title>Sujay Sarma's Core assembly for data access</Title>
+		<Authors>Sujay V. Sarma</Authors>
+		<Description>This library is used as a dependency by other libraries named with the prefix 'SujaySarma.Data.'. SujaySarma.Data.Core provides core reflection attributes, attribute discovery, validation, data conversion, population, hydration and evaporation services to the upstream consuming libraries.</Description>
+		<Copyright>Copyright (c) 2025 and beyond Sujay V Sarma. All Rights Reserved.</Copyright>
+		<PackageProjectUrl>https://github.com/sujayvsarma/SujaySarma.Data</PackageProjectUrl>
+		<PackageIcon>SS Logo.png</PackageIcon>
+		<RepositoryUrl>https://github.com/sujayvsarma/SujaySarma.Data</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>data access,core,library,sql server,windows,registry,json,sql,sqlserver,azure,tables,databases,files,flat file,csv,txt</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<AssemblyVersion>9.5.0.0</AssemblyVersion>
+		<FileVersion>9.5.0.0</FileVersion>
+		<Version>$(AssemblyVersion)</Version>
+		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
+		<IncludeSymbols>True</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="README.md" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="README.md">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		</Content>
+		<Content Include="SS - Favicon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="..\..\SS Logo.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.5" Condition="'$(TargetFramework)' == 'net8.0'" />
+	</ItemGroup>
+
+</Project>
