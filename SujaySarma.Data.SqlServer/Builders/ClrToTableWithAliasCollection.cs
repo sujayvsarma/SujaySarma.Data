@@ -27,7 +27,7 @@ namespace SujaySarma.Data.SqlServer.Builders
         {
             string typeName = type.Name;
 
-            foreach(ClrToTableWithAlias item in _list)
+            foreach (ClrToTableWithAlias item in _list)
             {
                 if (item.TypeInfo.Name.Equals(typeName))
                 {
@@ -41,11 +41,8 @@ namespace SujaySarma.Data.SqlServer.Builders
 
             if (isPrimaryTable)
             {
-                if (_primaryTable != null)
-                {
-                    // we already have a primary table set, so clear it
-                    _primaryTable.ClearIsPrimary();
-                }
+                // we already have a primary table set, so clear it
+                _primaryTable?.ClearIsPrimary();
 
                 _primaryTable = newItem;
             }
@@ -87,7 +84,7 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// <returns>Alias or NULL.</returns>
         public string? GetAlias(string tableName)
         {
-            foreach(ClrToTableWithAlias map in _list)
+            foreach (ClrToTableWithAlias map in _list)
             {
                 if (map.QualifiedTableName.Equals(tableName, StringComparison.OrdinalIgnoreCase))
                 {
@@ -162,7 +159,7 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// <param name="dispose">Actually dispose?</param>
         public void Dispose(bool dispose = true)
         {
-            if (dispose && (! isDisposed))
+            if (dispose && (!isDisposed))
             {
                 _list.Clear();
 
@@ -174,7 +171,10 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// Dispose this collection
         /// </summary>
         public void Dispose()
-            => Dispose(true);
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         private bool isDisposed = false;
         #endregion

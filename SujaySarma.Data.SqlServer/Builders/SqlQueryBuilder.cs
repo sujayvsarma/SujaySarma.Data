@@ -384,7 +384,7 @@ namespace SujaySarma.Data.SqlServer.Builders
             return this;
         }
 
-        //// <summary>
+        /// <summary>
         /// Add a condition that helps filter the rows of the returned dataset, joining this condition to ones already added using the OR operator.
         /// </summary>
         /// <typeparam name="TTable1">Type of .NET object for object reference in condition</typeparam>
@@ -596,12 +596,12 @@ namespace SujaySarma.Data.SqlServer.Builders
             _intoTable = null;
         }
 
-        private List<string> _selectColumns;
+        private readonly List<string> _selectColumns;
         private SqlTableHints _tableHints;
-        private SqlJoin _joins;
-        private SqlWhere _where;
+        private readonly SqlJoin _joins;
+        private readonly SqlWhere _where;
         private string? _groupBy;
-        private StringBuilder _orderBy;
+        private readonly StringBuilder _orderBy;
         private bool _isDistinct = false;
         private uint _topCount = uint.MaxValue;
         private bool _topIsPercent = false;

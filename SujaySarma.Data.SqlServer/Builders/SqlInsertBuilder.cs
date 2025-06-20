@@ -75,7 +75,7 @@ namespace SujaySarma.Data.SqlServer.Builders
                 if (_sourceDataQuery != null)
                 {
                     builder.Append("FROM ");
-                    builder.Append(_sourceDataQuery.ToString());
+                    builder.Append(_sourceDataQuery);
                 }
                 else
                 {
@@ -370,8 +370,10 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// <returns>A newly created instance of a SqlInsertBuilder.</returns>
         public static SqlInsertBuilder Into(string destinationTableName)
         {
-            SqlInsertBuilder builder = new SqlInsertBuilder();
-            builder._destinationTableName = destinationTableName;
+            SqlInsertBuilder builder = new SqlInsertBuilder
+            {
+                _destinationTableName = destinationTableName
+            };
 
             return builder;
         }
@@ -395,12 +397,12 @@ namespace SujaySarma.Data.SqlServer.Builders
         }
 
         private string? _destinationTableName;
-        private List<string> _destinationColumnNames;
+        private readonly List<string> _destinationColumnNames;
         private StringBuilder? _sourceDataQuery;
         private SqlTableHints _tableHints;
         private uint _topCount = uint.MaxValue;
         private bool _topIsPercent = false;
-        private List<Dictionary<string, string>> _columnsWithValues;
+        private readonly List<Dictionary<string, string>> _columnsWithValues;
         private bool _usingDefaultValues;
     }
 }

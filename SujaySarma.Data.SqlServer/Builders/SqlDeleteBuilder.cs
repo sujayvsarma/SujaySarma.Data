@@ -1,6 +1,10 @@
-﻿using System;
+﻿using SujaySarma.Data.Core.Reflection;
+using SujaySarma.Data.SqlServer.Attributes;
+
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace SujaySarma.Data.SqlServer.Builders
@@ -136,6 +140,37 @@ namespace SujaySarma.Data.SqlServer.Builders
             return this;
         }
 
+        /// <summary>
+        /// Add a condition to delete the row specific to the provided <paramref name="obj"/> instance's data.
+        /// </summary>
+        /// <typeparam name="TTable">Type of .NET object for object reference in condition</typeparam>
+        /// <param name="obj"></param>
+        /// <param name="conditionAppendingOperator">Operator to append the current set of conditions to the ones already added</param>
+        /// <returns>Self-instance</returns>
+        public SqlDeleteBuilder Where<TTable>(TTable obj, OperatorsToJoinConditionsEnum conditionAppendingOperator = OperatorsToJoinConditionsEnum.And)
+        {
+            // Add WHERE clauses for keys in the data being updated.
+            ClrToTableWithAlias map = base.Map.Get<TTable>() ?? base.Map.Add<TTable>(true);
+            object? refInstance = obj;
+
+            List<string> whereMap = new List<string>();
+            foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
+            {
+                TableColumnAttribute? columnAttribute = member.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
+                if ((columnAttribute != null) && (columnAttribute.IsSearchKey))
+                {
+                    whereMap.Add($"([{columnAttribute.CreateQualifiedName()}]={ReflectionUtils.GetSQLStringValue(Core.ReflectionUtils.GetValue(ref refInstance, member))})");
+                }
+            }
+
+            if (whereMap.Count > 0)
+            {
+                _where.Add(whereMap, conditionAppendingOperator);
+            }
+
+            return this;
+        }
+
         #endregion
 
         #region Primary Clauses
@@ -190,8 +225,10 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// <returns>A newly created instance of a SqlDeleteBuilder.</returns>
         public static SqlDeleteBuilder From(string tableName)
         {
-            SqlDeleteBuilder builder = new SqlDeleteBuilder();
-            builder._primaryTable = new ClrToTableWithAlias(typeof(object), true, tableName);
+            SqlDeleteBuilder builder = new SqlDeleteBuilder
+            {
+                _primaryTable = new ClrToTableWithAlias(typeof(object), true, tableName)
+            };
             return builder;
         }
 
@@ -215,10 +252,8 @@ namespace SujaySarma.Data.SqlServer.Builders
         private SqlTableHints _tableHints;
         private uint _topCount = uint.MaxValue;
         private bool _topIsPercent = false;
-        private SqlJoin _joins;
-        private SqlWhere _where;
-
-
+        private readonly SqlJoin _joins;
+        private readonly SqlWhere _where;
 
     }
 }

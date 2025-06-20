@@ -56,7 +56,7 @@ namespace SujaySarma.Data.SqlServer
             { typeof(double), value => ((double)value).ToString("R") },
             { typeof(decimal), value => ((decimal)value).ToString("G") },
             { typeof(string), value => QuoteIfRequired(value.ToString()!, true) },
-            { typeof(DateTime), value => $"'{((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss.fff")}'" },
+            { typeof(DateTime), value => $"'{(DateTime)value:yyyy-MM-dd HH:mm:ss.fff}'" },
             { typeof(Guid), value => $"'{value}'" }
         };
 

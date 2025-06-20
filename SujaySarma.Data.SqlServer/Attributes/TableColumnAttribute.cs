@@ -10,6 +10,15 @@ namespace SujaySarma.Data.SqlServer.Attributes
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public class TableColumnAttribute : ContainerMemberAttribute
     {
+        /// <summary>
+        /// Type of key if it is one, otherwise assign None.
+        /// </summary>
+        public KeyTypesEnum TypeOfKey
+        {
+            get; set;
+
+        } = KeyTypesEnum.None;
+
 
         /// <summary>
         /// Provide the data table column name and other flags used the value for this property or field is stored in or retrieved from.

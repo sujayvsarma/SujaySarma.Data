@@ -3,7 +3,7 @@
     /// <summary>
     /// Type of SQL statement
     /// </summary>
-    public enum SqlStatementType
+    public enum SqlStatementTypesEnum
     {
         /// <summary>
         /// INSERT
