@@ -1,6 +1,6 @@
 ﻿SujaySarma.Data.Azure.Tables
 =========================
-This is a .NET library for working with Azure Table Storage. It provides a set of classes and interfaces to help you manage and manipulate data in Azure Table Storage efficiently. Note that this library is a "core" library and is not intended for standalone use. It is designed to be used as a dependency in other projects that require data management capabilities with Azure Table Storage.
+This is a .NET library for working with Azure Table Storage. It provides a set of classes and interfaces to help you manage and manipulate data in Azure Table Storage efficiently. It is designed to be used as a dependency in other projects that require data management capabilities with Azure Table Storage.
 
 API
 ----

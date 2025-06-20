@@ -1,6 +1,6 @@
-﻿SujaySarma.Data.Azure.Tables
+﻿SujaySarma.Data.SqlServer
 =========================
-This is a .NET library for working with Azure Table Storage. It provides a set of classes and interfaces to help you manage and manipulate data in Azure Table Storage efficiently. Note that this library is a "core" library and is not intended for standalone use. It is designed to be used as a dependency in other projects that require data management capabilities with Azure Table Storage.
+This is a .NET library that helps you manipulate objects and data in SQL Server databases. It supports on-prem SQL Servers, MSDE, LocalDB, named instances, SQL Azure and SQL on Linux scenarios.
 
 API
 ----
@@ -10,17 +10,22 @@ This library provides the following public-surface API:
 
 Name | Description
 -----|------------
-TableAttribute | An attribute that can be applied to classes to indicate that they represent a table in Azure Table Storage.
-TableColumnAttribute | An attribute that can be applied to properties of a class to indicate that they represent a column in Azure Table Storage.
-PartitionKeyAttribute | An attribute that can be applied to a property of a class to indicate that it represents the partition key for the table.
-RowKeyAttribute | An attribute that can be applied to a property of a class to indicate that it represents the row key for the table.
-ETagAttribute | An attribute that can be applied to a property of a class to indicate that it represents the ETag for the table entity.
-TimestampAttribute | An attribute that can be applied to a property of a class to indicate that it represents the timestamp for the table entity.
+Table | Map a class, structure or record to a database table.
+TableColumn | Map a property or field to a database table column.
+
+In addition, this library supports creating a table for a .NET object. To support this, you would need to provide column type constraints (such as marking them as IDENTITY or providing precision/scale values). This is achieved through the following attributes:
+
+Name | Description
+-----|---------------
+ColumnPrecision | Specifies the precision value.
+ColumnScale | Specifies the scale of precision.
+Identity | Marks a column as an IDENTITY column and provides the SEED and INCREMENT values.
+
 
 **How to use**
-- Decorate your classes with the `TableAttribute` to indicate that they represent a table in Azure Table Storage.
-- Decorate the properties or fields in the classes with the `TableColumnAttribute` to indicate that they represent columns in the table. If they represent one of the special columns such as a `PartitionKey`, `RowKey`, `Timestamp` or `ETag`, decorate them with the appropriate attribute from the Attributes table above.
-- Use the `AzureTablesContext` class to interact with Azure Table Storage. This class provides methods for performing both DDL and DML operations on the tables and entities, in both synchronous and asynchronous modes.
+- Decorate your classes with the `TableAttribute` to indicate that they represent a table in SQL Server.
+- Decorate the properties or fields in the classes with the `TableColumnAttribute` to indicate that they represent columns in the table. If you need to support the SDK's CreateTable functionality, add the required attributes from the second table of attributes above.
+- Use the `SqlContext` class to interact with SQL Server. This class provides methods for performing both DDL and DML operations on the tables, in both synchronous and asynchronous modes.
 
 ---
 

@@ -30,22 +30,22 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
 		<DebugType>embedded</DebugType>
-		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;</NoWarn>
+		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;IDE0034;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
 		<DebugType>embedded</DebugType>
-		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;</NoWarn>
+		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;IDE0034;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
 		<DebugType>embedded</DebugType>
-		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;</NoWarn>
+		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;IDE0034;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
 		<DebugType>embedded</DebugType>
-		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;</NoWarn>
+		<NoWarn>1701;1702;IDE0090;IDE0028;IDE0075;IDE0306;IDE0300;IDE0305;IDE0063;IDE1005;IDE0066;IDE0290;IDE0034;IDE0301;</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

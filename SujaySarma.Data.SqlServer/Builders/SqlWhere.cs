@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Text;
 
 namespace SujaySarma.Data.SqlServer.Builders
 {
@@ -57,6 +59,25 @@ namespace SujaySarma.Data.SqlServer.Builders
 
             Add(sql);
         }
+
+        /// <summary>
+        /// To support implementations like <see cref="SqlDeleteBuilder"/> where objects are provided to delete.
+        /// </summary>
+        /// <param name="conditions">Pre-composed condition string</param>
+        /// <param name="conditionJoiningOperator">The joining operator</param>
+        internal void Add(List<string> conditions, OperatorsToJoinConditionsEnum conditionJoiningOperator)
+        {
+            foreach(string condition in conditions)
+            {
+                if (base.HasItems)
+                {
+                    Add(((conditionJoiningOperator != OperatorsToJoinConditionsEnum.Or) ? " AND " : " OR "));
+                }
+
+                Add(condition);
+            }
+        }
+
 
         /// <inheritdoc />
         public override string ToString()

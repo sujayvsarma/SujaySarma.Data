@@ -101,7 +101,7 @@ namespace SujaySarma.Data.Core
         /// <returns>Original or converted value</returns>
         public static object? ConvertValueIfRequired(object? value, Type targetClrType)
         {
-            if ((value == null) || (value == DBNull.Value))
+            if ((value == null) || (value is DBNull) || (value == DBNull.Value))
             {
                 return null;
             }

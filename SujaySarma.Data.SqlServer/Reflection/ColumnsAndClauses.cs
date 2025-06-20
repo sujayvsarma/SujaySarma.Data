@@ -52,7 +52,7 @@ namespace SujaySarma.Data.SqlServer.Reflection
         /// <param name="tableAliasName">When not-NULL, prefixes string as the table alias to each column (e.g.: useful in queries with joins).</param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public static Dictionary<string, string> GetColumnValuePairs<TObject>(this TObject obj, SqlStatementType statementType, ContainerTypeInfo typeInfo, string? tableAliasName = null)
+        public static Dictionary<string, string> GetColumnValuePairs<TObject>(this TObject obj, SqlStatementTypesEnum statementType, ContainerTypeInfo typeInfo, string? tableAliasName = null)
         {
             Dictionary<string, string> columnValuePairs = new Dictionary<string, string>();
             if (obj == null)
@@ -60,7 +60,7 @@ namespace SujaySarma.Data.SqlServer.Reflection
                 return columnValuePairs;
             }
 
-            if (statementType == SqlStatementType.Upsert)
+            if (statementType == SqlStatementTypesEnum.Upsert)
             {
                 throw new InvalidOperationException("For Upsert operations, call this function twice: once with (statementType = Insert), and again with (statementType = Update).");
             }
@@ -72,8 +72,8 @@ namespace SujaySarma.Data.SqlServer.Reflection
             {
                 switch (statementType)
                 {
-                    case SqlStatementType.Query:
-                    case SqlStatementType.Delete:
+                    case SqlStatementTypesEnum.Query:
+                    case SqlStatementTypesEnum.Delete:
                         if (member.Column.IsSearchKey)
                         {
                             KeyValuePair<string, string> columnWithValue = GetColumnNameWithValue(member, ref refInstance);
@@ -81,7 +81,7 @@ namespace SujaySarma.Data.SqlServer.Reflection
                         }
                         break;
 
-                    case SqlStatementType.Insert:
+                    case SqlStatementTypesEnum.Insert:
                         if (member.Column.IncludeFor.HasFlag(ColumnInclusionStrategy.Inserts))
                         {
                             KeyValuePair<string, string> columnWithValue = GetColumnNameWithValue(member, ref refInstance);
@@ -89,7 +89,7 @@ namespace SujaySarma.Data.SqlServer.Reflection
                         }
                         break;
 
-                    case SqlStatementType.Update:
+                    case SqlStatementTypesEnum.Update:
                         if (member.Column.IncludeFor.HasFlag(ColumnInclusionStrategy.Updates))
                         {
                             KeyValuePair<string, string> columnWithValue = GetColumnNameWithValue(member, ref refInstance);
@@ -167,7 +167,7 @@ namespace SujaySarma.Data.SqlServer.Reflection
         /// <returns>The <paramref name="sb"/> with the added key-value pairs</returns>
         public static StringBuilder AppendColumnsWithValues(this StringBuilder sb, Dictionary<string, string> columnsWithValues, string separator = ",")
         {
-            if ((columnsWithValues != null) && columnsWithValues.Any())
+            if ((columnsWithValues != null) && (columnsWithValues.Count > 0))
             {
                 sb.Append(string.Join(separator, columnsWithValues.Select(kv => $"{kv.Key} = {kv.Value}")));
             }
@@ -184,7 +184,7 @@ namespace SujaySarma.Data.SqlServer.Reflection
         /// <returns>The <paramref name="sb"/> with the added key-value pairs</returns>
         public static StringBuilder AppendColumnsWithValues(this StringBuilder sb, Dictionary<string, object?>? columnsWithValues, string separator = ",")
         {
-            if ((columnsWithValues != null) && columnsWithValues.Any())
+            if ((columnsWithValues != null) && (columnsWithValues.Count > 0))
             {
                 sb.Append(string.Join(separator, columnsWithValues.Select(kv => $"{kv.Key} = {ReflectionUtils.GetSQLStringValue(kv.Value)}")));
             }
@@ -201,7 +201,7 @@ namespace SujaySarma.Data.SqlServer.Reflection
         /// <returns>The <paramref name="sb"/> with the added key-value pairs</returns>
         public static StringBuilder AppendColumnsWithValues(this StringBuilder sb, Dictionary<string, string> columnsWithValues, char separator = ',')
         {
-            if ((columnsWithValues != null) && columnsWithValues.Any())
+            if ((columnsWithValues != null) && (columnsWithValues.Count > 0))
             {
                 sb.Append(string.Join(separator, columnsWithValues.Select(kv => $"{kv.Key} = {kv.Value}")));
             }
@@ -218,7 +218,7 @@ namespace SujaySarma.Data.SqlServer.Reflection
         /// <returns>The <paramref name="sb"/> with the added key-value pairs</returns>
         public static StringBuilder AppendColumnsWithValues(this StringBuilder sb, Dictionary<string, object?>? columnsWithValues, char separator = ',')
         {
-            if ((columnsWithValues != null) && columnsWithValues.Any())
+            if ((columnsWithValues != null) && (columnsWithValues.Count > 0))
             {
                 sb.Append(string.Join(separator, columnsWithValues.Select(kv => $"{kv.Key} = {ReflectionUtils.GetSQLStringValue(kv.Value)}")));
             }

@@ -30,7 +30,7 @@ namespace SujaySarma.Data.SqlServer.Builders
             StringBuilder builder = new StringBuilder();
             builder.Append($"MERGE {_destinationTableName} ");
             builder.Append("USING ");
-            builder.Append(_usingQuery.ToString());
+            builder.Append(_usingQuery);
             builder.Append(' ');
 
             foreach(WhenMatchedDo action in _matchOperations)
@@ -165,8 +165,10 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// <returns>A newly created instance of SqlMergeBuilder</returns>
         public static SqlMergeBuilder Table(string tableName, string tableAlias)
         {
-            SqlMergeBuilder builder = new SqlMergeBuilder();
-            builder._destinationTableName = $"{tableName} AS {tableAlias}";
+            SqlMergeBuilder builder = new SqlMergeBuilder
+            {
+                _destinationTableName = $"{tableName} AS {tableAlias}"
+            };
             return builder;
         }
 
@@ -186,7 +188,7 @@ namespace SujaySarma.Data.SqlServer.Builders
 
         private string _destinationTableName;
         private StringBuilder _usingQuery;
-        private List<WhenMatchedDo> _matchOperations;
+        private readonly List<WhenMatchedDo> _matchOperations;
 
         /// <summary>
         /// A structured manner to keep track of what to do 

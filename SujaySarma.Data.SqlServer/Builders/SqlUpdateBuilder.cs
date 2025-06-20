@@ -1,4 +1,7 @@
 ﻿using SujaySarma.Data.Core.Reflection;
+using SujaySarma.Data.SqlServer.Attributes;
+
+using System.Reflection;
 
 using System;
 using System.Collections.Generic;
@@ -75,7 +78,7 @@ namespace SujaySarma.Data.SqlServer.Builders
 
                 if (_sourceDataQuery != null)
                 {
-                    builder.Append(_sourceDataQuery.ToString());
+                    builder.Append(_sourceDataQuery);
                     builder.Append(' ');
                 }
 
@@ -89,8 +92,30 @@ namespace SujaySarma.Data.SqlServer.Builders
                 {
                     builder.Append("WHERE (").Append(_where.ToString()).Append(')');
                 }
+                else
+                {
+                    // Add WHERE clauses for keys in the data being updated.
+                    ClrToTableWithAlias map = base.Map.GetPrimaryTable()!;
 
-                builder.Append(';');
+                    List<string> whereMap = new List<string>();
+                    foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
+                    {
+                        TableColumnAttribute? columnAttribute = member.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
+                        if ((columnAttribute != null) && (columnAttribute.IsSearchKey))
+                        {
+                            // value maps are in the dictionary.
+                            string columnName = columnAttribute.CreateQualifiedName();
+                            whereMap.Add($"([{columnName}]={columnValueSet[columnName]})");
+                        }
+                    }
+
+                    if (whereMap.Count > 0)
+                    {
+                        builder.Append("WHERE (").AppendJoin(" AND ", whereMap).Append(')');
+                    }
+                }
+
+                    builder.Append(';');
                 builder.AppendLine();
             }
 
@@ -462,8 +487,10 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// <returns>A newly created instance of a SqlUpdateBuilder.</returns>
         public static SqlUpdateBuilder For(string destinationTableName)
         {
-            SqlUpdateBuilder builder = new SqlUpdateBuilder();
-            builder._destinationTableName = destinationTableName;
+            SqlUpdateBuilder builder = new SqlUpdateBuilder
+            {
+                _destinationTableName = destinationTableName
+            };
 
             return builder;
         }
@@ -491,8 +518,8 @@ namespace SujaySarma.Data.SqlServer.Builders
         private SqlTableHints _tableHints;
         private uint _topCount = uint.MaxValue;
         private bool _topIsPercent = false;
-        private List<Dictionary<string, string>> _columnsWithValues;
-        private SqlJoin _joins;
-        private SqlWhere _where;
+        private readonly List<Dictionary<string, string>> _columnsWithValues;
+        private readonly SqlJoin _joins;
+        private readonly SqlWhere _where;
     }
 }
