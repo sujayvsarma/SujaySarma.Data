@@ -19,13 +19,16 @@
 		<PackageTags>data access,library,sql,sqlserver,sql server,sql-server,msde,azuresql,azure sql,azure,localdb,json,databases</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>9.5.0.0</AssemblyVersion>
-		<FileVersion>9.5.0.0</FileVersion>
+		<AssemblyVersion>9.5.1.0</AssemblyVersion>
+		<FileVersion>9.5.1.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
 		<IncludeSymbols>True</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageReleaseNotes>[Version 9.5.1.0] - Updated on Sep 17th 2025:
+---
+Fixed a bug where column key type was not being used to exclude the field from INSERT and UPDATE operations. Impacted operations are in SqlInsertBuilder and SqlUpdateBuilder classes.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">

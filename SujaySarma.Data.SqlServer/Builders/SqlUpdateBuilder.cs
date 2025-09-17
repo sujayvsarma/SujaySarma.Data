@@ -115,7 +115,7 @@ namespace SujaySarma.Data.SqlServer.Builders
                     }
                 }
 
-                    builder.Append(';');
+                builder.Append(';');
                 builder.AppendLine();
             }
 
@@ -339,10 +339,20 @@ namespace SujaySarma.Data.SqlServer.Builders
             Dictionary<string, string> objValues = new Dictionary<string, string>();
             foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
             {
+                TableColumnAttribute? columnAttribute = member.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
+                if (columnAttribute != null)
+                {
+                    if (columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.PrimaryKey) || columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.Identity))
+                    {
+                        // skip primary keys and identity columns.
+                        continue;
+                    }
+                }
+
                 objValues.Add(
-                        $"{map.Alias}.{member.Column.CreateQualifiedName()}",
-                        ReflectionUtils.GetSQLStringValue(Core.ReflectionUtils.GetValue(ref refSource, member))
-                    );
+                    $"{map.Alias}.{member.Column.CreateQualifiedName()}",
+                    ReflectionUtils.GetSQLStringValue(Core.ReflectionUtils.GetValue(ref refSource, member))
+                );
             }
 
             _columnsWithValues.Add(objValues);
@@ -378,6 +388,16 @@ namespace SujaySarma.Data.SqlServer.Builders
                 object? refSource = obj;
                 foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
                 {
+                    TableColumnAttribute? columnAttribute = member.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
+                    if (columnAttribute != null)
+                    {
+                        if (columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.PrimaryKey) || columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.Identity))
+                        {
+                            // skip primary keys and identity columns.
+                            continue;
+                        }
+                    }
+
                     objValues.Add(
                             $"{map.Alias}.{member.Column.CreateQualifiedName()}",
                             ReflectionUtils.GetSQLStringValue(Core.ReflectionUtils.GetValue(ref refSource, member))

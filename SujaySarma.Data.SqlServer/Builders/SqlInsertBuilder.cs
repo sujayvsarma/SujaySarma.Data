@@ -1,7 +1,9 @@
 ﻿using SujaySarma.Data.Core.Reflection;
+using SujaySarma.Data.SqlServer.Attributes;
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace SujaySarma.Data.SqlServer.Builders
@@ -173,6 +175,16 @@ namespace SujaySarma.Data.SqlServer.Builders
             Dictionary<string, string> objValues = new Dictionary<string, string>();
             foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
             {
+                TableColumnAttribute? columnAttribute = member.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
+                if (columnAttribute != null)
+                {
+                    if (columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.PrimaryKey) || columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.Identity))
+                    {
+                        // skip primary keys and identity columns.
+                        continue;
+                    }
+                }
+
                 string columnName = $"{map.Alias}.{member.Column.CreateQualifiedName()}";
                 objValues.Add(
                         columnName,
@@ -223,6 +235,16 @@ namespace SujaySarma.Data.SqlServer.Builders
                 object? refSource = obj;
                 foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
                 {
+                    TableColumnAttribute? columnAttribute = member.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
+                    if (columnAttribute != null)
+                    {
+                        if (columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.PrimaryKey) || columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.Identity))
+                        {
+                            // skip primary keys and identity columns.
+                            continue;
+                        }
+                    }
+
                     string columnName = $"{map.Alias}.{member.Column.CreateQualifiedName()}";
                     objValues.Add(
                             columnName,
