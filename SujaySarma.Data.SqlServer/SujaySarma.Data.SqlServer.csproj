@@ -19,16 +19,17 @@
 		<PackageTags>data access,library,sql,sqlserver,sql server,sql-server,msde,azuresql,azure sql,azure,localdb,json,databases</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>9.5.1.0</AssemblyVersion>
-		<FileVersion>9.5.1.0</FileVersion>
+		<AssemblyVersion>9.5.5.0</AssemblyVersion>
+		<FileVersion>9.5.5.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
 		<IncludeSymbols>True</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>[Version 9.5.1.0] - Updated on Sep 17th 2025:
+		<PackageReleaseNotes>[Version 9.5.5.0] - Updated on Sep 18th 2025:
 ---
-Fixed a bug where column key type was not being used to exclude the field from INSERT and UPDATE operations. Impacted operations are in SqlInsertBuilder and SqlUpdateBuilder classes.</PackageReleaseNotes>
+(1) Some refactoring of classes, removed unused constants and code.
+(2) Added support for FOREIGN KEYS (see TableColumnAttribute, use TypeOfKey = Foreign, and set the two Referenced* properties).
+(3) Updated code across Builders to work with FOREIGN KEYS.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">

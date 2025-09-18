@@ -1,10 +1,8 @@
-﻿using SujaySarma.Data.Core.Reflection;
-using SujaySarma.Data.SqlServer.Attributes;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
+
+using SujaySarma.Data.SqlServer.Attributes;
 
 namespace SujaySarma.Data.SqlServer.Builders
 {
@@ -173,24 +171,9 @@ namespace SujaySarma.Data.SqlServer.Builders
             object? refSource = obj;
 
             Dictionary<string, string> objValues = new Dictionary<string, string>();
-            foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
+            base.BuildColumnNamesWithValues(ref refSource, map, KeyTypesEnum.PrimaryKey | KeyTypesEnum.Identity, objValues);
+            foreach(string columnName in objValues.Keys)
             {
-                TableColumnAttribute? columnAttribute = member.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
-                if (columnAttribute != null)
-                {
-                    if (columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.PrimaryKey) || columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.Identity))
-                    {
-                        // skip primary keys and identity columns.
-                        continue;
-                    }
-                }
-
-                string columnName = $"{map.Alias}.{member.Column.CreateQualifiedName()}";
-                objValues.Add(
-                        columnName,
-                        ReflectionUtils.GetSQLStringValue(Core.ReflectionUtils.GetValue(ref refSource, member))
-                    );
-
                 if (! _destinationColumnNames.Contains(columnName))
                 {
                     _destinationColumnNames.Add(columnName);
@@ -233,29 +216,15 @@ namespace SujaySarma.Data.SqlServer.Builders
             foreach (TObject obj in objList)
             {
                 object? refSource = obj;
-                foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
+                base.BuildColumnNamesWithValues(ref refSource, map, KeyTypesEnum.PrimaryKey | KeyTypesEnum.Identity, objValues);
+                foreach (string columnName in objValues.Keys)
                 {
-                    TableColumnAttribute? columnAttribute = member.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
-                    if (columnAttribute != null)
-                    {
-                        if (columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.PrimaryKey) || columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.Identity))
-                        {
-                            // skip primary keys and identity columns.
-                            continue;
-                        }
-                    }
-
-                    string columnName = $"{map.Alias}.{member.Column.CreateQualifiedName()}";
-                    objValues.Add(
-                            columnName,
-                            ReflectionUtils.GetSQLStringValue(Core.ReflectionUtils.GetValue(ref refSource, member))
-                        );
-
                     if (!_destinationColumnNames.Contains(columnName))
                     {
                         _destinationColumnNames.Add(columnName);
                     }
                 }
+
                 _columnsWithValues.Add(objValues);
                 objValues.Clear();
             }

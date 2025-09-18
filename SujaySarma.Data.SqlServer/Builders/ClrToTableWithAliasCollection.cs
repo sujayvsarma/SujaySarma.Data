@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
+using SujaySarma.Data.Core.Reflection;
+using SujaySarma.Data.SqlServer.Attributes;
+
 namespace SujaySarma.Data.SqlServer.Builders
 {
     /// <summary>
@@ -15,7 +18,8 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// </summary>
         /// <typeparam name="TObject">Type of .NET object to add mapping for.</typeparam>
         /// <param name="isPrimaryTable">Flag to set this as a primary table for this statement sequence.</param>
-        public ClrToTableWithAlias Add<TObject>(bool isPrimaryTable = false)
+        /// <param name="navigationPropertiesDepth">Desired depth of resolution of navigation (foreign key) properties. Defaults to [1].</param>
+        public ClrToTableWithAlias Add<TObject>(bool isPrimaryTable = false, int navigationPropertiesDepth = 1)
             => Add(typeof(TObject), isPrimaryTable);
 
         /// <summary>
@@ -23,7 +27,8 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// </summary>
         /// <param name="type">Type of .NET object to add mapping for.</param>
         /// <param name="isPrimaryTable">Flag to set this as a primary table for this statement sequence.</param>
-        public ClrToTableWithAlias Add(Type type, bool isPrimaryTable = false)
+        /// <param name="navigationPropertiesDepth">Desired depth of resolution of navigation (foreign key) properties. Defaults to [1].</param>
+        public ClrToTableWithAlias Add(Type type, bool isPrimaryTable = false, int navigationPropertiesDepth = 1)
         {
             string typeName = type.Name;
 
@@ -43,12 +48,31 @@ namespace SujaySarma.Data.SqlServer.Builders
             {
                 // we already have a primary table set, so clear it
                 _primaryTable?.ClearIsPrimary();
-
                 _primaryTable = newItem;
+            }
+
+
+            if (_currentNavPropertyDepth < navigationPropertiesDepth)
+            {
+                // Resolve navigation properties
+                _currentNavPropertyDepth++;
+
+                foreach (MemberTypeInfo member in newItem.TypeInfo.Members.Values)
+                {
+                    if ((member.Column is TableColumnAttribute column)
+                        && column.TypeOfKey.HasFlag(KeyTypesEnum.Foreign)
+                            && (column.ReferencedTable != null) && (!string.IsNullOrWhiteSpace(column.ReferencedColumn)))
+                    {
+                        // This is recursively called!
+                        Add(column.ReferencedTable, false, navigationPropertiesDepth);
+                        _currentNavPropertyDepth--;
+                    }
+                }
             }
 
             return newItem;
         }
+        private int _currentNavPropertyDepth = 0;
 
         /// <summary>
         /// Try to retrieve any added mapping for the provided .NET object type.

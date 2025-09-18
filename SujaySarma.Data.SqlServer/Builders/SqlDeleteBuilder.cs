@@ -141,6 +141,46 @@ namespace SujaySarma.Data.SqlServer.Builders
         }
 
         /// <summary>
+        /// Add a condition to filter the rows to delete.
+        /// </summary>
+        /// <typeparam name="TTable1">Type of .NET object for object reference in condition</typeparam>
+        /// <typeparam name="TTable2">Type of .NET object for object reference in condition</typeparam>
+        /// <param name="conditions">One or more conditions in Lambda Expression form</param>
+        /// <param name="conditionAppendingOperator">Operator to append the current set of conditions to the ones already added</param>
+        /// <returns>Self-instance</returns>
+        public SqlDeleteBuilder Where<TTable1, TTable2>(Expression<Func<TTable1, TTable2, bool>> conditions, OperatorsToJoinConditionsEnum conditionAppendingOperator = OperatorsToJoinConditionsEnum.And)
+        {
+            _where.Add<TTable1, TTable2>(conditions, conditionAppendingOperator);
+            return this;
+        }
+
+        /// <summary>
+        /// Add a condition to filter the rows to delete, joining this condition to ones already added using the OR operator.
+        /// </summary>
+        /// <typeparam name="TTable1">Type of .NET object for object reference in condition</typeparam>
+        /// <typeparam name="TTable2">Type of .NET object for object reference in condition</typeparam>
+        /// <param name="conditions">One or more conditions in Lambda Expression form</param>
+        /// <returns>Self-instance</returns>
+        public SqlDeleteBuilder OrWhere<TTable1, TTable2>(Expression<Func<TTable1, TTable2, bool>> conditions)
+        {
+            _where.Add<TTable1, TTable2>(conditions, OperatorsToJoinConditionsEnum.Or);
+            return this;
+        }
+
+        /// <summary>
+        /// Add a condition to filter the rows to delete, joining this condition to ones already added using the AND operator.
+        /// </summary>
+        /// <typeparam name="TTable1">Type of .NET object for object reference in condition</typeparam>
+        /// <typeparam name="TTable2">Type of .NET object for object reference in condition</typeparam>
+        /// <param name="conditions">One or more conditions in Lambda Expression form</param>
+        /// <returns>Self-instance</returns>
+        public SqlDeleteBuilder AndWhere<TTable1, TTable2>(Expression<Func<TTable1, TTable2, bool>> conditions)
+        {
+            _where.Add<TTable1, TTable2>(conditions, OperatorsToJoinConditionsEnum.And);
+            return this;
+        }
+
+        /// <summary>
         /// Add a condition to delete the row specific to the provided <paramref name="obj"/> instance's data.
         /// </summary>
         /// <typeparam name="TTable">Type of .NET object for object reference in condition</typeparam>

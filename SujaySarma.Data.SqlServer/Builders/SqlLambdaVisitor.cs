@@ -1,4 +1,5 @@
 ﻿using SujaySarma.Data.Core.Constants;
+using SujaySarma.Data.Core.Reflection;
 using SujaySarma.Data.SqlServer.Attributes;
 
 using System;
@@ -51,7 +52,7 @@ namespace SujaySarma.Data.SqlServer.Builders
             string falseStr = _values.Pop();
 
             _values.Push($"CASE WHEN ({testStr}) THEN {trueStr} ELSE {falseStr} END");
-            
+
             return (Expression)node;
         }
 
@@ -61,7 +62,7 @@ namespace SujaySarma.Data.SqlServer.Builders
         protected override Expression VisitBinary(BinaryExpression node)
         {
             string operatorName = ConvertExpressionOperatorToSQL((Expression)node);
-            
+
             Visit(node.Left);
             string leftStr = _values.Pop();
 
@@ -163,19 +164,40 @@ namespace SujaySarma.Data.SqlServer.Builders
                 return (Expression)node;
             }
 
-            TableColumnAttribute? customAttribute = node.Member.GetCustomAttribute<TableColumnAttribute>(true);
-            if (customAttribute != null)
+            TableColumnAttribute? column = node.Member.GetCustomAttribute<TableColumnAttribute>(true);
+            if (column != null)
             {
-                string qualifiedName = customAttribute.CreateQualifiedName();
-                if (!string.IsNullOrWhiteSpace(qualifiedName))
+                if (column.TypeOfKey.HasFlag(KeyTypesEnum.Foreign) && (column.ReferencedTable != null) && (!string.IsNullOrWhiteSpace(column.ReferencedColumn)))
                 {
-                    _values.Push($"{tableAliasOrName}.[{qualifiedName}]");
-                    if (isEnum)
+                    // This is a foreign key. We need to add all columns from the referenced table to the query.
+                    ClrToTableWithAlias? foreignTable = _typeTableAliasMap.Get(column.ReferencedTable);
+                    if (foreignTable != null)
                     {
-                        _currentEnum = propertyDataType;
-                        _serialiseEnumsAsStrings = ((customAttribute.IfEnumSerialiseAs == EnumSerializationStrategy.AsString) ? true : false);
+                        string foreignTableAliasOrName = _typeTableAliasMap.GetUsableMoniker(column.ReferencedTable) ?? column.ReferencedTable.Name;
+
+                        // We need to add to list and join, because otherwise we just get a space-separated string that won't work!
+
+                        List<string> foreignColumns = new List<string>();
+                        foreach (MemberTypeInfo foreignColumn in foreignTable.TypeInfo.Members.Values)
+                        {
+                            foreignColumns.Add($"{foreignTableAliasOrName}.[{foreignColumn.Column.CreateQualifiedName()}]");
+                        }
+                        _values.Push(string.Join(',', foreignColumns));
                     }
                 }
+                else
+                {
+                    string qualifiedName = column.CreateQualifiedName();
+                    if (!string.IsNullOrWhiteSpace(qualifiedName))
+                    {
+                        _values.Push($"{tableAliasOrName}.[{qualifiedName}]");
+                        if (isEnum)
+                        {
+                            _currentEnum = propertyDataType;
+                            _serialiseEnumsAsStrings = ((column.IfEnumSerialiseAs == EnumSerializationStrategy.AsString) ? true : false);
+                        }
+                    }
+                }                
             }
 
             return (Expression)node;
@@ -198,7 +220,7 @@ namespace SujaySarma.Data.SqlServer.Builders
         {
             ReadOnlyCollection<MemberInfo>? members = node.Members;
             IEnumerable<KeyValuePair<MemberInfo, Expression>>? keyValuePairs = (members?.Zip<MemberInfo, Expression, KeyValuePair<MemberInfo, Expression>>(
-                    node.Arguments, 
+                    node.Arguments,
                         (m, a) => new KeyValuePair<MemberInfo, Expression>(m, a))
                 );
 

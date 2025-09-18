@@ -19,9 +19,9 @@ namespace SujaySarma.Data.SqlServer.Attributes
         PrimaryKey = 1,
 
         /// <summary>
-        /// UNIQUE key.
+        /// Foreign key.
         /// </summary>
-        UniqueKey = 2,
+        Foreign = 2,
 
         /// <summary>
         /// An IDENTITY value.

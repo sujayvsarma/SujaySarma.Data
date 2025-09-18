@@ -495,10 +495,7 @@ namespace SujaySarma.Data.SqlServer.Builders
         public SqlQueryBuilder Select<TObject>()
         {
             ClrToTableWithAlias map = base.Map.Add<TObject>();
-            foreach (MemberTypeInfo memberTypeInformation in map.TypeInfo.Members.Values)
-            {
-                AddColumnIfNotExistsOrSkip($"{map.Alias}.{memberTypeInformation.Column.CreateQualifiedName()}");
-            }
+            base.BuildColumnNames(map, Attributes.KeyTypesEnum.None, _selectColumns);
             return this;
         }
 
@@ -516,10 +513,7 @@ namespace SujaySarma.Data.SqlServer.Builders
 
             foreach (ClrToTableWithAlias typeTable in base.Map)
             {
-                foreach (MemberTypeInfo memberTypeInformation in typeTable.TypeInfo.Members.Values)
-                {
-                    AddColumnIfNotExistsOrSkip($"{typeTable.Alias}.{memberTypeInformation.Column.CreateQualifiedName()}");
-                }
+                base.BuildColumnNames(typeTable, Attributes.KeyTypesEnum.None, _selectColumns);
             }
             return this;
         }
@@ -606,19 +600,5 @@ namespace SujaySarma.Data.SqlServer.Builders
         private uint _topCount = uint.MaxValue;
         private bool _topIsPercent = false;
         private string? _intoTable;
-
-        /// <summary>
-        /// Adds the column name to the list distinctly.
-        /// </summary>
-        /// <param name="columnName">Name of the column to add.</param>
-        private void AddColumnIfNotExistsOrSkip(string columnName)
-        {
-            if (_selectColumns.Any(cn => cn.Equals(columnName, StringComparison.OrdinalIgnoreCase)))
-            {
-                return;
-            }
-
-            _selectColumns.Add(columnName);
-        }
     }
 }

@@ -1,12 +1,11 @@
-﻿using SujaySarma.Data.Core.Reflection;
-using SujaySarma.Data.SqlServer.Attributes;
-
-using System.Reflection;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
+
+using SujaySarma.Data.Core.Reflection;
+using SujaySarma.Data.SqlServer.Attributes;
 
 namespace SujaySarma.Data.SqlServer.Builders
 {
@@ -96,7 +95,6 @@ namespace SujaySarma.Data.SqlServer.Builders
                 {
                     // Add WHERE clauses for keys in the data being updated.
                     ClrToTableWithAlias map = base.Map.GetPrimaryTable()!;
-
                     List<string> whereMap = new List<string>();
                     foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
                     {
@@ -335,26 +333,9 @@ namespace SujaySarma.Data.SqlServer.Builders
         {
             ClrToTableWithAlias map = base.Map.Add<TObject>();
             object? refSource = obj;
-
             Dictionary<string, string> objValues = new Dictionary<string, string>();
-            foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
-            {
-                TableColumnAttribute? columnAttribute = member.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
-                if (columnAttribute != null)
-                {
-                    if (columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.PrimaryKey) || columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.Identity))
-                    {
-                        // skip primary keys and identity columns.
-                        continue;
-                    }
-                }
 
-                objValues.Add(
-                    $"{map.Alias}.{member.Column.CreateQualifiedName()}",
-                    ReflectionUtils.GetSQLStringValue(Core.ReflectionUtils.GetValue(ref refSource, member))
-                );
-            }
-
+            base.BuildColumnNamesWithValues(ref refSource, map, KeyTypesEnum.PrimaryKey | KeyTypesEnum.Identity, objValues);
             _columnsWithValues.Add(objValues);
 
             return this;
@@ -373,37 +354,18 @@ namespace SujaySarma.Data.SqlServer.Builders
 
             /*
              * There are two approaches to extracting column names here:
-             * 
              *  1. Extract them in a separate for-loop over map.TypeInfo.Members.Values as we only need the reflected members' TypeInfos.
-             *  
              *  2. Do them inside the main for (over objList).
-             *  
              *  We are preferring the #2 method here as it also allows us to deal with dynamic objects (like TObject = a generic TableEntities) 
              *  that *may* have differing property/field information between each instance of the same base type.
-             * 
              */
 
             foreach (TObject obj in objList)
             {
                 object? refSource = obj;
-                foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
-                {
-                    TableColumnAttribute? columnAttribute = member.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
-                    if (columnAttribute != null)
-                    {
-                        if (columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.PrimaryKey) || columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.Identity))
-                        {
-                            // skip primary keys and identity columns.
-                            continue;
-                        }
-                    }
-
-                    objValues.Add(
-                            $"{map.Alias}.{member.Column.CreateQualifiedName()}",
-                            ReflectionUtils.GetSQLStringValue(Core.ReflectionUtils.GetValue(ref refSource, member))
-                        );
-                }
+                base.BuildColumnNamesWithValues(ref refSource, map, KeyTypesEnum.PrimaryKey | KeyTypesEnum.Identity, objValues);
                 _columnsWithValues.Add(objValues);
+
                 objValues.Clear();
             }
 
