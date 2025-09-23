@@ -70,7 +70,7 @@ namespace SujaySarma.Data.SqlServer.Attributes
 
         /// <inheritdoc />
         public override string CreateQualifiedName()
-            => $"[{Name}]";
+            => $"{Name}";
     }
 
 }

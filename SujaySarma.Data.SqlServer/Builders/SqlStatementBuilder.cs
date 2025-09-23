@@ -79,7 +79,8 @@ namespace SujaySarma.Data.SqlServer.Builders
                         }
                     }
 
-                    string columnName = $"{map.Alias}.{member.Column.CreateQualifiedName()}";
+                    string rawColumnName = member.Column.CreateQualifiedName();
+                    string columnName = $"{map.Alias}.{rawColumnName} as {map.QualifiedTableName}.{rawColumnName}";
                     if (!columnNames.Contains(columnName))
                     {
                         columnNames.Add(columnName);
@@ -121,7 +122,8 @@ namespace SujaySarma.Data.SqlServer.Builders
                         }
                     }
 
-                    string columnName = $"{map.Alias}.{member.Column.CreateQualifiedName()}";
+                    string rawColumnName = member.Column.CreateQualifiedName();
+                    string columnName = $"{map.Alias}.{rawColumnName} as {map.QualifiedTableName}.{rawColumnName}";
                     if (!columnNamesWithValues.ContainsKey(columnName))
                     {
                         columnNamesWithValues.Add(columnName,
@@ -129,41 +131,6 @@ namespace SujaySarma.Data.SqlServer.Builders
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Retrieve a list of column names along with their values
-        /// </summary>
-        /// <param name="sourceObject">Object whose values to fetch.</param>
-        /// <param name="map">Discovered object.</param>
-        /// <param name="onlyFlags">Only the columns with the mentioned flags (HasFlags) will be processed.</param>
-        protected Dictionary<string, string> BuildColumnNamesWithValues(ref object? sourceObject, ClrToTableWithAlias map, KeyTypesEnum onlyFlags)
-        {
-            Dictionary<string, string> columnNamesWithValues = new Dictionary<string, string>();
-            foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
-            {
-                TableColumnAttribute? columnAttribute = member.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
-                if (columnAttribute != null)
-                {
-                    foreach (KeyTypesEnum flag in Enum.GetValues<KeyTypesEnum>())
-                    {
-                        if (onlyFlags.HasFlag(flag) && columnAttribute.TypeOfKey.HasFlag(flag))
-                        {
-                            string columnName = $"{map.Alias}.{member.Column.CreateQualifiedName()}";
-                            if (!columnNamesWithValues.ContainsKey(columnName))
-                            {
-                                columnNamesWithValues.Add(columnName,
-                                    ReflectionUtils.GetSQLStringValue(Core.ReflectionUtils.GetValue(ref sourceObject, member)));
-                            }
-
-                            // Process member only once per flag!
-                            break;
-                        }
-                    }                    
-                }
-            }
-
-            return columnNamesWithValues;
         }
 
 

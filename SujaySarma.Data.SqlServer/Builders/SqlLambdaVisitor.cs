@@ -164,6 +164,15 @@ namespace SujaySarma.Data.SqlServer.Builders
                 return (Expression)node;
             }
 
+            /*
+                We have eliminated all other possibilities at this stage. What we have must be a property that maps to a table column.
+
+                Now, these columns may be defined as two types:
+                (1) a simple column. That we process in the nested ELSE block below.
+                (2) a Foreign key into another object (table). This is defined on a proper type (struct/record/class) in the caller's business object, 
+                    meaning we need to retrieve the entire object (table) from the backend -- this requires us to pull all the columns of the foreign table 
+                    (not just the key column referenced).
+            */
             TableColumnAttribute? column = node.Member.GetCustomAttribute<TableColumnAttribute>(true);
             if (column != null)
             {
@@ -173,15 +182,29 @@ namespace SujaySarma.Data.SqlServer.Builders
                     ClrToTableWithAlias? foreignTable = _typeTableAliasMap.Get(column.ReferencedTable);
                     if (foreignTable != null)
                     {
-                        string foreignTableAliasOrName = _typeTableAliasMap.GetUsableMoniker(column.ReferencedTable) ?? column.ReferencedTable.Name;
-
-                        // We need to add to list and join, because otherwise we just get a space-separated string that won't work!
-
-                        List<string> foreignColumns = new List<string>();
-                        foreach (MemberTypeInfo foreignColumn in foreignTable.TypeInfo.Members.Values)
+                        ClrToTableWithAlias? foreignTableMap = _typeTableAliasMap.Get(column.ReferencedTable);
+                        if (foreignTableMap == null)
                         {
-                            foreignColumns.Add($"{foreignTableAliasOrName}.[{foreignColumn.Column.CreateQualifiedName()}]");
+                            throw new TypeLoadException($"The type '{column.ReferencedTable.Name}' is not decorated with a 'Table' attribute.");
                         }
+
+                        // We need to add to list and join, because otherwise we just get a space - separated string that won't work!
+                        List<string> foreignColumns = new List<string>();
+                        foreach (MemberTypeInfo foreignMember in foreignTableMap.TypeInfo.Members.Values)
+                        {
+                            TableColumnAttribute? columnAttribute = foreignMember.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
+                            if (columnAttribute != null)
+                            {
+                                string rawColumnName = foreignMember.Column.CreateQualifiedName();
+                                string columnName = $"{foreignTableMap.Alias}.{rawColumnName} as {foreignTableMap.QualifiedTableName}.{rawColumnName}";
+                                if (!foreignColumns.Contains(columnName))
+                                {
+                                    foreignColumns.Add(columnName);
+                                }
+                                ;
+                            }
+                        }
+
                         _values.Push(string.Join(',', foreignColumns));
                     }
                 }
