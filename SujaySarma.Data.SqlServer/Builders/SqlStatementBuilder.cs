@@ -48,49 +48,7 @@ namespace SujaySarma.Data.SqlServer.Builders
             => Map.Add(table, isPrimary);
 
         /// <summary>
-        /// Retrieve a list of column names
-        /// </summary>
-        /// <param name="map">Discovered object.</param>
-        /// <param name="skipFlags">Any columns with the mentioned flags (HasFlags) will be skipped.</param>
-        /// <param name="columnNames">List of existing columns -- will be added to, uniquely.</param>
-        protected void BuildColumnNames(ClrToTableWithAlias map, KeyTypesEnum skipFlags, List<string> columnNames)
-        {
-            foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
-            {
-                TableColumnAttribute? columnAttribute = member.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
-                if (columnAttribute != null)
-                {
-                    // shortcut: nothing can be OR'ed with None.
-                    if (skipFlags != KeyTypesEnum.None)
-                    {
-                        bool skipMember = false;
-                        foreach (KeyTypesEnum flag in Enum.GetValues<KeyTypesEnum>())
-                        {
-                            if (skipFlags.HasFlag(flag) && columnAttribute.TypeOfKey.HasFlag(flag))
-                            {
-                                skipMember = true;
-                                break;
-                            }
-                        }
-
-                        if (skipMember)
-                        {
-                            continue;
-                        }
-                    }
-
-                    string rawColumnName = member.Column.CreateQualifiedName();
-                    string columnName = $"{map.Alias}.{rawColumnName} as {map.QualifiedTableName}.{rawColumnName}";
-                    if (!columnNames.Contains(columnName))
-                    {
-                        columnNames.Add(columnName);
-                    };
-                }
-            }
-        }
-
-        /// <summary>
-        /// Retrieve a list of column names along with their values
+        /// Retrieve a list of column names along with their values (THIS IS CALLED FROM OUR NON-QUERY BUILDERS... Insert/Update/Merge)
         /// </summary>
         /// <param name="sourceObject">Object whose values to fetch.</param>
         /// <param name="map">Discovered object.</param>

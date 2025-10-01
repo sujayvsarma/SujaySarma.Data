@@ -12,7 +12,8 @@ namespace SujaySarma.Data.SqlServer.Attributes
     public class TableColumnAttribute : ContainerMemberAttribute
     {
         /// <summary>
-        /// Type of key if it is one, otherwise assign None.
+        /// Type of key if it is one, otherwise assign None. 
+        /// If set to ForeignKey, also set up <see cref="ReferencedTable"/> and <see cref="ReferencedColumn"/> properties.
         /// </summary>
         public KeyTypesEnum TypeOfKey
         {

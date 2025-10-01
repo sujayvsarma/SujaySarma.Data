@@ -19,17 +19,15 @@
 		<PackageTags>data access,library,sql,sqlserver,sql server,sql-server,msde,azuresql,azure sql,azure,localdb,json,databases</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>9.5.6.0</AssemblyVersion>
-		<FileVersion>9.5.6.0</FileVersion>
+		<AssemblyVersion>9.5.8.0</AssemblyVersion>
+		<FileVersion>9.5.8.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
 		<IncludeSymbols>False</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>[Version 9.5.6.0] - Updated on Sep 23rd 2025:
+		<PackageReleaseNotes>[Version 9.5.8.0] - Updated on Oct 1st 2025:
 ---
-(1) Fixed a bug in TableColumnAttribute to add square brackets around the name returned.
-(2) Fixed a bug in SqlStatementBuilder to compose fully qualified aliased names ("t.[Id]" earlier is now returned as "t.[Id] as [table].[Id]")
-(3) Propagated changes for fix#2 above to SqlLambdaVisitor's VisitMember function (see foreign key IF block at the end)</PackageReleaseNotes>
+(1) Using Foreign keys now add the implicit joins explicitly to generated SQL (earlier caller needed to add the joins themselves)</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">

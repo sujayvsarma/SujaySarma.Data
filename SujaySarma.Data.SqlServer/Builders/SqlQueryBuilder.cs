@@ -1,9 +1,11 @@
 ﻿using SujaySarma.Data.Core.Reflection;
+using SujaySarma.Data.SqlServer.Attributes;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace SujaySarma.Data.SqlServer.Builders
@@ -479,6 +481,9 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// <returns>Self-instance</returns>
         public SqlQueryBuilder Select<TObject>(params Expression<Func<TObject, object>>[] selectors)
         {
+            // We don't need to call SelectImpl() for this version,
+            // because SqlLambdaVisitor's VisitMember already takes care of foreign key maps.
+
             base.Map.Add<TObject>();
             foreach (Expression selector in selectors)
             {
@@ -495,7 +500,7 @@ namespace SujaySarma.Data.SqlServer.Builders
         public SqlQueryBuilder Select<TObject>()
         {
             ClrToTableWithAlias map = base.Map.Add<TObject>();
-            base.BuildColumnNames(map, Attributes.KeyTypesEnum.None, _selectColumns);
+            BuildColumnNames(map, Attributes.KeyTypesEnum.None, _selectColumns);
             return this;
         }
 
@@ -510,11 +515,11 @@ namespace SujaySarma.Data.SqlServer.Builders
 
             // We elect to list the actual column names as this better reflects the .Net object space that we 
             // want to populate/manipulate using this library.
-
             foreach (ClrToTableWithAlias typeTable in base.Map)
             {
-                base.BuildColumnNames(typeTable, Attributes.KeyTypesEnum.None, _selectColumns);
+                BuildColumnNames(typeTable, Attributes.KeyTypesEnum.None, _selectColumns);
             }
+
             return this;
         }
 
@@ -589,6 +594,74 @@ namespace SujaySarma.Data.SqlServer.Builders
             _orderBy = new StringBuilder();
             _intoTable = null;
         }
+
+        /// <summary>
+        /// Retrieve a list of column names (THIS IS CALLED FROM <see cref="SqlQueryBuilder"/>)
+        /// </summary>
+        /// <param name="map">Discovered object.</param>
+        /// <param name="skipFlags">Any columns with the mentioned flags (HasFlags) will be skipped.</param>
+        /// <param name="columnNames">List of existing columns -- will be added to, uniquely.</param>
+        private void BuildColumnNames(ClrToTableWithAlias map, KeyTypesEnum skipFlags, List<string> columnNames)
+        {
+            foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
+            {
+                TableColumnAttribute? columnAttribute = member.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
+                if (columnAttribute != null)
+                {
+                    // shortcut: nothing can be OR'ed with None.
+                    if (skipFlags != KeyTypesEnum.None)
+                    {
+                        bool skipMember = false;
+                        foreach (KeyTypesEnum flag in Enum.GetValues<KeyTypesEnum>())
+                        {
+                            if (skipFlags.HasFlag(flag) && columnAttribute.TypeOfKey.HasFlag(flag))
+                            {
+                                skipMember = true;
+                                break;
+                            }
+                        }
+
+                        if (skipMember)
+                        {
+                            continue;
+                        }
+                    }
+
+                    // column name in current table
+                    string rawColumnName = member.Column.CreateQualifiedName();
+                    string columnName = $"{map.Alias}.{rawColumnName} as {map.QualifiedTableName}.{rawColumnName}";
+                    if (!columnNames.Contains(columnName))
+                    {
+                        columnNames.Add(columnName);
+                    }
+
+                    // If this was a foreign key, we need the columns in the foreign table as well.
+                    // **only** process 1 level deep! (consistent with SqlLambdaVisitor/VisitMember)
+                    if (columnAttribute.TypeOfKey.HasFlag(KeyTypesEnum.Foreign)
+                         && (!string.IsNullOrWhiteSpace(columnAttribute.ReferencedColumn))
+                            && (columnAttribute.ReferencedTable != null))
+                    {
+                        // This will throw if caller has not created the type properly!
+                        ClrToTableWithAlias foreignMap = Map.Add(columnAttribute.ReferencedTable);
+                        string rawForeignColumnName = $"[{columnAttribute.ReferencedColumn!}]";
+
+                        // Add the implicit join explicitly
+                        _joins.Add(
+                                foreignMap.QualifiedTableName,
+                                $"{map.Alias}.[{rawColumnName}] = {foreignMap.Alias}.{rawForeignColumnName}",
+                                TypesOfJoinsEnum.Inner
+                            );
+                        
+                        string foreignColumnName = $"{foreignMap.Alias}.{rawForeignColumnName} as {foreignMap.QualifiedTableName}.{rawForeignColumnName}";
+                        if (!columnNames.Contains(foreignColumnName))
+                        {
+                            columnNames.Add(foreignColumnName);
+                        }
+                    }
+                }
+            }
+        }
+
 
         private readonly List<string> _selectColumns;
         private SqlTableHints _tableHints;

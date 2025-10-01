@@ -14,17 +14,20 @@ namespace SujaySarma.Data.SqlServer.Attributes
         None = 0,
 
         /// <summary>
-        /// Primary key.
+        /// Primary key. 
+        /// If set, the column value is changed only during INSERTs. During other operations, it will appear in the WHERE clause only!
         /// </summary>
         PrimaryKey = 1,
 
         /// <summary>
-        /// Foreign key.
+        /// Foreign key. 
+        /// When set, causes child-reference objects to be loaded using implicit joins. Also populate TableColumn attribute's ReferencedTable and ReferencedColumns.
         /// </summary>
         Foreign = 2,
 
         /// <summary>
         /// An IDENTITY value.
+        /// If set, the column value is changed only during INSERTs. During other operations, it will appear in the WHERE clause only!
         /// </summary>
         Identity = 8
     }
