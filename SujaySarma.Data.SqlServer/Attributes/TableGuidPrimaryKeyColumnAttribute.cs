@@ -1,5 +1,7 @@
 ﻿using System;
 
+using SujaySarma.Data.Core.Constants;
+
 namespace SujaySarma.Data.SqlServer.Attributes
 {
     /// <summary>
@@ -16,6 +18,11 @@ namespace SujaySarma.Data.SqlServer.Attributes
         public TableGuidPrimaryKeyColumnAttribute(string columnName)
             : base(columnName)
         {
+            DefaultValueProviderFunction = (() => Guid.NewGuid());
+
+            base.SerialiseAsJson = false;
+            base.IncludeFor = ColumnInclusionStrategy.Inserts;
+            base.IsSearchKey = true;
         }
 
     }
