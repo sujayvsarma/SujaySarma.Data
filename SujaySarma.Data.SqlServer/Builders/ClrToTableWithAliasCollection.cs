@@ -20,7 +20,7 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// <param name="isPrimaryTable">Flag to set this as a primary table for this statement sequence.</param>
         /// <param name="navigationPropertiesDepth">Desired depth of resolution of navigation (foreign key) properties. Defaults to [1].</param>
         public ClrToTableWithAlias Add<TObject>(bool isPrimaryTable = false, int navigationPropertiesDepth = 1)
-            => Add(typeof(TObject), isPrimaryTable);
+            => Add(typeof(TObject), isPrimaryTable, navigationPropertiesDepth);
 
         /// <summary>
         /// Add a mapping for the given type.

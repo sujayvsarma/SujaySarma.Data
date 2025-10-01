@@ -53,6 +53,15 @@ namespace SujaySarma.Data.SqlServer.Builders
                 throw new ArgumentNullException(nameof(clause), "Clause cannot be null or whitespace.");
             }
 
+            // Ensure it is unique!
+            foreach(string existing in _clauses)
+            {
+                if (string.Equals(existing, clause, StringComparison.OrdinalIgnoreCase))
+                {
+                    return this;
+                }
+            }
+
             _clauses.Add(clause);
             return this;
         }
