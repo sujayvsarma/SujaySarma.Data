@@ -194,6 +194,24 @@ namespace SujaySarma.Data.SqlServer
             return new SqlContext(builder.Build());
         }
 
+        /// <summary>
+        /// Initialise with the provided connection string
+        /// </summary>
+        /// <param name="connectionString">Fully constructed connection string</param>
+        /// <returns>A usable SqlContext instance.</returns>
+        public static SqlContext WithConnectionString(string connectionString)
+            => new SqlContext(connectionString);
+
+        /// <summary>
+        /// Initialise with the provided connection string
+        /// </summary>
+        /// <param name="builder">An instance of <see cref="SqlServerConnectionStringBuilder"/></param>
+        /// <returns>A usable SqlContext instance.</returns>
+        public static SqlContext WithBuilder(SqlServerConnectionStringBuilder builder)
+            => new SqlContext(builder.Build());
+
+
+
         private readonly string _connectionString;
     }
 }
