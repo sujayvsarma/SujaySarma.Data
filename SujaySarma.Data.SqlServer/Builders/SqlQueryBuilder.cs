@@ -627,7 +627,6 @@ namespace SujaySarma.Data.SqlServer.Builders
                         }
                     }
 
-                    // column name in current table
                     string rawColumnName = member.Column.CreateQualifiedName();
                     string columnName = $"{map.Alias}.{rawColumnName} as {map.QualifiedTableName}.{rawColumnName}";
                     if (!columnNames.Contains(columnName))
