@@ -19,15 +19,16 @@
 		<PackageTags>data access,library,sql,sqlserver,sql server,sql-server,msde,azuresql,azure sql,azure,localdb,json,databases</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>9.5.8.0</AssemblyVersion>
-		<FileVersion>9.5.8.0</FileVersion>
+		<AssemblyVersion>9.5.10.0</AssemblyVersion>
+		<FileVersion>9.5.10.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
 		<IncludeSymbols>False</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>[Version 9.5.8.0] - Updated on Oct 1st 2025:
+		<PackageReleaseNotes>[Version 9.5.10.0] - Updated on Oct 1st 2025:
 ---
-(1) Using Foreign keys now add the implicit joins explicitly to generated SQL (earlier caller needed to add the joins themselves)</PackageReleaseNotes>
+(1) Added 2 new attributes `TableDateTimeAuditColumn` and `TableGuidPrimaryKey` equivalent to the base `DateTimeAuditColumn` and `GuidPrimaryKey` attributes, but these 
+SQL attributes derive from `TableColummn` attribute and not from the base `ContainerMember` attribute!</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
