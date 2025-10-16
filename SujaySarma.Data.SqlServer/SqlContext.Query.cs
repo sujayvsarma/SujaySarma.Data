@@ -141,7 +141,7 @@ namespace SujaySarma.Data.SqlServer
         /// <exception cref="Exception">Thrown if the query returned an error condition. InnerException will contain the downstream exception thrown.</exception>
         public List<TObject> QueryList<TObject>(SqlQueryBuilder query)
         {
-            return QueryList<TObject>(query);
+            return QueryList<TObject>(query.Build());
         }
 
         /// <summary>

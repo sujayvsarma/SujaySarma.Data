@@ -19,18 +19,15 @@
 		<PackageTags>data access,library,sql,sqlserver,sql server,sql-server,msde,azuresql,azure sql,azure,localdb,json,databases</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>9.5.14.0</AssemblyVersion>
-		<FileVersion>9.5.14.0</FileVersion>
+		<AssemblyVersion>9.5.15.0</AssemblyVersion>
+		<FileVersion>9.5.15.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
 		<IncludeSymbols>False</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>[Version 9.5.14.0] - Updated on Oct 1st 2025:
+		<PackageReleaseNotes>[Version 9.5.15.0] - Updated on Oct 16th 2025:
 ---
-(1) Added 2 new attributes `TableDateTimeAuditColumn` and `TableGuidPrimaryKey` equivalent to the base `DateTimeAuditColumn` and `GuidPrimaryKey` attributes, but these 
-SQL attributes derive from `TableColummn` attribute and not from the base `ContainerMember` attribute!
-(2) Fixed bug in new attributes, copying properties/settings from `DateTimeAuditColumn` and `GuidPrimaryKey` attributes.
-(3) Fixed a bug in SqlContext that did not accept a connectionstring for initialisation</PackageReleaseNotes>
+Fixed a bug in SqlContext QueryList function with the SqlQueryBuilder overload that was not overloaded correctly, resulting in recursive calls to itself eventually throwing a StackOverflowException.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
@@ -73,7 +70,7 @@ SQL attributes derive from `TableColummn` attribute and not from the base `Conta
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" Condition=" '$(TargetFramework)' == 'net8.0' " />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.2" Condition=" '$(TargetFramework)' == 'net8.0' " />
 		<PackageReference Include="SujaySarma.Data.Core" Version="9.5.0" />
 		<PackageReference Include="System.Data.SqlClient" Version="4.9.0" Condition=" '$(TargetFramework)' == 'net6.0' " />
 	</ItemGroup>
