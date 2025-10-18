@@ -196,7 +196,8 @@ namespace SujaySarma.Data.SqlServer.Builders
                             if (columnAttribute != null)
                             {
                                 string rawColumnName = foreignMember.Column.CreateQualifiedName();
-                                string columnName = $"{foreignTableMap.Alias}.{rawColumnName} as {foreignTableMap.QualifiedTableName}.{rawColumnName}";
+                                string foreignTableNameWithoutBrackets = foreignTableMap.QualifiedTableName.Replace("[", "").Replace("]", "");
+                                string columnName = $"[{foreignTableMap.Alias}].[{rawColumnName}] as [{foreignTableNameWithoutBrackets}.{rawColumnName}]";
                                 if (!foreignColumns.Contains(columnName))
                                 {
                                     foreignColumns.Add(columnName);
@@ -213,7 +214,7 @@ namespace SujaySarma.Data.SqlServer.Builders
                     string qualifiedName = column.CreateQualifiedName();
                     if (!string.IsNullOrWhiteSpace(qualifiedName))
                     {
-                        _values.Push($"{tableAliasOrName}.[{qualifiedName}]");
+                        _values.Push($"[{tableAliasOrName}].[{qualifiedName}]");
                         if (isEnum)
                         {
                             _currentEnum = propertyDataType;

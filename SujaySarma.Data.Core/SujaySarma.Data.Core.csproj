@@ -19,12 +19,13 @@
 		<PackageTags>data access,core,library,sql server,windows,registry,json,sql,sqlserver,azure,tables,databases,files,flat file,csv,txt</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>9.5.0.0</AssemblyVersion>
-		<FileVersion>9.5.0.0</FileVersion>
+		<AssemblyVersion>9.5.1.0</AssemblyVersion>
+		<FileVersion>9.5.1.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
 		<IncludeSymbols>True</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageReleaseNotes>Fixed a bug in `ContainerMemberAttribute` that was expected all properties to be treated as Json serialisable.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">

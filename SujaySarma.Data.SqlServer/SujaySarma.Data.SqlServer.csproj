@@ -19,13 +19,13 @@
 		<PackageTags>data access,library,sql,sqlserver,sql server,sql-server,msde,azuresql,azure sql,azure,localdb,json,databases</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>9.5.15.0</AssemblyVersion>
-		<FileVersion>9.5.15.0</FileVersion>
+		<AssemblyVersion>9.5.15.7</AssemblyVersion>
+		<FileVersion>9.5.15.7</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
 		<IncludeSymbols>False</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>[Version 9.5.15.0] - Updated on Oct 16th 2025:
+		<PackageReleaseNotes>[Version 9.5.15.7] - Updated on Oct 16th 2025:
 ---
 Fixed a bug in SqlContext QueryList function with the SqlQueryBuilder overload that was not overloaded correctly, resulting in recursive calls to itself eventually throwing a StackOverflowException.</PackageReleaseNotes>
 	</PropertyGroup>
@@ -71,7 +71,7 @@ Fixed a bug in SqlContext QueryList function with the SqlQueryBuilder overload t
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.2" Condition=" '$(TargetFramework)' == 'net8.0' " />
-		<PackageReference Include="SujaySarma.Data.Core" Version="9.5.0" />
+		<PackageReference Include="SujaySarma.Data.Core" Version="9.5.1" />
 		<PackageReference Include="System.Data.SqlClient" Version="4.9.0" Condition=" '$(TargetFramework)' == 'net6.0' " />
 	</ItemGroup>
 

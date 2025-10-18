@@ -96,9 +96,32 @@ namespace SujaySarma.Data.SqlServer
             }
 
             QueryResult dataResult = (QueryResult)result;
-            foreach(DataRow row in dataResult.Data.Tables[0].Rows)
+            foreach (DataRow row in dataResult.Data.Tables[0].Rows)
             {
                 yield return SqlDataSerialiser.Transform<TObject>(row);
+            }
+        }
+
+        /// <summary>
+        /// Execute a query and return the results as an IEnumerable collection of .NET objects.
+        /// </summary>
+        /// <param name="query">The query to execute.</param>
+        /// <param name="targetType">Type of .NET object to return.</param>
+        /// <returns>IEnumerable collection of objects.</returns>
+        /// <exception cref="Exception">Thrown if the query returned an error condition. InnerException will contain the downstream exception thrown.</exception>
+        public IEnumerable<object> QueryEnumerable(StringBuilder query, Type targetType)
+        {
+            ExecutionResult result = Query(query);
+            if (result.IsError)
+            {
+                ErrorResult error = (ErrorResult)result;
+                throw new Exception(error.Messages[0], error.Exception);
+            }
+
+            QueryResult dataResult = (QueryResult)result;
+            foreach (DataRow row in dataResult.Data.Tables[0].Rows)
+            {
+                yield return SqlDataSerialiser.Transform(row, targetType);
             }
         }
 
@@ -115,6 +138,18 @@ namespace SujaySarma.Data.SqlServer
         }
 
         /// <summary>
+        /// Execute a query and return the results as an IEnumerable collection of .NET objects.
+        /// </summary>
+        /// <param name="query">The query to execute.</param>
+        /// <param name="targetType">Type of .NET object to return.</param>
+        /// <returns>IEnumerable collection of objects.</returns>
+        /// <exception cref="Exception">Thrown if the query returned an error condition. InnerException will contain the downstream exception thrown.</exception>
+        public IEnumerable<object> QueryEnumerable(SqlQueryBuilder query, Type targetType)
+        {
+            return QueryEnumerable(query.Build(), targetType);
+        }
+
+        /// <summary>
         /// Execute a query and return the results as a List of .NET objects.
         /// </summary>
         /// <typeparam name="TObject">Type of .NET object to return.</typeparam>
@@ -124,13 +159,32 @@ namespace SujaySarma.Data.SqlServer
         public List<TObject> QueryList<TObject>(StringBuilder query)
         {
             List<TObject> list = new List<TObject>();
-            foreach(TObject obj in QueryEnumerable<TObject>(query))
+            foreach (TObject obj in QueryEnumerable<TObject>(query))
             {
                 list.Add(obj);
             }
 
             return list;
         }
+
+        /// <summary>
+        /// Execute a query and return the results as a List of .NET objects.
+        /// </summary>
+        /// <param name="query">The query to execute.</param>
+        /// <param name="targetType">Type of .NET object to return.</param>
+        /// <returns>List of objects.</returns>
+        /// <exception cref="Exception">Thrown if the query returned an error condition. InnerException will contain the downstream exception thrown.</exception>
+        public List<object> QueryList(StringBuilder query, Type targetType)
+        {
+            List<object> list = new List<object>();
+            foreach (object obj in QueryEnumerable(query, targetType))
+            {
+                list.Add(obj);
+            }
+
+            return list;
+        }
+
 
         /// <summary>
         /// Execute a query and return the results as a List of .NET objects.
@@ -142,6 +196,18 @@ namespace SujaySarma.Data.SqlServer
         public List<TObject> QueryList<TObject>(SqlQueryBuilder query)
         {
             return QueryList<TObject>(query.Build());
+        }
+
+        /// <summary>
+        /// Execute a query and return the results as a List of .NET objects.
+        /// </summary>
+        /// <param name="query">The query to execute.</param>
+        /// <param name="targetType">Type of .NET object to return.</param>
+        /// <returns>List of objects.</returns>
+        /// <exception cref="Exception">Thrown if the query returned an error condition. InnerException will contain the downstream exception thrown.</exception>
+        public List<object> QueryList(SqlQueryBuilder query, Type targetType)
+        {
+            return QueryList(query.Build(), targetType);
         }
 
         /// <summary>
@@ -170,6 +236,31 @@ namespace SujaySarma.Data.SqlServer
         }
 
         /// <summary>
+        /// Execute a query and returns the only/first row as a <paramref name="targetType"/> instance. If no data was returned, returns a NULL.
+        /// </summary>
+        /// <param name="query">The query to execute.</param>
+        /// <param name="targetType">Type of .NET object to return.</param>
+        /// <returns>Single instance of type <paramref name="targetType"/> or NULL.</returns>
+        /// <exception cref="Exception">Thrown if the query returned an error condition. InnerException will contain the downstream exception thrown.</exception>
+        public object? Query(StringBuilder query, Type targetType)
+        {
+            ExecutionResult result = Query(query);
+            if (result.IsError)
+            {
+                ErrorResult error = (ErrorResult)result;
+                throw new Exception(error.Messages[0], error.Exception);
+            }
+
+            QueryResult dataResult = (QueryResult)result;
+            if ((dataResult.Data.Tables.Count >= 1) && (dataResult.Data.Tables[0].Rows.Count >= 1))
+            {
+                return SqlDataSerialiser.Transform(dataResult.Data.Tables[0].Rows[0], targetType);
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Execute a query and returns the only/first row as a <typeparamref name="TObject"/> instance. If no data was returned, returns a NULL.
         /// </summary>
         /// <typeparam name="TObject">Type of .NET object to return.</typeparam>
@@ -179,6 +270,18 @@ namespace SujaySarma.Data.SqlServer
         public TObject? Query<TObject>(SqlQueryBuilder query)
         {
             return Query<TObject>(query.Build());
+        }
+
+        /// <summary>
+        /// Execute a query and returns the only/first row as a <paramref name="targetType"/> instance. If no data was returned, returns a NULL.
+        /// </summary>
+        /// <param name="query">The query to execute.</param>
+        /// <param name="targetType">Type of .NET object to return.</param>
+        /// <returns>Single instance of type <paramref name="targetType"/> or NULL.</returns>
+        /// <exception cref="Exception">Thrown if the query returned an error condition. InnerException will contain the downstream exception thrown.</exception>
+        public object? Query(SqlQueryBuilder query, Type targetType)
+        {
+            return Query(query.Build(), targetType);
         }
 
         /// <summary>
@@ -272,6 +375,29 @@ namespace SujaySarma.Data.SqlServer
         /// <summary>
         /// Execute a query and return the results as an IAsyncEnumerable collection of .NET objects.
         /// </summary>
+        /// <param name="query">The query to execute.</param>
+        /// <param name="targetType">Type of .NET object to return.</param>
+        /// <returns>IAsyncEnumerable collection of objects.</returns>
+        /// <exception cref="Exception">Thrown if the query returned an error condition. InnerException will contain the downstream exception thrown.</exception>
+        public async IAsyncEnumerable<object> QueryEnumerableAsync(StringBuilder query, Type targetType)
+        {
+            ExecutionResult result = await QueryAsync(query);
+            if (result.IsError)
+            {
+                ErrorResult error = (ErrorResult)result;
+                throw new Exception(error.Messages[0], error.Exception);
+            }
+
+            QueryResult dataResult = (QueryResult)result;
+            foreach (DataRow row in dataResult.Data.Tables[0].Rows)
+            {
+                yield return SqlDataSerialiser.Transform(row, targetType);
+            }
+        }
+
+        /// <summary>
+        /// Execute a query and return the results as an IAsyncEnumerable collection of .NET objects.
+        /// </summary>
         /// <typeparam name="TObject">Type of .NET object to return.</typeparam>
         /// <param name="query">The query to execute.</param>
         /// <returns>IAsyncEnumerable collection of objects.</returns>
@@ -279,6 +405,21 @@ namespace SujaySarma.Data.SqlServer
         public async IAsyncEnumerable<TObject> QueryEnumerableAsync<TObject>(SqlQueryBuilder query)
         {
             await foreach (var item in QueryEnumerableAsync<TObject>(query.Build()))
+            {
+                yield return item;
+            }
+        }
+
+        /// <summary>
+        /// Execute a query and return the results as an IAsyncEnumerable collection of .NET objects.
+        /// </summary>
+        /// <param name="query">The query to execute.</param>
+        /// <param name="targetType">Type of .NET object to return.</param>
+        /// <returns>IAsyncEnumerable collection of objects.</returns>
+        /// <exception cref="Exception">Thrown if the query returned an error condition. InnerException will contain the downstream exception thrown.</exception>
+        public async IAsyncEnumerable<object> QueryEnumerableAsync(SqlQueryBuilder query, Type targetType)
+        {
+            await foreach (var item in QueryEnumerableAsync(query.Build(), targetType))
             {
                 yield return item;
             }
@@ -305,6 +446,24 @@ namespace SujaySarma.Data.SqlServer
         /// <summary>
         /// Execute a query and return the results as a List of .NET objects.
         /// </summary>
+        /// <param name="query">The query to execute.</param>
+        /// <param name="targetType">Type of .NET object to return.</param>
+        /// <returns>List of objects.</returns>
+        /// <exception cref="Exception">Thrown if the query returned an error condition. InnerException will contain the downstream exception thrown.</exception>
+        public async Task<List<object>> QueryListAsync(StringBuilder query, Type targetType)
+        {
+            List<object> list = new List<object>();
+            await foreach (object obj in QueryEnumerableAsync(query, targetType))
+            {
+                list.Add(obj);
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// Execute a query and return the results as a List of .NET objects.
+        /// </summary>
         /// <typeparam name="TObject">Type of .NET object to return.</typeparam>
         /// <param name="query">The query to execute.</param>
         /// <returns>List of objects.</returns>
@@ -312,6 +471,18 @@ namespace SujaySarma.Data.SqlServer
         public async Task<List<TObject>> QueryListAsync<TObject>(SqlQueryBuilder query)
         {
             return await QueryListAsync<TObject>(query.Build());
+        }
+
+        /// <summary>
+        /// Execute a query and return the results as a List of .NET objects.
+        /// </summary>
+        /// <param name="query">The query to execute.</param>
+        /// <param name="targetType">Type of .NET object to return.</param>
+        /// <returns>List of objects.</returns>
+        /// <exception cref="Exception">Thrown if the query returned an error condition. InnerException will contain the downstream exception thrown.</exception>
+        public async Task<List<object>> QueryListAsync(SqlQueryBuilder query, Type targetType)
+        {
+            return await QueryListAsync(query.Build(), targetType);
         }
 
         /// <summary>
@@ -340,6 +511,31 @@ namespace SujaySarma.Data.SqlServer
         }
 
         /// <summary>
+        /// Execute a query and returns the only/first row as a <paramref name="targetType"/> instance. If no data was returned, returns a NULL.
+        /// </summary>
+        /// <param name="query">The query to execute.</param>
+        /// <param name="targetType">Type of .NET object to return.</param>
+        /// <returns>Single instance of type <paramref name="targetType"/> or NULL.</returns>
+        /// <exception cref="Exception">Thrown if the query returned an error condition. InnerException will contain the downstream exception thrown.</exception>
+        public async Task<object?> QueryAsync(StringBuilder query, Type targetType)
+        {
+            ExecutionResult result = await QueryAsync(query);
+            if (result.IsError)
+            {
+                ErrorResult error = (ErrorResult)result;
+                throw new Exception(error.Messages[0], error.Exception);
+            }
+
+            QueryResult dataResult = (QueryResult)result;
+            if ((dataResult.Data.Tables.Count >= 1) && (dataResult.Data.Tables[0].Rows.Count >= 1))
+            {
+                return SqlDataSerialiser.Transform(dataResult.Data.Tables[0].Rows[0], targetType);
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Execute a query and returns the only/first row as a <typeparamref name="TObject"/> instance. If no data was returned, returns a NULL.
         /// </summary>
         /// <typeparam name="TObject">Type of .NET object to return.</typeparam>
@@ -349,6 +545,18 @@ namespace SujaySarma.Data.SqlServer
         public async Task<TObject?> QueryAsync<TObject>(SqlQueryBuilder query)
         {
             return await QueryAsync<TObject>(query.Build());
+        }
+
+        /// <summary>
+        /// Execute a query and returns the only/first row as a <paramref name="targetType"/> instance. If no data was returned, returns a NULL.
+        /// </summary>
+        /// <param name="query">The query to execute.</param>
+        /// <param name="targetType">Type of .NET object to return.</param>
+        /// <returns>Single instance of type <paramref name="targetType"/> or NULL.</returns>
+        /// <exception cref="Exception">Thrown if the query returned an error condition. InnerException will contain the downstream exception thrown.</exception>
+        public async Task<object?> QueryAsync(SqlQueryBuilder query, Type targetType)
+        {
+            return await QueryAsync(query.Build(), targetType);
         }
     }
 }

@@ -34,6 +34,28 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// <summary>
         /// Register a JOIN between two objects/tables.
         /// </summary>
+        /// <param name="leftTable">Type of CLR object for the LEFT table in the join</param>
+        /// <param name="rightTable">Type of CLR object for the RIGHT table in the join</param>
+        /// <param name="joinCondition">Condition to join the tables</param>
+        /// <param name="type">The type of join to perform. Default: INNER JOIN</param>
+        /// <returns>Self-instance</returns>
+        public SqlJoin Add(Type leftTable, Type rightTable, Expression joinCondition, TypesOfJoinsEnum type = TypesOfJoinsEnum.Inner)
+        {
+            if (base.Maps.Get(leftTable) == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(leftTable), "The 'Left' marked table-object should have already been added, or must be a non-SQL persisted object like a runtime variable or constant.");
+            }
+
+            ClrToTableWithAlias rightTableMap = base.Maps.Add(rightTable);
+            string conditionSql = base.ExpressionToSQL(joinCondition);
+            base.Add($"{type.ToSqlString()} {rightTableMap.QualifiedTableNameWithAlias} WITH (NOLOCK) ON {conditionSql}");
+
+            return this;
+        }
+
+        /// <summary>
+        /// Register a JOIN between two objects/tables.
+        /// </summary>
         /// <param name="rightTableName">Name of the RHS table.</param>
         /// <param name="joinCondition">Condition to join the tables</param>
         /// <param name="type">The type of join to perform. Default: INNER JOIN</param>

@@ -67,7 +67,7 @@ namespace SujaySarma.Data.Core
             Name = ((!string.IsNullOrWhiteSpace(name)) ? name : throw new ArgumentNullException(nameof(name), "Argument cannot be a Null, empty or whitespace string."));
             IncludeFor = ColumnInclusionStrategy.InsertUpdateAndDelete;
             IfEnumSerialiseAs = EnumSerializationStrategy.AsInt;
-            SerialiseAsJson = true;
+            SerialiseAsJson = false;
             IsSearchKey = false;
 
             DefaultValueProviderFunction = null;
@@ -84,7 +84,7 @@ namespace SujaySarma.Data.Core
             Name = string.Empty;
             IncludeFor = ColumnInclusionStrategy.InsertUpdateAndDelete;
             IfEnumSerialiseAs = EnumSerializationStrategy.AsInt;
-            SerialiseAsJson = true;
+            SerialiseAsJson = false;
             IsSearchKey = false;
 
             DefaultValueProviderFunction = null;

@@ -38,6 +38,35 @@ namespace SujaySarma.Data.SqlServer.Builders
             return this;
         }
 
+        /// <summary>Register a WHERE clause condition</summary>
+        /// <param name="table">Type of CLR object for object reference in condition</param>
+        /// <param name="conditions">One or more conditions in Lambda Expression form</param>
+        /// <param name="conditionAppendingOperator">Operator to append the current set of conditions to the ones already added</param>
+        /// <returns>Self-instance</returns>
+        public SqlWhere Add(Type table, Expression conditions, OperatorsToJoinConditionsEnum conditionAppendingOperator = OperatorsToJoinConditionsEnum.And)
+        {
+            base.Maps.Add(table);
+
+            AddImpl(conditions, conditionAppendingOperator);
+            return this;
+        }
+
+        /// <summary>Register a WHERE clause condition</summary>
+        /// <param name="table1">Type of CLR object for object reference in condition</param>
+        /// <param name="table2">Type of CLR object for object reference in condition</param>
+        /// <param name="conditions">One or more conditions in Lambda Expression form</param>
+        /// <param name="conditionAppendingOperator">Operator to append the current set of conditions to the ones already added</param>
+        /// <returns>Self-instance</returns>
+        public SqlWhere Add(Type table1, Type table2, Expression conditions, OperatorsToJoinConditionsEnum conditionAppendingOperator = OperatorsToJoinConditionsEnum.And)
+        {
+            base.Maps.Add(table1);
+            base.Maps.Add(table2);
+
+            AddImpl(conditions, conditionAppendingOperator);
+            return this;
+        }
+
+
         /// <summary>
         /// Implementation function for the Add() overloads
         /// </summary>

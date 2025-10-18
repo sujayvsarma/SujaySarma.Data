@@ -1,12 +1,12 @@
-﻿using SujaySarma.Data.Core.Reflection;
-using SujaySarma.Data.SqlServer.Attributes;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+
+using SujaySarma.Data.Core.Reflection;
+using SujaySarma.Data.SqlServer.Attributes;
 
 namespace SujaySarma.Data.SqlServer.Builders
 {
@@ -174,6 +174,72 @@ namespace SujaySarma.Data.SqlServer.Builders
         }
 
         /// <summary>
+        /// Add an INNER JOIN between <paramref name="leftTable"/> and <paramref name="rightTable"/>.
+        /// </summary>
+        /// <param name="leftTable">Type of .NET object for the LEFT table in the join</param>
+        /// <param name="rightTable">Type of .NET object for the RIGHT table in the join</param>
+        /// <param name="joinCondition">Condition to join the tables</param>
+        /// <param name="type">The type of join to perform. Default: INNER JOIN</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder Join(Type leftTable, Type rightTable, Expression joinCondition, TypesOfJoinsEnum type = TypesOfJoinsEnum.Inner)
+        {
+            _joins.Add(leftTable, rightTable, joinCondition, type);
+            return this;
+        }
+
+        /// <summary>
+        /// Add an INNER JOIN between <paramref name="leftTable"/> and <paramref name="rightTable"/>.
+        /// </summary>
+        /// <param name="leftTable">Type of .NET object for the LEFT table in the join</param>
+        /// <param name="rightTable">Type of .NET object for the RIGHT table in the join</param>
+        /// <param name="joinCondition">Condition to join the tables</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder InnerJoin(Type leftTable, Type rightTable, Expression joinCondition)
+        {
+            _joins.Add(leftTable, rightTable, joinCondition, TypesOfJoinsEnum.Inner);
+            return this;
+        }
+
+        /// <summary>
+        /// Add a LEFT JOIN between <paramref name="leftTable"/> and <paramref name="rightTable"/>.
+        /// </summary>
+        /// <param name="leftTable">Type of .NET object for the LEFT table in the join</param>
+        /// <param name="rightTable">Type of .NET object for the RIGHT table in the join</param>
+        /// <param name="joinCondition">Condition to join the tables</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder LeftJoin(Type leftTable, Type rightTable, Expression joinCondition)
+        {
+            _joins.Add(leftTable, rightTable, joinCondition, TypesOfJoinsEnum.Left);
+            return this;
+        }
+
+        /// <summary>
+        /// Add a RIGHT JOIN between <paramref name="leftTable"/> and <paramref name="rightTable"/>.
+        /// </summary>
+        /// <param name="leftTable">Type of .NET object for the LEFT table in the join</param>
+        /// <param name="rightTable">Type of .NET object for the RIGHT table in the join</param>
+        /// <param name="joinCondition">Condition to join the tables</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder RightJoin(Type leftTable, Type rightTable, Expression joinCondition)
+        {
+            _joins.Add(leftTable, rightTable, joinCondition, TypesOfJoinsEnum.Right);
+            return this;
+        }
+
+        /// <summary>
+        /// Add a FULL JOIN between <paramref name="leftTable"/> and <paramref name="rightTable"/>.
+        /// </summary>
+        /// <param name="leftTable">Type of .NET object for the LEFT table in the join</param>
+        /// <param name="rightTable">Type of .NET object for the RIGHT table in the join</param>
+        /// <param name="joinCondition">Condition to join the tables</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder FullJoin(Type leftTable, Type rightTable, Expression joinCondition)
+        {
+            _joins.Add(leftTable, rightTable, joinCondition, TypesOfJoinsEnum.Full);
+            return this;
+        }
+
+        /// <summary>
         /// Add a JOIN between the primary table (added via the <see cref="From{TPrimaryTableObject}"/> function) and the free-string table named by <paramref name="rightTableName"/>.
         /// </summary>
         /// <param name="rightTableName">Name of the table joining with.</param>
@@ -297,6 +363,113 @@ namespace SujaySarma.Data.SqlServer.Builders
             return GroupBy<TTable>(selector, having, TypesOfGroupByEnum.EmptyGroup);
         }
 
+        /// <summary>
+        /// Add one or more GROUP BY column(s) to the collection. This function can be used only once as a SQL query may contain only one GROUP BY clause!
+        /// </summary>
+        /// <param name="table">Type of .NET object</param>
+        /// <param name="selector">Linq expression to select the column(s) for the grouping.</param>
+        /// <param name="having">Linq expression to select the conditions for the HAVING clause. NULL to exclude the HAVING.</param>
+        /// <param name="type">Type of GROUP BY to generate</param>
+        public SqlQueryBuilder GroupBy(Type table, Expression selector, Expression? having = null, TypesOfGroupByEnum type = TypesOfGroupByEnum.Standard)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (!string.IsNullOrWhiteSpace(_groupBy))
+            {
+                throw new InvalidOperationException("GROUP BY may be set only once.");
+            }
+
+            base.Add(table);
+            string groupByColumns = ExpressionToSQL(selector);
+            string? havingCondition = ((having != null) ? ExpressionToSQL(having) : null);
+
+            switch (type)
+            {
+                case TypesOfGroupByEnum.Standard:
+                    sb.Append($"GROUP BY {groupByColumns}");
+                    if (havingCondition != null)
+                    {
+                        sb.Append($" HAVING {havingCondition}");
+                    }
+                    break;
+
+                case TypesOfGroupByEnum.Rollup:
+                    sb.Append($"GROUP BY ROLLUP({groupByColumns})");
+                    if (havingCondition != null)
+                    {
+                        sb.Append($" HAVING {havingCondition}");
+                    }
+                    break;
+
+                case TypesOfGroupByEnum.Cube:
+                    sb.Append($"GROUP BY CUBE({groupByColumns})");
+                    if (havingCondition != null)
+                    {
+                        sb.Append($" HAVING {havingCondition}");
+                    }
+                    break;
+
+                case TypesOfGroupByEnum.GroupingSets:
+                    sb.Append($"GROUP BY GROUPING SETS ({groupByColumns})");
+                    if (havingCondition != null)
+                    {
+                        sb.Append($" HAVING {havingCondition}");
+                    }
+                    break;
+
+                case TypesOfGroupByEnum.EmptyGroup:
+                    sb.Append("GROUP BY ()");
+                    break;
+            }
+
+            _groupBy = sb.ToString();
+
+            return this;
+        }
+
+        /// <summary>
+        /// Add one or more GROUP BY ROLLUP column(s) to the collection. This function can be used only once as a SQL query may contain only one GROUP BY clause!
+        /// </summary>
+        /// <param name="table">Type of .NET object</param>
+        /// <param name="selector">Linq expression to select the column(s) for the grouping.</param>
+        /// <param name="having">Linq expression to select the conditions for the HAVING clause. NULL to exclude the HAVING.</param>
+        public SqlQueryBuilder GroupByRollup(Type table, Expression selector, Expression? having = null)
+        {
+            return GroupBy(table, selector, having, TypesOfGroupByEnum.Rollup);
+        }
+
+        /// <summary>
+        /// Add one or more GROUP BY CUBE column(s) to the collection. This function can be used only once as a SQL query may contain only one GROUP BY clause!
+        /// </summary>
+        /// <param name="table">Type of .NET object</param>
+        /// <param name="selector">Linq expression to select the column(s) for the grouping.</param>
+        /// <param name="having">Linq expression to select the conditions for the HAVING clause. NULL to exclude the HAVING.</param>
+        public SqlQueryBuilder GroupByCube(Type table, Expression selector, Expression? having = null)
+        {
+            return GroupBy(table, selector, having, TypesOfGroupByEnum.Cube);
+        }
+
+        /// <summary>
+        /// Add one or more GROUP BY GROUPING SETS column(s) to the collection. This function can be used only once as a SQL query may contain only one GROUP BY clause!
+        /// </summary>
+        /// <param name="table">Type of .NET object</param>
+        /// <param name="selector">Linq expression to select the column(s) for the grouping.</param>
+        /// <param name="having">Linq expression to select the conditions for the HAVING clause. NULL to exclude the HAVING.</param>
+        public SqlQueryBuilder GroupByGroupingSets(Type table, Expression selector, Expression? having = null)
+        {
+            return GroupBy(table, selector, having, TypesOfGroupByEnum.GroupingSets);
+        }
+
+        /// <summary>
+        /// Add one or more GROUP BY () column(s) to the collection. This function can be used only once as a SQL query may contain only one GROUP BY clause!
+        /// </summary>
+        /// <param name="table">Type of .NET object</param>
+        /// <param name="selector">Linq expression to select the column(s) for the grouping.</param>
+        /// <param name="having">Linq expression to select the conditions for the HAVING clause. NULL to exclude the HAVING.</param>
+        public SqlQueryBuilder GroupByEmpty(Type table, Expression selector, Expression? having = null)
+        {
+            return GroupBy(table, selector, having, TypesOfGroupByEnum.EmptyGroup);
+        }
+
         #endregion
 
         #region Order By
@@ -343,6 +516,47 @@ namespace SujaySarma.Data.SqlServer.Builders
             return OrderBy<TTable, TResult>(expression, SortOrderEnum.DESC);
         }
 
+
+        /// <summary>
+        /// Add an expression to order the rows of the result by, also specifying the direction of the ordering.
+        /// </summary>
+        /// <param name="table">Type of .NET object for object reference in condition</param>
+        /// <param name="expression">Selector for parameters of the ORDER BY</param>
+        /// <param name="direction">Direction of sorting</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder OrderBy(Type table, Expression expression, SortOrderEnum direction = SortOrderEnum.ASC)
+        {
+            base.Add(table);
+
+            string column = base.ExpressionToSQL(expression);
+            string order = (direction != SortOrderEnum.DESC ? "ASC" : "DESC");
+
+            _orderBy.Append($"{column} {order} ");
+            return this;
+        }
+
+        /// <summary>
+        /// Add an expression to order the rows of the result by, using Ascending (ASC) order.
+        /// </summary>
+        /// <param name="table">Type of .NET object for object reference in condition</param>
+        /// <param name="expression">Selector for parameters of the ORDER BY</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder OrderByASC(Type table, Expression expression)
+        {
+            return OrderBy(table, expression, SortOrderEnum.ASC);
+        }
+
+        /// <summary>
+        /// Add an expression to order the rows of the result by, using Descending (DESC) order.
+        /// </summary>
+        /// <param name="table">Type of .NET object for object reference in condition</param>
+        /// <param name="expression">Selector for parameters of the ORDER BY</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder OrderByDESC(Type table, Expression expression)
+        {
+            return OrderBy(table, expression, SortOrderEnum.DESC);
+        }
+
         #endregion
 
         #region Where
@@ -363,6 +577,19 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// <summary>
         /// Add a condition that helps filter the rows of the returned dataset, also specifying the operator (AND, OR) that joins this condition to ones already added.
         /// </summary>
+        /// <param name="table">Type of .NET object for object reference in condition</param>
+        /// <param name="conditions">One or more conditions in Lambda Expression form</param>
+        /// <param name="conditionAppendingOperator">Operator to append the current set of conditions to the ones already added</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder Where(Type table, Expression conditions, OperatorsToJoinConditionsEnum conditionAppendingOperator = OperatorsToJoinConditionsEnum.And)
+        {
+            _where.Add(table, conditions, conditionAppendingOperator);
+            return this;
+        }
+
+        /// <summary>
+        /// Add a condition that helps filter the rows of the returned dataset, also specifying the operator (AND, OR) that joins this condition to ones already added.
+        /// </summary>
         /// <typeparam name="TTable1">Type of .NET object for object reference in condition</typeparam>
         /// <typeparam name="TTable2">Type of .NET object for object reference in condition</typeparam>
         /// <param name="conditions">One or more conditions in Lambda Expression form</param>
@@ -371,6 +598,20 @@ namespace SujaySarma.Data.SqlServer.Builders
         public SqlQueryBuilder Where<TTable1, TTable2>(Expression<Func<TTable1, TTable2, bool>> conditions, OperatorsToJoinConditionsEnum conditionAppendingOperator = OperatorsToJoinConditionsEnum.And)
         {
             _where.Add<TTable1, TTable2>(conditions, conditionAppendingOperator);
+            return this;
+        }
+
+        /// <summary>
+        /// Add a condition that helps filter the rows of the returned dataset, also specifying the operator (AND, OR) that joins this condition to ones already added.
+        /// </summary>
+        /// <param name="table1">Type of .NET object for object reference in condition</param>
+        /// <param name="table2">Type of .NET object for object reference in condition</param>
+        /// <param name="conditions">One or more conditions in Lambda Expression form</param>
+        /// <param name="conditionAppendingOperator">Operator to append the current set of conditions to the ones already added</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder Where(Type table1, Type table2, Expression conditions, OperatorsToJoinConditionsEnum conditionAppendingOperator = OperatorsToJoinConditionsEnum.And)
+        {
+            _where.Add(table1, table2, conditions, conditionAppendingOperator);
             return this;
         }
 
@@ -389,6 +630,18 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// <summary>
         /// Add a condition that helps filter the rows of the returned dataset, joining this condition to ones already added using the OR operator.
         /// </summary>
+        /// <param name="table">Type of .NET object for object reference in condition</param>
+        /// <param name="conditions">One or more conditions in Lambda Expression form</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder OrWhere(Type table, Expression conditions)
+        {
+            _where.Add(table, conditions, OperatorsToJoinConditionsEnum.Or);
+            return this;
+        }
+
+        /// <summary>
+        /// Add a condition that helps filter the rows of the returned dataset, joining this condition to ones already added using the OR operator.
+        /// </summary>
         /// <typeparam name="TTable1">Type of .NET object for object reference in condition</typeparam>
         /// <typeparam name="TTable2">Type of .NET object for object reference in condition</typeparam>
         /// <param name="conditions">One or more conditions in Lambda Expression form</param>
@@ -396,6 +649,19 @@ namespace SujaySarma.Data.SqlServer.Builders
         public SqlQueryBuilder OrWhere<TTable1, TTable2>(Expression<Func<TTable1, TTable2, bool>> conditions)
         {
             _where.Add<TTable1, TTable2>(conditions, OperatorsToJoinConditionsEnum.Or);
+            return this;
+        }
+
+        /// <summary>
+        /// Add a condition that helps filter the rows of the returned dataset, joining this condition to ones already added using the OR operator.
+        /// </summary>
+        /// <param name="table1">Type of .NET object for object reference in condition</param>
+        /// <param name="table2">Type of .NET object for object reference in condition</param>
+        /// <param name="conditions">One or more conditions in Lambda Expression form</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder OrWhere(Type table1, Type table2, Expression conditions)
+        {
+            _where.Add(table1, table2, conditions, OperatorsToJoinConditionsEnum.Or);
             return this;
         }
 
@@ -414,6 +680,18 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// <summary>
         /// Add a condition that helps filter the rows of the returned dataset, joining this condition to ones already added using the AND operator.
         /// </summary>
+        /// <param name="table">Type of .NET object for object reference in condition</param>
+        /// <param name="conditions">One or more conditions in Lambda Expression form</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder AndWhere(Type table, Expression conditions)
+        {
+            _where.Add(table, conditions, OperatorsToJoinConditionsEnum.And);
+            return this;
+        }
+
+        /// <summary>
+        /// Add a condition that helps filter the rows of the returned dataset, joining this condition to ones already added using the AND operator.
+        /// </summary>
         /// <typeparam name="TTable1">Type of .NET object for object reference in condition</typeparam>
         /// <typeparam name="TTable2">Type of .NET object for object reference in condition</typeparam>
         /// <param name="conditions">One or more conditions in Lambda Expression form</param>
@@ -421,6 +699,19 @@ namespace SujaySarma.Data.SqlServer.Builders
         public SqlQueryBuilder AndWhere<TTable1, TTable2>(Expression<Func<TTable1, TTable2, bool>> conditions)
         {
             _where.Add<TTable1, TTable2>(conditions, OperatorsToJoinConditionsEnum.And);
+            return this;
+        }
+
+        /// <summary>
+        /// Add a condition that helps filter the rows of the returned dataset, joining this condition to ones already added using the AND operator.
+        /// </summary>
+        /// <param name="table1">Type of .NET object for object reference in condition</param>
+        /// <param name="table2">Type of .NET object for object reference in condition</param>
+        /// <param name="conditions">One or more conditions in Lambda Expression form</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder AndWhere(Type table1, Type table2, Expression conditions)
+        {
+            _where.Add(table1, table2, conditions, OperatorsToJoinConditionsEnum.And);
             return this;
         }
 
@@ -436,6 +727,19 @@ namespace SujaySarma.Data.SqlServer.Builders
         public SqlQueryBuilder Into<TTable2>()
         {
             ClrToTableWithAlias map = base.Add<TTable2>(false);
+            _intoTable = map.QualifiedTableName;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Specify the name of the dynamically created table that the rows are to be inserted into.
+        /// </summary>
+        /// <param name="table2">Type of .NET object of the newly created table (to be inserted into).</param>
+        /// <returns>Self-instance.</returns>
+        public SqlQueryBuilder Into(Type table2)
+        {
+            ClrToTableWithAlias map = base.Add(table2, false);
             _intoTable = map.QualifiedTableName;
 
             return this;
@@ -481,7 +785,7 @@ namespace SujaySarma.Data.SqlServer.Builders
         /// <returns>Self-instance</returns>
         public SqlQueryBuilder Select<TObject>(params Expression<Func<TObject, object>>[] selectors)
         {
-            // We don't need to call SelectImpl() for this version,
+            // We don't need to call BuildColumnNames() for this version,
             // because SqlLambdaVisitor's VisitMember already takes care of foreign key maps.
 
             base.Map.Add<TObject>();
@@ -500,6 +804,18 @@ namespace SujaySarma.Data.SqlServer.Builders
         public SqlQueryBuilder Select<TObject>()
         {
             ClrToTableWithAlias map = base.Map.Add<TObject>();
+            BuildColumnNames(map, Attributes.KeyTypesEnum.None, _selectColumns);
+            return this;
+        }
+
+        /// <summary>
+        /// Specify that all of the eligible columns from the specified <paramref name="type"/> object are to be selected.
+        /// </summary>
+        /// <param name="type">Type of .NET class, structure or record</param>
+        /// <returns>Self-instance</returns>
+        public SqlQueryBuilder Select(Type type)
+        {
+            ClrToTableWithAlias map = base.Map.Add(type);
             BuildColumnNames(map, Attributes.KeyTypesEnum.None, _selectColumns);
             return this;
         }
@@ -579,6 +895,16 @@ namespace SujaySarma.Data.SqlServer.Builders
             => new SqlQueryBuilder(typeof(TPrimaryTableObject));
 
         /// <summary>
+        /// Defines the primary .NET object and its backing SQL table that shouldbe used for this query. 
+        /// All unqualified column references are deemed to be homed in this object/table.
+        /// </summary>
+        /// <param name="primaryTableObject">Type of primary .NET object.</param>
+        /// <returns>A new instance of the SqlQueryBuilder.</returns>
+        public static SqlQueryBuilder From(Type primaryTableObject)
+            => new SqlQueryBuilder(primaryTableObject);
+
+
+        /// <summary>
         /// Initialiser. Consciously private to avoid anyone using the constructor-route!
         /// </summary>
         /// <param name="typeOfFromTable">Type of the primary table</param>
@@ -596,7 +922,7 @@ namespace SujaySarma.Data.SqlServer.Builders
         }
 
         /// <summary>
-        /// Retrieve a list of column names (THIS IS CALLED FROM <see cref="SqlQueryBuilder"/>)
+        /// Retrieve a list of column names
         /// </summary>
         /// <param name="map">Discovered object.</param>
         /// <param name="skipFlags">Any columns with the mentioned flags (HasFlags) will be skipped.</param>
@@ -628,7 +954,8 @@ namespace SujaySarma.Data.SqlServer.Builders
                     }
 
                     string rawColumnName = member.Column.CreateQualifiedName();
-                    string columnName = $"{map.Alias}.{rawColumnName} as {map.QualifiedTableName}.{rawColumnName}";
+                    string tableNameWithoutBrackets = map.QualifiedTableName.Replace("[", "").Replace("]", "");
+                    string columnName = $"[{map.Alias}].[{rawColumnName}] as [{tableNameWithoutBrackets}.{rawColumnName}]";
                     if (!columnNames.Contains(columnName))
                     {
                         columnNames.Add(columnName);
@@ -647,11 +974,12 @@ namespace SujaySarma.Data.SqlServer.Builders
                         // Add the implicit join explicitly
                         _joins.Add(
                                 foreignMap.QualifiedTableName,
-                                $"{map.Alias}.[{rawColumnName}] = {foreignMap.Alias}.{rawForeignColumnName}",
+                                $"[{map.Alias}].[{rawColumnName}] = [{foreignMap.Alias}].{rawForeignColumnName}",
                                 TypesOfJoinsEnum.Inner
                             );
-                        
-                        string foreignColumnName = $"{foreignMap.Alias}.{rawForeignColumnName} as {foreignMap.QualifiedTableName}.{rawForeignColumnName}";
+
+                        string foreignTableNameWithoutBrackets = foreignMap.QualifiedTableName.Replace("[", "").Replace("]", "");
+                        string foreignColumnName = $"[{foreignMap.Alias}].[{rawForeignColumnName}] as [{foreignTableNameWithoutBrackets}.{rawForeignColumnName}]";
                         if (!columnNames.Contains(foreignColumnName))
                         {
                             columnNames.Add(foreignColumnName);
