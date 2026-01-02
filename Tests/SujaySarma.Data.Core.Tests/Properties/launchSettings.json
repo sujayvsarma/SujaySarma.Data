@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SujaySarma.Data.Core.Tests": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "SujaySarma.Data.Core.TypeDiscovery": "DISABLED"
+      }
+    }
+  }
+}

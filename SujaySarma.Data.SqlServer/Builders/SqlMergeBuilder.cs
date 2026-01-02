@@ -1,227 +1,128 @@
-﻿using System;
+﻿using SujaySarma.Data.SqlServer.Builders.Constants;
+using SujaySarma.Data.SqlServer.Builders.Merge;
+
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-namespace SujaySarma.Data.SqlServer.Builders
+
+namespace SujaySarma.Data.SqlServer.Builders;
+
+/// <summary>
+/// Helps assemble the MERGE statement, with all of its complexities, in a fluid-style.
+/// Supports: USING, WHEN MATCHED, WHEN NOT MATCHED BY TARGET, WHEN NOT MATCHED BY SOURCE, OUTPUT, WITH clauses.
+/// </summary>
+/// <typeparam name="TTarget">The <see cref="Type"/> of the target table/entity for the MERGE statement.</typeparam>
+public sealed partial class SqlMergeBuilder<TTarget> : SqlStatementBuilder
 {
+
     /// <summary>
-    /// Helps build a SQL query (MERGE) statement. 
-    /// Supports: specifying target and source tables, defining merge conditions, and handling INSERT, UPDATE, and DELETE actions.
+    /// Assembles the complete MERGE statement.
     /// </summary>
-    public sealed class SqlMergeBuilder : SqlStatementBuilder
+    /// <returns>An instance of <see cref="StringBuilder"/> containing the completed statement.</returns>
+    public override StringBuilder Build()
     {
-
-        /// <summary>
-        /// Assembles the MERGE statement and returns it as a StringBuilder instance.
-        /// </summary>
-        /// <returns>The assembled MERGE statement.</returns>
-        public override StringBuilder Build()
+        // If there is a trailing space, remove it.
+        if (_mergeBuilder[_mergeBuilder.Length - 1] is ' ')
         {
-            if (_usingQuery.Length == 0)
-            {
-                throw new InvalidOperationException("No query specified to select dataset to determine MERGE operation.");
-            }
-
-            if (_matchOperations.Count == 0)
-            {
-                throw new InvalidOperationException("No operations specified at all against MATCHED or NOT MATCHED conditions.");
-            }
-
-            StringBuilder builder = new StringBuilder();
-            builder.Append($"MERGE {_destinationTableName} ");
-            builder.Append("USING ");
-            builder.Append(_usingQuery);
-            builder.Append(' ');
-
-            foreach(WhenMatchedDo action in _matchOperations)
-            {
-                builder.Append("WHEN ");
-                if (action.Matched)
-                {
-                    builder.Append("MATCHED ");
-                }
-                else
-                {
-                    builder.Append("NOT MATCHED ");
-                }
-
-                if ((action.AdditionalCondition != null) && (action.AdditionalCondition.Length > 0))
-                {
-                    string resolve = action.AdditionalCondition.ToString();
-                    if ((resolve != "BY TARGET") && (resolve != "BY SOURCE"))
-                    {
-                        builder.Append($"AND ({resolve})");
-                    }
-                    else
-                    {
-                        builder.Append(resolve);
-                    }
-                    builder.Append(' ');
-                }
-
-                string actionSql = action.Execute.Build().ToString();
-                if (string.IsNullOrWhiteSpace(actionSql))
-                {
-                    throw new InvalidOperationException($"The action to execute for {(action.Matched ? string.Empty : "NOT ")}MATCHED is empty or invalid.");
-                }
-
-                builder.Append("THEN ");
-                builder.Append(actionSql);
-                builder.Append(' ');
-            }
-
-            builder.Append(';');
-            return builder;
+            _mergeBuilder.Remove(_mergeBuilder.Length - 1, 1);
         }
 
-
-
-        #region The query that switches between Insert/Update/Delete
-
-        /// <summary>
-        /// Provide the query or dataset that determines whether the MERGE statement executes the INSERT, UPDATE or DELETE portion.
-        /// </summary>
-        /// <param name="query">The fully-composed query as a SqlQueryBuilder.</param>
-        /// <param name="queryResultAlias">An alias to use for the dataset resulting from <paramref name="query"/></param>
-        /// <param name="filterCondition">The matching/filtering condition to be used with an "ON" sub-clause within the USING clause.</param>
-        /// <returns>Self-instance</returns>
-        public SqlMergeBuilder Using(SqlQueryBuilder query, string queryResultAlias = "TGT", string? filterCondition = null)
+        if (_mergeBuilder[_mergeBuilder.Length - 1] is not ';')
         {
-            _usingQuery = query.Build();
-            _usingQuery.Append($" AS {queryResultAlias}");
-            if (! string.IsNullOrWhiteSpace(filterCondition))
-            {
-                _usingQuery.Append($" ON ({filterCondition})");
-            }
-            return this;
+            _mergeBuilder.Append(';');
         }
 
-        /// <summary>
-        /// Provide the query or dataset that determines whether the MERGE statement executes the INSERT, UPDATE or DELETE portion.
-        /// </summary>
-        /// <param name="query">The fully-composed query as a StringBuilder.</param>
-        /// <param name="queryResultAlias">An alias to use for the dataset resulting from <paramref name="query"/></param>
-        /// <param name="filterCondition">The matching/filtering condition to be used with an "ON" sub-clause within the USING clause.</param>
-        /// <returns>Self-instance</returns>
-        public SqlMergeBuilder Using(StringBuilder query, string queryResultAlias = "TGT", string? filterCondition = null)
-        {
-            _usingQuery = query;
-            _usingQuery.Append($" AS {queryResultAlias}");
-            if (! string.IsNullOrWhiteSpace(filterCondition))
-            {
-                _usingQuery.Append($" ON ({filterCondition})");
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Provide the query or dataset that determines whether the MERGE statement executes the INSERT, UPDATE or DELETE portion.
-        /// </summary>
-        /// <param name="query">The fully-composed query as a free-form string.</param>
-        /// <param name="queryResultAlias">An alias to use for the dataset resulting from <paramref name="query"/></param>
-        /// <param name="filterCondition">The matching/filtering condition to be used with an "ON" sub-clause within the USING clause.</param>
-        /// <returns>Self-instance</returns>
-        public SqlMergeBuilder Using(string query, string queryResultAlias = "TGT", string? filterCondition = null)
-        {
-            _usingQuery = new StringBuilder(query);
-            _usingQuery.Append($" AS {queryResultAlias}");
-            if (! string.IsNullOrWhiteSpace(filterCondition))
-            {
-                _usingQuery.Append($" ON ({filterCondition})");
-            }
-            return this;
-        }
-
-        #endregion
-
-        #region Primary clauses
-
-        /// <summary>
-        /// Specifies the table that holds the data to be merged.
-        /// </summary>
-        /// <typeparam name="TTable">Type of .NET object that maps to this table.</typeparam>
-        /// <returns>A newly created instance of SqlMergeBuilder</returns>
-        public static SqlMergeBuilder Table<TTable>()
-            => Table(typeof(TTable));
-
-        /// <summary>
-        /// Specifies the table that holds the data to be merged.
-        /// </summary>
-        /// <param name="tableType">Type of .NET object that maps to this table.</param>
-        /// <returns>A newly created instance of SqlMergeBuilder</returns>
-        public static SqlMergeBuilder Table(Type tableType)
-        {
-            SqlMergeBuilder builder = new SqlMergeBuilder();
-            ClrToTableWithAlias map = builder.Map.Add(tableType, true);
-            builder._destinationTableName = $"{map.QualifiedTableName} AS {map.Alias}";
-            return builder;
-        }
-
-        /// <summary>
-        /// Specifies the table that holds the data to be merged.
-        /// </summary>
-        /// <param name="tableName">Name of the table.</param>
-        /// <param name="tableAlias">A shorter name or alias for the table.</param>
-        /// <returns>A newly created instance of SqlMergeBuilder</returns>
-        public static SqlMergeBuilder Table(string tableName, string tableAlias)
-        {
-            SqlMergeBuilder builder = new SqlMergeBuilder
-            {
-                _destinationTableName = $"{tableName} AS {tableAlias}"
-            };
-            return builder;
-        }
-
-        #endregion
-
-
-        /// <summary>
-        /// Private constructor
-        /// </summary>
-        private SqlMergeBuilder()
-            : base()
-        {
-            _destinationTableName = default!;
-            _usingQuery = default!;
-            _matchOperations = new List<WhenMatchedDo>();
-        }
-
-        private string _destinationTableName;
-        private StringBuilder _usingQuery;
-        private readonly List<WhenMatchedDo> _matchOperations;
-
-        /// <summary>
-        /// A structured manner to keep track of what to do 
-        /// when conditions match (or not)
-        /// </summary>
-        private class WhenMatchedDo
-        {
-            /// <summary>
-            /// When a provided condition matches.
-            /// </summary>
-            public bool Matched
-            {
-                get; set;
-
-            } = false;
-
-            /// <summary>
-            /// An additional filter or condition to apply when matched/not.
-            /// </summary>
-            public StringBuilder? AdditionalCondition
-            {
-                get; set;
-
-            } = null;
-
-            /// <summary>
-            /// The statement to execute
-            /// </summary>
-            public SqlStatementBuilder Execute
-            {
-                get; set;
-
-            } = default!;
-        }
+        return _mergeBuilder;
     }
+
+    /// <summary>
+    /// Create a new instance of the SqlMergeBuilder, and return the UsingBuilder to continue 
+    /// building the MERGE statement.
+    /// </summary>
+    /// <param name="lockingHint">SQL LOCK hints for the <typeparamref name="TTarget"/> table. HOLDLOCK/SERIALIZABLE is recommended, though 
+    /// TABLOCK, UPDLOCK, XLOCK can also be taken. Be mindful that the MERGE statement has potential to cause really ugly concurrency issues.</param>
+    /// <param name="top">If specified, limits the number of rows affected by the MERGE statement to the provided count.</param>
+    /// <param name="topIsPercent">If true, indicates <paramref name="top"/> is a percent value.</param>
+    /// <returns>An instance of a <see cref="UsingBuilder{TTarget}"/> to continue building the MERGE statement.</returns>
+    public static UsingBuilder<TTarget> Create(SqlHint lockingHint = SqlHint.HoldLock, uint? top = null, bool topIsPercent = false)
+    {
+        List<SqlHint> lockHints = new List<SqlHint>();
+        if (!lockHints.TryAdd(lockingHint, SqlStatementType.Merge, out string? errorMessage))
+        {
+            throw new ArgumentException($"One or more hints are not valid for statement type 'MERGE': {errorMessage}", nameof(lockingHint));
+        }
+
+        if (topIsPercent && (top > 100))
+        {
+            throw new ArgumentOutOfRangeException(nameof(top), $"Count cannot be greater than 100 when {nameof(topIsPercent)} is true.");
+        }
+
+        SqlMergeBuilder<TTarget> builder = new SqlMergeBuilder<TTarget>(lockHints, top, topIsPercent);
+        return builder._usingBuilder;
+    }
+
+    /// <summary>
+    /// Private constructor to prevent accidental initialisation.
+    /// </summary>
+    /// <param name="lockHints">SQL LOCK hints for the <typeparamref name="TTarget"/> table. HOLDLOCK/SERIALIZABLE is recommended, though 
+    /// TABLOCK, UPDLOCK, XLOCK can also be taken. Be mindful that the MERGE statement has potential to cause really ugly concurrency issues.</param>
+    /// <param name="top">If specified, limits the number of rows affected by the MERGE statement to the provided count.</param>
+    /// <param name="topIsPercent">If true, indicates <paramref name="top"/> is a percent value.</param>
+    private SqlMergeBuilder(List<SqlHint> lockHints, uint? top = null, bool topIsPercent = false)
+        : base(typeof(TTarget))
+    {
+        _mergeBuilder = new StringBuilder()
+            .Append("MERGE ");
+
+        if (top is not null)
+        {
+            _mergeBuilder.Append("TOP (").Append(top.Value).Append(") ");
+            if (topIsPercent)
+            {
+                _mergeBuilder.Append("PERCENT ");
+            }
+        }
+
+        _mergeBuilder.Append(_primaryTable.PersistenceInfo.CreateQualifiedName()).Append(' ');
+
+        if (lockHints.Count > 0)
+        {
+            _mergeBuilder.Append("WITH (").AppendJoin(", ", lockHints.Select(h => h.ToSQL())).Append(") ");
+        }
+
+        _mergeBuilder.Append("AS ").Append(_primaryTable.ReferenceAlias).Append(' ').AppendLine();
+
+        _usingBuilder = new UsingBuilder<TTarget>(this);
+    }
+
+    /// <summary>
+    /// Write the provided <paramref name="clause"/> to the _mergeBuilder instance.
+    /// </summary>
+    /// <param name="clause">Portion of the clause to write to the builder instance.</param>
+    internal void Write(StringBuilder clause)
+    {
+        _mergeBuilder.Append(clause);
+    }
+
+    /// <summary>
+    /// Write the provided <paramref name="clause"/> to the _mergeBuilder instance.
+    /// </summary>
+    /// <param name="clause">Portion of the clause to write to the builder instance.</param>
+    internal void Write(string clause)
+    {
+        _mergeBuilder.Append(clause);
+    }
+
+
+    /// <summary>
+    /// Reference to the USING builder.
+    /// </summary>
+    private readonly UsingBuilder<TTarget> _usingBuilder;
+
+    /// <summary>
+    /// Instance of a StringBuilder that all clause-builders write back to.
+    /// </summary>
+    private readonly StringBuilder _mergeBuilder;
 }

@@ -1,0 +1,78 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0-windows;net8.0-windows;net10.0-windows</TargetFrameworks>
+		<UseWindowsForms>true</UseWindowsForms>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<ApplicationIcon>SS - Favicon.ico</ApplicationIcon>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>D:\Sujay\src\SujaySarma.Data\SujaySarma.Data.snk</AssemblyOriginatorKeyFile>
+		<Title>Sujay Sarma's Windows Forms Data-binding Helper Library</Title>
+		<Authors>Sujay V. Sarma</Authors>
+		<Description>This library assists in painless data-binding a Windows Forms UI to the object entity model. This library is designed to work with my (SujaySarma.Data.*) ORM frameworks and will not work with any other ORM framework (like EF).</Description>
+		<Copyright>Copyright (c) 2025 and beyond Sujay V Sarma. All Rights Reserved.</Copyright>
+		<PackageProjectUrl>https://github.com/sujayvsarma/SujaySarma.Data</PackageProjectUrl>
+		<PackageIcon>SS Logo.png</PackageIcon>
+		<RepositoryUrl>https://github.com/sujayvsarma/SujaySarma.Data</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>data access,data binding, databinding,binding,library,sql,sqlserver,sql server,sql-server,msde,azuresql,azure sql,azure,localdb,json,databases</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<AssemblyVersion>10.0.0.0</AssemblyVersion>
+		<FileVersion>10.0.0.0</FileVersion>
+		<Version>$(AssemblyVersion)</Version>
+		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
+		<IncludeSymbols>False</IncludeSymbols>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageReleaseNotes>[10.0.0.0] - Complete rewrite of the library! This version is NOT backwards compatible with previous versions.</PackageReleaseNotes>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<NoWarn>1701;1702;SYSLIB1045;IDE0028;IDE0034;IDE0063;IDE0066;IDE0075;IDE0090;IDE0130;IDE0290;IDE0300;IDE0301;IDE0305;IDE0306;IDE0330;IDE1005;</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<NoWarn>1701;1702;SYSLIB1045;IDE0028;IDE0034;IDE0063;IDE0066;IDE0075;IDE0090;IDE0130;IDE0290;IDE0300;IDE0301;IDE0305;IDE0306;IDE0330;IDE1005;</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<NoWarn>1701;1702;SYSLIB1045;IDE0028;IDE0034;IDE0063;IDE0066;IDE0075;IDE0090;IDE0130;IDE0290;IDE0300;IDE0301;IDE0305;IDE0306;IDE0330;IDE1005;</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<NoWarn>1701;1702;SYSLIB1045;IDE0028;IDE0034;IDE0063;IDE0066;IDE0075;IDE0090;IDE0130;IDE0290;IDE0300;IDE0301;IDE0305;IDE0306;IDE0330;IDE1005;</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<NoWarn>1701;1702;SYSLIB1045;IDE0028;IDE0034;IDE0063;IDE0066;IDE0075;IDE0090;IDE0130;IDE0290;IDE0300;IDE0301;IDE0305;IDE0306;IDE0330;IDE1005;</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<NoWarn>1701;1702;SYSLIB1045;IDE0028;IDE0034;IDE0063;IDE0066;IDE0075;IDE0090;IDE0130;IDE0290;IDE0300;IDE0301;IDE0305;IDE0306;IDE0330;IDE1005;</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Include="README.md">
+		  <PackagePath>\</PackagePath>
+		  <Pack>True</Pack>
+		</Content>
+		<Content Include="SS - Favicon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\SS Logo.png" Link="SS Logo.png">
+			<PackagePath>\</PackagePath>
+			<Pack>True</Pack>
+		</None>
+	</ItemGroup>
+
+</Project>

@@ -1,170 +1,413 @@
-﻿using SujaySarma.Data.Core;
-
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 
-namespace SujaySarma.Data.Files.TokenLimitedFiles
+using SujaySarma.Data.Files.TokenLimitedFiles.Constants;
+using SujaySarma.Data.Files.TokenLimitedFiles.Types;
+
+namespace SujaySarma.Data.Files.TokenLimitedFiles;
+
+/// <summary>
+/// Reads token (comma, semi-colon, etc) limited records from a flatfile as per RFC 4180. 
+/// This reader implementation specifically performs its operations synchronously.
+/// </summary>
+public class TokenLimitedFileReader : IDisposable
 {
+
     /// <summary>
-    /// Reads token-limited flat-files. Default token is the comma (',').
+    /// Reads the next available (complete) record/row from the current position in the initialised stream.
+    /// This method complies strictly with RFC 4180 regarding the reading of token-delimited data.
     /// </summary>
-    public sealed partial class TokenLimitedFileReader : IDisposable
+    /// <param name="record">[out] The fields of the record/row read:
+    /// Empty - Nothing was read, or a blank-line was encountered.
+    /// Value - fields of the record that were read -- maybe fewer than actual if there was an error (see [return] value!)
+    /// [SPECIAL CASE] Only one element - when [return] is 'Error', contains the error message.</param>
+    /// <returns>A <see cref="ReaderExitReason"/>Provides the reason why the reader returned. When this value is 
+    /// 'Error', caller must stop attempting to read further from the stream as the data WILL be corrupt!</returns>
+    public ReaderExitReason TryReadRecord(out string[] record)
     {
+        record = Array.Empty<string>();
+        ReaderExitReason reason = ReaderExitReason.EndOfFileOrStream;
+        string? field = null;
 
-
-        /// <summary>
-        /// Field delimiter. Default is comma (',').
-        /// </summary>
-        public char Delimiter => _options.Delimiter;
-
-        /// <summary>
-        /// Returns the current text encoding being used
-        /// </summary>
-        public Encoding CurrentEncoding => _reader.CurrentEncoding;
-
-        /// <summary>
-        /// Returns if the current position is the EOF
-        /// </summary>
-        public bool EndOfStream => _reader.EndOfStream;
-
-        /// <summary>
-        /// The number of rows read (so far). Since we stream the data, this is not the Total count!
-        /// </summary>
-        public ulong RowCount => ROWS_READ;
-
-
-        /// <summary>
-        /// Initialize reader with a stream and other options
-        /// </summary>
-        /// <param name="stream">Stream to open the reader on</param>
-        /// <param name="options">Options for the reader</param>
-        public TokenLimitedFileReader(Stream stream, TokenLimitedFileOptions options)
+        if (!CanRead)
         {
-            _reader = new StreamReader(stream, options.AutoDetectEncoding ? null : options.TextEncoding, options.AutoDetectEncoding, options.BufferSize, options.LeaveFileOrStreamOpen);
-            _state = new ReaderState();
-            _options = options;
+            return reason;
         }
 
-        /// <summary>
-        /// Initialize reader with path to file and other options
-        /// </summary>
-        /// <param name="path">Path to file (absolute preferred)</param>
-        /// <param name="options">Options for the reader</param>
-        public TokenLimitedFileReader(string path, TokenLimitedFileOptions options)
-        {
-            options.TextEncoding ??= Encoding.UTF8;
+        _readRecordBuffer.Clear();
+        bool hasPreviousFieldDelimiter = false;
 
-            FileStreamOptions streamOptions = new FileStreamOptions()
+        while (true)
+        {
+            ReaderExitReason fieldReaderExitReason = TryReadField(out field);
+            switch (fieldReaderExitReason)
             {
-                Access = FileAccess.Read,
-                Mode = FileMode.Open,
-                Options = FileOptions.SequentialScan,
-                Share = FileShare.Read,
-                BufferSize = options.BufferSize
-            };
+                case ReaderExitReason.BlankLineEncountered:
+                    // return the reason as-is. Nothing in 'record'.
+                    return fieldReaderExitReason;
 
-            _reader = new StreamReader(path, options.TextEncoding, options.AutoDetectEncoding, streamOptions);
-            _state = new ReaderState();
-            _options = options;
-        }
+                case ReaderExitReason.EndOfFileOrStream:
+                    if (field is not null)
+                    {
+                        _readRecordBuffer.Append(field);
+                    }
+                    else
+                    {
+                        if (hasPreviousFieldDelimiter)
+                        {
+                            // special case!
+                            // record ended right after a field delimiter.
+                            // Consider this a blank field.
+                            _readRecordBuffer.Append(string.Empty);
+                        }
+                    }
+                    reason = fieldReaderExitReason;
+                    goto readerLoopExit;
 
-        /// <summary>
-        /// Closes the stream, including the underlying stream. The stream is also disposed.
-        /// No further operation must be attempted on the stream after this call.
-        /// </summary>
-        public void Close()
-        {
-            this.ThrowIfDisposed(this.isDisposed, nameof(TokenLimitedFileReader));
+                case ReaderExitReason.Error:
+                    // add the error as the first and only field of the record.
+                    record = new string[1] { field! };
+                    return fieldReaderExitReason;
 
-            _state = new ReaderState();
-            _reader.Close();
-            Dispose();
-        }
+                case ReaderExitReason.InContentNullCharacter:
+                    // if field itself wasnt NULL, add it to the record.
+                    // and terminate reading.
+                    if (!string.IsNullOrEmpty(field))
+                    {
+                        _readRecordBuffer.Append(field);
+                    }
+                    reason = fieldReaderExitReason;
+                    goto readerLoopExit;
 
-        /// <summary>
-        /// Sets the maximum number of fields expected for row.
-        /// </summary>
-        /// <param name="numberOfFields">Number of expected fields</param>
-        /// <remarks>
-        ///     This only controls the length of the array returned by FIRST call to <see cref="M:SujaySarma.Data.Files.TokenLimitedFiles.TokenLimitedFileReader.ReadRow" /> and <see cref="M:SujaySarma.Data.Files.TokenLimitedFiles.TokenLimitedFileReader.ReadRowAsync" /> methods.
-        ///     All fields on a row will be returned regardless of this value. Subsequent reads of longer rows will cause the internal
-        ///     maximum field counter to be incremented accordingly.
-        /// </remarks>
-        public void SetExpectedRowSize(int numberOfFields)
-        {
-            if (numberOfFields <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(numberOfFields), "parameter must be a positive integer.");
+                case ReaderExitReason.FieldDelimiterEncountered:
+                    // field delimiter, add to record, continue reading.
+                    if (field is not null)
+                    {
+                        _readRecordBuffer.Append(field);
+                    }
+                    hasPreviousFieldDelimiter = true;
+                    break;
+
+                case ReaderExitReason.RecordDelimiterEncountered:
+                    // record delimiter, add field read, stop reading.
+                    if (field is not null)
+                    {
+                        _readRecordBuffer.Append(field);
+                    }
+                    reason = ReaderExitReason.RecordDelimiterEncountered;
+                    goto readerLoopExit;
             }
-
-            if (numberOfFields < _state.MaximumFieldsRead)
-            {
-                throw new ArgumentOutOfRangeException(nameof(numberOfFields), "Must be called before the first call to ReadRow or ReadRowAsync methods.");
-            }
-
-            _state.MaximumFieldsRead = numberOfFields;
         }
 
+    readerLoopExit:
+        record = _readRecordBuffer.ToStringArray();
+        return reason;
+    }
 
-        /// <summary>
-        /// The double-quote (") character
-        /// </summary>
-        private const char DOUBLE_QUOTE = '"';
+    /// <summary>
+    /// Reads the next available field from the current position in the initialised stream. 
+    /// This method complies strictly with RFC 4180 regarding the use of quotes and special characters. 
+    /// </summary>
+    /// <param name="field">[out] Value of the field read: 
+    /// NULL - reached EOF before reading anything, 
+    /// Value - of field, 
+    /// Error message - when [return] is 'Error'.</param>
+    /// <returns>A <see cref="ReaderExitReason"/>Provides the reason why the reader returned. When this value is 
+    /// 'Error', caller must stop attempting to read further from the stream as the data WILL be corrupt!</returns>
+    public ReaderExitReason TryReadField(out string? field)
+    {
+        field = null;
+        ReaderExitReason reason = ReaderExitReason.EndOfFileOrStream;
 
-        /// <summary>
-        /// The carriage return character (\r)
-        /// </summary>
-        private const char CARRIAGE_RETURN = '\r';
-
-        /// <summary>
-        /// The linefeed return character (\n)
-        /// </summary>
-        private const char LINE_FEED = '\n';
-
-        /// <summary>
-        /// Total number of rows read by this instance of the reader
-        /// </summary>
-        private ulong ROWS_READ;
-
-        /// <summary>
-        /// Options for this reader instance
-        /// </summary>
-        private readonly TokenLimitedFileOptions _options;
-
-        /// <summary>
-        /// The stream that we are writing the token-limited data into
-        /// </summary>
-        private readonly StreamReader _reader;
-
-        /// <summary>
-        /// Current state of this reader instance. Initialised in the constructor and reset in <see cref="M:SujaySarma.Data.Files.TokenLimitedFiles.TokenLimitedFileReader.Close" />.
-        /// </summary>
-        private TokenLimitedFileReader.ReaderState _state;
-
-        #region IDisposable
-
-        /// <inheritdoc />
-        public void Dispose()
+        if (!CanRead)
         {
-            if (!isDisposed)
+            return reason;
+        }
+
+        const char DOUBLE_QUOTE = '"';
+        const char CR = '\r';
+        const char LF = '\n';
+
+        ReaderScope currentScope = ReaderScope.NotReading;
+
+        // VERY important!
+        _readFieldBuffer.Clear();
+
+        while (_reader.Peek() != -1)
+        {
+            char ch = (char)_reader.Read();
+
+            // The DQ (") defines behaviour for multiple other things. Process it first.
+            if (ch is DOUBLE_QUOTE)
             {
-                isDisposed = true;
-                if (!_options.LeaveFileOrStreamOpen)
+                char next = (char)_reader.Peek();
+                bool isEscapedQuotes = (next is DOUBLE_QUOTE);
+                switch (currentScope)
                 {
-                    _reader.Close();
+                    case ReaderScope.NotReading when (!isEscapedQuotes):
+                        /*
+                         *  Began to read, encountered a single-".
+                         *  RFC: Begin quoted scope.
+                         */
+                        currentScope = ReaderScope.Quoted;
+                        break;
+
+                    case ReaderScope.NotReading when isEscapedQuotes:
+                        /*
+                         *  Began to read, encountered a double-"".
+                         *  Two possibles:
+                         *  
+                         *  1. It is a sequence of 3-" (eg: """This...) 
+                         *     where an escape-quote block begins immediately within a quoted field.
+                         *     
+                         *     RFC: This is okay, begin quoted block, read the escape quotes.
+                         *     
+                         *  2. It is a regular escape-quoted block in an unquoted segment.
+                         *  
+                         *     RFC: This is invalid. Escape"" are valid only *within* a quoted block!
+                         */
+                        _reader.Read();
+                        char nextAfterNext = (char)_reader.Peek();
+                        if (nextAfterNext is DOUBLE_QUOTE)
+                        {
+                            // We have 3-"s.
+                            // Enter quoted scope for 1st ".
+                            currentScope = ReaderScope.Quoted;
+
+                            // Consume the "" as a " and add it to the buffer.
+                            _readFieldBuffer.Append(DOUBLE_QUOTE);
+                            _reader.Read();
+                        }
+                        else if (nextAfterNext == _delimiter)
+                        {
+                            // "" within unquoted section.
+                            // Is the next char our delimiter? If so, we have an empty quoted field.
+                            _reader.Read();
+                            field = string.Empty;
+                            return ReaderExitReason.FieldDelimiterEncountered;
+                        }
+                        else
+                        {
+                            // RFC: Error! Terminate immediately.
+                            field = "When field value is not quoted, cannot contain escaped double-quotes.";
+                            return ReaderExitReason.Error;
+                        }
+                        break;
+
+                    case ReaderScope.Unquoted:
+                        // Begun to read, unquoted block, encountered " or "".
+                        // RFC: Error! Terminate immediately.
+                        field = "When field value is not quoted, cannot contain (escaped) double-quotes.";
+                        return ReaderExitReason.Error;
+
+                    case ReaderScope.Quoted when (!isEscapedQuotes):
+                        // Quoted block, encountered a single-"
+                        // RFC: End quote block. This automatically marks any further chars in field as invalid.
+                        currentScope = ReaderScope.NonReadable;
+
+                        // Check if it was indeed a quote-block ender or if we have more chars for this field.
+                        if ((next != _delimiter) && (next is not CR) && (next is not LF))
+                        {
+                            field = "Encountered double-quote sequence within field value.";
+                            return ReaderExitReason.Error;
+                        }
+                        break;
+
+                    case ReaderScope.Quoted when isEscapedQuotes:
+                        // Quoted block, encountered escaped quotes-"".
+                        // RFC: Consume both ", add one of them to buffer, continue.
+                        _reader.Read();
+                        _readFieldBuffer.Append(DOUBLE_QUOTE);
+                        break;
+                }
+            }
+            else if (ch is CR or LF)
+            {
+                if (currentScope is ReaderScope.Quoted)
+                {
+                    _readFieldBuffer.Append(ch);
+                }
+                else
+                {
+                    if ((ch is CR) && ((char)_reader.Peek() is LF))
+                    {
+                        // Eat the CR's LF if present outside quotes.
+                        _reader.Read();
+                    }
+
+                    reason = ReaderExitReason.RecordDelimiterEncountered;
+                    break;  // while
+                }
+            }
+            else if (ch == _delimiter)
+            {
+                if (currentScope is ReaderScope.Quoted)
+                {
+                    _readFieldBuffer.Append(ch);
+                }
+                else
+                {
+                    // If we encountered a quoted empty field, our read sequence would be:
+                    // ["",] and we would now have ["] in the buffer. Discard it.
+                    if ((_readFieldBuffer.Length == 1) && (_readFieldBuffer[0] is DOUBLE_QUOTE))
+                    {
+                        _readFieldBuffer.Clear();
+                    }
+
+                    reason = ReaderExitReason.FieldDelimiterEncountered;
+                    break;  // while
+                }
+            }
+            else if (ch == '\0')
+            {
+                // Null could be a part of data content -- though RARE!
+                // Peek() will return 0, not -1 when it sees '\0'
+                // However, it is still an "error" condition (malformed data), terminating the read.
+                reason = ReaderExitReason.InContentNullCharacter;
+                break;  // while
+            }
+            else
+            {
+                switch (currentScope)
+                {
+                    case ReaderScope.NonReadable:
+                        throw new InvalidOperationException($"Invalid condition reached with record: Please file a bug with this record:\n\n{_readFieldBuffer}{ch}.");
+
+                    case ReaderScope.NotReading:
+                        currentScope = ReaderScope.Unquoted;
+                        _readFieldBuffer.Append(ch);
+                        break;
+
+                    default:
+                        _readFieldBuffer.Append(ch);
+                        break;
                 }
             }
 
+        } // while
+
+        field = _readFieldBuffer.ToString();
+        return reason;
+    }
+
+    #region Common stream functions
+
+    /// <summary>
+    /// Returns if this reader can still read the stream.
+    /// </summary>
+    public bool CanRead
+        => ((!_isDisposed) && (!_reader.EndOfStream) && _reader.BaseStream.CanRead);
+
+    #endregion
+
+    #region IDisposable Implementation
+
+    /// <summary>
+    /// Dispose the reader.
+    /// </summary>
+    public void Dispose()
+    {
+        if (!_isDisposed)
+        {
+            _isDisposed = true;
+            _reader.Dispose();
+            _readFieldBuffer.Dispose();
+            _readRecordBuffer.Dispose();
+
             GC.SuppressFinalize(this);
         }
+    }
+    private bool _isDisposed = false;
+
+    #endregion
+
+    #region -- Initialisers --
+
+    /// <summary>
+    /// Initialises the reader.
+    /// </summary>
+    /// <param name="stream">A stream (perhaps from a network or web source) already initialised and perhaps open.</param>
+    /// <param name="delimiter">The character that delimits a field. Defaults to a comma.</param>
+    /// <param name="encoding">Encoding to use. If NULL, uses auto-detection.</param>
+    /// <param name="leaveStreamOpen">Instructs the reader to leave the provided <paramref name="stream"/> open after the reader is done with it.</param>
+    public TokenLimitedFileReader(Stream stream, char delimiter = ',', Encoding? encoding = null, bool leaveStreamOpen = false)
+    {
+        if ((stream is null) || (!stream.CanRead))
+        {
+            throw new IOException("Provided stream is not initialised or cannot be read from.");
+        }
+
+        bool autoDetect = (encoding == null);
+
+        // 64KB buffer for I/O
+        _reader = new StreamReader(stream, (encoding ?? Encoding.UTF8), autoDetect, bufferSize: 65536, leaveOpen: leaveStreamOpen);
+        _delimiter = delimiter;
+
+        _readFieldBuffer = new FastCharacterArrayBuffer();
+        _readRecordBuffer = new FastStringArrayBuffer();
+    }
+
+    /// <summary>
+    /// Initialises the reader.
+    /// </summary>
+    /// <param name="path">Path to the disk or network file.</param>
+    /// <param name="delimiter">The character that delimits a field. Defaults to a comma.</param>
+    /// <param name="encoding">Encoding to use. If NULL, uses auto-detection.</param>
+    public TokenLimitedFileReader(string path, char delimiter = ',', Encoding? encoding = null)
+    {
+        bool autoDetect = (encoding is null);
+        FileStreamOptions options = new FileStreamOptions()
+        {
+            Access = FileAccess.Read,
+            Mode = FileMode.Open,
+            Options = FileOptions.SequentialScan,
+            Share = FileShare.Read,
+            BufferSize = 65536              // 64KB buffer for I/O
+        };
+
+        _reader = new StreamReader(path, (encoding ?? Encoding.UTF8), autoDetect, options);
+        _delimiter = delimiter;
+
+        _readFieldBuffer = new FastCharacterArrayBuffer();
+        _readRecordBuffer = new FastStringArrayBuffer();
+    }
+
+    #endregion
+
+    private readonly StreamReader _reader;
+    private readonly char _delimiter;
+    private readonly FastCharacterArrayBuffer _readFieldBuffer;
+    private readonly FastStringArrayBuffer _readRecordBuffer;
+
+    /// <summary>
+    /// Types of reading scopes
+    /// </summary>
+    public enum ReaderScope
+    {
+        /// <summary>
+        /// Have not started reading yet.
+        /// </summary>
+        NotReading,
 
         /// <summary>
-        /// The IDisposable flag
+        /// Unquoted value.
+        /// eg: [Hello]
         /// </summary>
-        private bool isDisposed;
+        Unquoted,
 
-        #endregion
+        /// <summary>
+        /// A value within a set of double quotes. 
+        /// eg: ["Hello"]
+        /// </summary>
+        Quoted,
 
+        /// <summary>
+        /// When scope is NonReadable, the reader will 
+        /// pass through them, however only the field delimiter 
+        /// and record delimiters are considered/processed. Any/all 
+        /// other characters are read and discarded.
+        /// </summary>
+        NonReadable
     }
 }

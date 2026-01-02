@@ -1,37 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace SujaySarma.Data.SqlServer
+namespace SujaySarma.Data.SqlServer;
+
+// Implements IDisposable for SqlContext
+public partial class SqlContext : IDisposable
 {
-    // Implements IDisposable centrally for the SqlContext class.
-    public partial class SqlContext : IDisposable
+
+    /// <inheritdoc />
+    public void Dispose()
     {
-        /// <summary>
-        /// Dispose the resource-costly members of the instance.
-        /// </summary>
-        public void Dispose()
+        if (!_isDisposed)
         {
-            Dispose(true);
-
-            GC.SuppressFinalize(this);
+            _isDisposed = true;
         }
-
-        /// <summary>
-        /// Dispose the resource-costly members of the instance.
-        /// </summary>
-        /// <param name="reallyDispose">When set, we actually dispose stuff.</param>
-        public void Dispose(bool reallyDispose = false)
-        {
-            if (reallyDispose && (!_isDisposed))
-            {
-                // variable: SqlContext.Debug.cs
-                if (_debugDumpFile != null)
-                {
-                    _debugDumpFile.Flush();
-                    _debugDumpFile.Close();
-                }
-            }
-        }
-
-        private readonly bool _isDisposed = false;
     }
+    private bool _isDisposed = false;
+
 }

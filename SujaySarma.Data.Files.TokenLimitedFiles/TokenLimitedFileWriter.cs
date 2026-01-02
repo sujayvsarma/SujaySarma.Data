@@ -1,125 +1,219 @@
-﻿using SujaySarma.Data.Core;
-
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
-namespace SujaySarma.Data.Files.TokenLimitedFiles
+namespace SujaySarma.Data.Files.TokenLimitedFiles;
+
+/// <summary>
+/// Writes token (comma, semi-colon, etc) limited records to a flatfile as per RFC 4180. 
+/// This writer implementation specifically performs its operations synchronously.
+/// </summary>
+public class TokenLimitedFileWriter : IDisposable
 {
+
     /// <summary>
-    /// Writes token-limited flat-files. Default token is the comma (',').
+    /// Writes the provided content as the next record in the sequence.
     /// </summary>
-    public sealed partial class TokenLimitedFileWriter : IDisposable
+    /// <param name="record">Content/record to write to the destination. Array cannot be NULL, though 
+    /// elements may be (they are converted to empty strings in the data)
+    /// IMPORTANT: Do not quote string values because the function will quote it if required.</param>
+    /// <returns>True - content was written successfully, False - if there were errors.</returns>
+    public bool TryWriteRecord(IEnumerable<string?> record)
     {
-
-        /// <summary>
-        /// Field delimiter. Default is comma (',').
-        /// </summary>
-        public char Delimiter => _options.Delimiter;
-
-        /// <summary>
-        /// Returns the text encoding being used
-        /// </summary>
-        public Encoding Encoding => _writer.Encoding;
-
-        /// <summary>
-        /// Get/set if the stream automatically flushes written data to the backing file
-        /// </summary>
-        public bool AutoFlush
+        if ((!_writeEmptyRows) && record.All(s => string.IsNullOrEmpty(s)))
         {
-            get => _writer.AutoFlush;
-            init => _writer.AutoFlush = value;
+            return true;
         }
 
-        /// <summary>New line character used by the writer</summary>
-        public string NewLine
+        _fieldsWritten = false;
+        foreach (string? field in record)
         {
-            get => _writer.NewLine;
-            init => _writer.NewLine = value;
-        }
-
-        /// <summary>
-        /// The number of rows actually written (so far). Since we stream the data, this is not the Total count!
-        /// </summary>
-        public ulong RowCount => ROWS_WRITTEN;
-
-
-
-        /// <summary>Initialize writer with a stream and other options</summary>
-        /// <param name="stream">Stream to open the writer on</param>
-        /// <param name="options">Options for the writer</param>
-        public TokenLimitedFileWriter(Stream stream, TokenLimitedFileOptions options)
-        {
-            _writer = new StreamWriter(stream, options.TextEncoding, options.BufferSize, options.LeaveFileOrStreamOpen);
-            _options = options;
-        }
-
-        /// <summary>Initialize writer with path to file and other options</summary>
-        /// <param name="path">Path to file (absolute preferred)</param>
-        /// <param name="options">Options for the writer</param>
-        public TokenLimitedFileWriter(string path, TokenLimitedFileOptions options)
-        {
-            FileStreamOptions streamOptions = new FileStreamOptions()
+            if (!TryWriteFieldImpl(field))
             {
-                Access = FileAccess.Write,
-                Mode = FileMode.Create,
-                Options = FileOptions.None,
-                Share = FileShare.Read,
-                BufferSize = options.BufferSize
-            };
-
-            _writer = new StreamWriter(path, options.TextEncoding, streamOptions);
-            _options = options;
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            if (!isDisposed)
-            {
-                isDisposed = true;
-                if (!_options.LeaveFileOrStreamOpen)
-                {
-                    _writer.Close();
-                }
+                return false;
             }
+        }
+
+        _writer.Write(_recordTerminator);
+
+        return true;
+    }
+
+    /// <summary>
+    /// Writes the provided content as the next record in the sequence.
+    /// </summary>
+    /// <param name="record">>Content/record to write to the destination. Array cannot be NULL, though 
+    /// elements may be (they are converted to empty strings in the data)
+    /// IMPORTANT: Do not quote string values because the function will quote it if required.</param>
+    /// <returns>True - content was written successfully, False - if there were errors.</returns>
+    public bool TryWriteRecord(IEnumerable<object?> record)
+    {
+        List<string?> rec = new List<string?>();
+        foreach(object? obj in record)
+        {
+            rec.Add(Serialiser.SerialiseValue(obj, _delimiter, _recordTerminator));
+        }
+
+        return TryWriteRecord(rec);
+    }
+
+
+    /// <summary>
+    /// Writes the provided content as the next field in the sequence.
+    /// </summary>
+    /// <param name="field">Value/content to write to the destination. If this is NULL, writes an empty string. 
+    /// IMPORTANT: The caller must quote the string appropriately, as this function has no mechanism to identify if it needs quoting!</param>
+    /// <returns>True - content was written successfully, False - if there were errors.</returns>
+    private bool TryWriteFieldImpl(string? field)
+    {
+        if (!CanWrite)
+        {
+            return false;
+        }
+
+        try
+        {
+            if (_fieldsWritten)
+            {
+                _writer.Write(_delimiter);
+            }
+
+            _writer.Write(field ?? string.Empty);
+            _fieldsWritten = true;
+        }
+        catch
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Writes the provided content as the next field in the sequence.
+    /// </summary>
+    /// <typeparam name="T">Type of <paramref name="field"/>.</typeparam>
+    /// <param name="field">Value/content to write to the destination. If this is NULL, writes an empty string.
+    /// IMPORTANT: String values should NOT be as this function will automatically quote strings.</param>
+    /// <returns>True - content was written successfully, False - if there were errors.</returns>
+    public bool TryWriteField<T>(T? field)
+    {
+        string s = Serialiser.SerialiseValue(field, _delimiter, _recordTerminator);
+        return TryWriteFieldImpl(s);
+    }
+
+
+    #region Common stream functions
+
+    /// <summary>
+    /// Returns if this writer can still write the stream.
+    /// </summary>
+    public bool CanWrite
+        => ((!_isDisposed) && _writer.BaseStream.CanWrite);
+
+    #endregion
+
+    #region -- Initialisers --
+
+    /// <summary>
+    /// Initialises the writer.
+    /// </summary>
+    /// <param name="stream">A stream (perhaps from a network or web source) already initialised and perhaps open.</param>
+    /// <param name="delimiter">The character that delimits a field. Defaults to a comma.</param>
+    /// <param name="recordDelimiter">The [string] sequence that terminates a record. Defaults to CRLF (Windows)</param>
+    /// <param name="encoding">Encoding to use. If NULL, uses auto-detection.</param>
+    /// <param name="leaveStreamOpen">Instructs the writer to leave the provided <paramref name="stream"/> open after the writer is done with it.</param>
+    /// <param name="writeEmptyRows">When set, writes empty records to the file. Otherwise, skips them silently.</param>
+    public TokenLimitedFileWriter(Stream stream, char delimiter = ',', string recordDelimiter = "\r\n", Encoding? encoding = null, bool leaveStreamOpen = false, bool writeEmptyRows = false)
+    {
+        if ((stream is null) || (!stream.CanWrite))
+        {
+            throw new IOException("Provided stream is not initialised or cannot be written to.");
+        }
+
+        // 64KB buffer for I/O
+        _writer = new StreamWriter(stream, (encoding ?? Encoding.UTF8), bufferSize: 65536, leaveOpen: leaveStreamOpen);
+        _delimiter = delimiter;
+        _recordTerminator = recordDelimiter;
+        _writeEmptyRows = writeEmptyRows;
+    }
+
+    /// <summary>
+    /// Initialises the writer.
+    /// </summary>
+    /// <param name="path">Path to the disk or network file.</param>
+    /// <param name="delimiter">The character that delimits a field. Defaults to a comma.</param>
+    /// <param name="recordDelimiter">The [string] sequence that terminates a record. Defaults to CRLF (Windows)</param>
+    /// <param name="encoding">Encoding to use. If NULL, uses auto-detection.</param>
+    /// <param name="mode">The mode to open the file with.</param>
+    /// <param name="writeEmptyRows">When set, writes empty records to the file. Otherwise, skips them silently.</param>
+    public TokenLimitedFileWriter(string path, char delimiter = ',', string recordDelimiter = "\r\n", Encoding? encoding = null, FileMode mode = FileMode.CreateNew, bool writeEmptyRows = false)
+    {
+        if (!Enum.IsDefined<FileMode>(mode))
+        {
+            throw new ArgumentOutOfRangeException(nameof(mode), "Value must be from the 'FileMode' enumeration.");
+        }
+
+        if (!VALID_FILEMODES_FOR_WRITING.Contains(mode))
+        {
+            throw new ArgumentOutOfRangeException(nameof(mode), "Value is not valid for writing.");
+        }
+
+        FileStreamOptions options = new FileStreamOptions()
+        {
+            Access = FileAccess.Write,
+            Mode = mode,
+            Share = FileShare.None,
+            BufferSize = 65536              // 64KB buffer for I/O
+        };
+
+        _writer = new StreamWriter(path, (encoding ?? Encoding.UTF8), options);
+        _delimiter = delimiter;
+        _recordTerminator = recordDelimiter;
+
+        _writeEmptyRows = writeEmptyRows;
+    }
+
+    #endregion
+
+    private bool _fieldsWritten = false;
+
+    private readonly StreamWriter _writer;
+    private readonly char _delimiter;
+    private readonly string _recordTerminator;
+    private readonly bool _writeEmptyRows;
+    private readonly List<FileMode> VALID_FILEMODES_FOR_WRITING = new List<FileMode>
+    {
+        FileMode.Append,
+        FileMode.CreateNew,
+        FileMode.Create,
+        FileMode.Open,
+        FileMode.OpenOrCreate,
+        FileMode.Truncate
+    };
+
+    private const char DOUBLE_QUOTE = '"';
+    private const char CR = '\r';
+    private const char LF = '\n';
+
+    #region IDisposable Implementation
+
+    /// <summary>
+    /// Dispose the reader.
+    /// </summary>
+    public void Dispose()
+    {
+        if (!_isDisposed)
+        {
+            _isDisposed = true;
+            _writer.Dispose();
 
             GC.SuppressFinalize(this);
         }
-
-        /// <summary>
-        /// Closes the stream, including the underlying stream. The stream is also disposed.
-        /// No further operation must be attempted on the stream after this call.
-        /// </summary>
-        public void Close()
-        {
-            this.ThrowIfDisposed(isDisposed, nameof(TokenLimitedFileWriter));
-            Dispose();
-        }
-
-        /// <summary>
-        /// Number of rows written to the flatfile
-        /// </summary>
-        private ulong ROWS_WRITTEN;
-
-        /// <summary>
-        /// Options for this writer instance
-        /// </summary>
-        private readonly TokenLimitedFileOptions _options;
-
-        /// <summary>
-        /// The stream that we are writing the token-limited data into
-        /// </summary>
-        private readonly StreamWriter _writer;
-
-        /// <summary>
-        /// The flag for IDisposable
-        /// </summary>
-        private bool isDisposed;
-        
-        /// <summary>
-        /// The quote character as an interned constant.
-        /// </summary>
-        private static readonly char QUOTE = '"';
     }
+    private bool _isDisposed = false;
+
+    #endregion
 }

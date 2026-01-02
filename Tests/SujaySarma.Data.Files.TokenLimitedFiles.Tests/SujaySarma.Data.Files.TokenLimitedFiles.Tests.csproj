@@ -1,0 +1,30 @@
+﻿<Project Sdk="MSTest.Sdk/4.0.1">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<TestingExtensionsProfile>AllMicrosoft</TestingExtensionsProfile>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>..\..\SujaySarma.Data.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="TokenLimitedFileReaderAsyncTests.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\SujaySarma.Data.Files.TokenLimitedFiles\SujaySarma.Data.Files.TokenLimitedFiles.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="TestData\perfbenchmark.csv">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="TestData\variablerecordsbenchmark.csv">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+</Project>

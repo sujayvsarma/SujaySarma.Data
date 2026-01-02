@@ -1,112 +1,113 @@
-﻿using System;
+﻿using SujaySarma.Data.Core.TypeDiscovery;
+using SujaySarma.Data.SqlServer.Builders.Constants;
+
+using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
 
-using SujaySarma.Data.Core.Reflection;
-using SujaySarma.Data.SqlServer.Attributes;
+namespace SujaySarma.Data.SqlServer.Builders;
 
-namespace SujaySarma.Data.SqlServer.Builders
+/// <summary>
+/// A base class that provides functionality for our other 
+/// SQL statementType builder implementations.
+/// </summary>
+public abstract class SqlStatementBuilder
 {
     /// <summary>
-    /// Base class implemented by our fluid statement builders.
+    /// Assemble all components of the builder into the statementType.
     /// </summary>
-    public abstract class SqlStatementBuilder
+    /// <returns>Instance of a <see cref="StringBuilder"/> that can then be serialised to a string.</returns>
+    public virtual StringBuilder Build()
+        => throw new NotImplementedException("Ouch! Fluid-statementType builder forgot to implement the Build() function!");
+
+
+    /// <summary>
+    /// Resolve the provided type. Checks the builder's cache first and then retrieves from the type-discovery system if not found.
+    /// </summary>
+    /// <param name="type">The <see cref="Type"/> to resolve.</param>
+    /// <returns>Instance of <see cref="PersistenceContainerInfo"/> for the provided <paramref name="type"/>.</returns>
+    internal PersistenceContainerInfo ResolveType(Type type)
     {
-
-        /// <summary>
-        /// Build the statement as a SQL.
-        /// </summary>
-        /// <returns>SQL statement string OR empty string if there is no valid SQL statement.</returns>
-        public virtual StringBuilder Build()
-            => throw new NotImplementedException("Ouch! Someone wrote a Fluid-statement builder but forgot to implement the Build() function!");
-
-        /// <summary>
-        /// A helper function to parse lambda expressions to SQL
-        /// </summary>
-        /// <param name="expression">Lambda expression to parse</param>
-        /// <param name="treatAssignmentsAsAlias">[Optional] When set, tells the parser to treat any assignments in the expression as aliases. For eg: 'a = s.Id' will turn into 's.Id as [a]'</param>
-        /// <returns>SQL string expression</returns>
-        protected string ExpressionToSQL(Expression expression, bool treatAssignmentsAsAlias = false)
-            => _visitor.Tour(expression, treatAssignmentsAsAlias);
-
-        /// <summary>
-        /// Add a mapping for the given type.
-        /// </summary>
-        /// <typeparam name="TObject">Type of .NET object to add mapping for.</typeparam>
-        /// <param name="isPrimary">Flag to set this as a primary table for this statement sequence.</param>
-        protected ClrToTableWithAlias Add<TObject>(bool isPrimary = false)
-            => Add(typeof(TObject), isPrimary);
-
-        /// <summary>
-        /// Add a mapping for the given type.
-        /// </summary>
-        /// <param name="table">Type of .NET object to add mapping for.</param>
-        /// <param name="isPrimary">Flag to set this as a primary table for this statement sequence.</param>
-        protected ClrToTableWithAlias Add(Type table, bool isPrimary = false)
-            => Map.Add(table, isPrimary);
-
-        /// <summary>
-        /// Retrieve a list of column names along with their values (THIS IS CALLED FROM OUR NON-QUERY BUILDERS... Insert/Update/Merge)
-        /// </summary>
-        /// <param name="sourceObject">Object whose values to fetch.</param>
-        /// <param name="map">Discovered object.</param>
-        /// <param name="skipFlags">Any columns with the mentioned flags (HasFlags) will be skipped.</param>
-        /// <param name="columnNamesWithValues">List of existing column/value pairs -- will be added to, uniquely.</param>
-        protected void BuildColumnNamesWithValues(ref object? sourceObject, ClrToTableWithAlias map, KeyTypesEnum skipFlags, Dictionary<string, string> columnNamesWithValues)
+        if (!_addedTypes.TryGetValue(type, out PersistenceContainerInfo? pci))
         {
-            foreach (MemberTypeInfo member in map.TypeInfo.Members.Values)
-            {
-                TableColumnAttribute? columnAttribute = member.FieldOrPropertyInfo.GetCustomAttribute<TableColumnAttribute>();
-                if (columnAttribute != null)
-                {
-                    // nothing can be OR'ed with None.
-                    if (skipFlags != KeyTypesEnum.None)
-                    {
-                        bool skipMember = false;
-                        foreach (KeyTypesEnum flag in Enum.GetValues<KeyTypesEnum>())
-                        {
-                            if (skipFlags.HasFlag(flag) && columnAttribute.TypeOfKey.HasFlag(flag))
-                            {
-                                skipMember = true;
-                                break;
-                            }
-                        }
-
-                        if (skipMember)
-                        {
-                            continue;
-                        }
-                    }
-
-                    string rawColumnName = member.Column.CreateQualifiedName();
-                    string columnName = $"{map.Alias}.{rawColumnName} as {map.QualifiedTableName}.{rawColumnName}";
-                    if (!columnNamesWithValues.ContainsKey(columnName))
-                    {
-                        columnNamesWithValues.Add(columnName,
-                            ReflectionUtils.GetSQLStringValue(Core.ReflectionUtils.GetValue(ref sourceObject, member)));
-                    }
-                }
-            }
+            pci = type.RetrievePersistenceContainerInfoOrThrowException();
+            _addedTypes[type] = pci;
         }
 
-
-        /// <summary>
-        /// Initialize. Only child classes are allowed to call me.
-        /// </summary>
-        protected SqlStatementBuilder()
-        {
-            Map = new ClrToTableWithAliasCollection();
-            _visitor = new SqlLambdaVisitor(Map);
-        }
-
-        // Cached visitor to improve performance across ParseToSql calls.
-        private readonly SqlLambdaVisitor _visitor;
-
-        /// <summary>
-        /// The table map
-        /// </summary>
-        protected ClrToTableWithAliasCollection Map;
+        return pci;
     }
+
+    /// <summary>
+    /// Returns if the provided <paramref name="type"/> has been added to our collection.
+    /// </summary>
+    /// <param name="type">The <see cref="Type"/> to check for.</param>
+    /// <returns>TRUE if the <paramref name="type"/> has been added.</returns>
+    internal bool IsAdded(Type type)
+    {
+        return _addedTypes.ContainsKey(type);
+    }
+
+
+    /// <summary>
+    /// Validates that both <paramref name="type1"/> and <paramref name="type2"/> target the same destination table. 
+    /// </summary>
+    /// <param name="type1">The <see cref="Type"/> of one entity to check.</param>
+    /// <param name="type2">The <see cref="Type"/> of the other entity to check.</param>
+    /// <returns>True if both types target the same destination table.</returns>
+    internal bool IsSameTableTarget(Type type1, Type type2)
+    {
+        // When types are the same, their destinations will match.
+        if (type1 == type2)
+        {
+            return true;
+        }
+
+        // Resolve, fetch PCI and compare the actual targets.
+        if (ResolveType(type1).PersistenceInfo.CreateQualifiedName() == ResolveType(type2).PersistenceInfo.CreateQualifiedName())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Check for validity and conflicts and append all <see cref="SqlHint"/>s in the <paramref name="hints"/> 
+    /// to the internal collection. Either all hints are added, or none are -- appending hints happens only after all validations are successful.
+    /// </summary>
+    /// <param name="hints">An OR'ed collection of <see cref="SqlHint"/> to append.</param>
+    /// <param name="statementType">The type of statement we are building -- Each element of <paramref name="hints"/> will 
+    /// be checked for validity (against this statement type) and inter-hint conflict.</param>
+    internal void AppendHints(SqlHint hints, SqlStatementType statementType)
+    {
+        if (!_hints.TryAdd(hints, statementType, out string? errorMessage))
+        {
+            throw new InvalidOperationException(errorMessage);
+        }
+    }
+
+    /// <summary>
+    /// Initialise the statement builder using the primary entity's mapped table.
+    /// </summary>
+    /// <param name="primaryTableType">Type of entity mapped to the primary entity for this statement or query.</param>
+    protected SqlStatementBuilder(Type primaryTableType)
+    {
+        _addedTypes[primaryTableType] = primaryTableType.RetrievePersistenceContainerInfoOrThrowException();
+        _primaryTable = _addedTypes[primaryTableType];
+    }
+
+    /// <summary>
+    /// Query hints for the table. Each element is an INDIVIDUAL flag (not OR'ed!)
+    /// </summary>
+    protected readonly List<SqlHint> _hints = new List<SqlHint>();
+
+    /// <summary>
+    /// A statement-builder level cache of types that have been added to this statement. 
+    /// </summary>
+    protected readonly Dictionary<Type, PersistenceContainerInfo> _addedTypes = new Dictionary<Type, PersistenceContainerInfo>();
+
+    /// <summary>
+    /// The PCI for the entity added via the constructor.
+    /// </summary>
+    internal readonly PersistenceContainerInfo _primaryTable;
 }

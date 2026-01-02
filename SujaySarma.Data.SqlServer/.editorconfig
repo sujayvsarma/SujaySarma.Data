@@ -1,0 +1,2 @@
+[SqlMergeBuilder.RabbitHole.cs]
+dotnet_diagnostic.CS1061.severity = none
