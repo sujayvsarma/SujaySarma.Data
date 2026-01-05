@@ -11,10 +11,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="TokenLimitedFileReaderAsyncTests.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\..\SujaySarma.Data.Files.TokenLimitedFiles\SujaySarma.Data.Files.TokenLimitedFiles.csproj" />
 	</ItemGroup>
 

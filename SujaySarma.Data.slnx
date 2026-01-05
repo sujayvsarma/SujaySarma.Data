@@ -3,6 +3,7 @@
     <Project Path="Tests/SujaySarma.Data.Core.Tests/SujaySarma.Data.Core.Tests.csproj" Id="410f9aad-eff4-490d-8a4f-06f8915adb81" />
     <Project Path="Tests/SujaySarma.Data.Files.TokenLimitedFiles.Tests/SujaySarma.Data.Files.TokenLimitedFiles.Tests.csproj" Id="fe32c2f9-b280-4921-aa91-27419e2a916c" />
     <Project Path="Tests/SujaySarma.Data.SqlServer.Tests/SujaySarma.Data.SqlServer.Tests.csproj" />
+    <Project Path="Tests/SujaySarma.Data.WinFormsUI.Tests/SujaySarma.Data.WinFormsUI.Tests.csproj" />
   </Folder>
   <Project Path="SujaySarma.Data.Core/SujaySarma.Data.Core.csproj" />
   <Project Path="SujaySarma.Data.Files.TokenLimitedFiles/SujaySarma.Data.Files.TokenLimitedFiles.csproj" />

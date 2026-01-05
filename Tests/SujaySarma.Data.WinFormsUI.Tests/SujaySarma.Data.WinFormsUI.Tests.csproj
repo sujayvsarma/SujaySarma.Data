@@ -1,7 +1,7 @@
 ﻿<Project Sdk="MSTest.Sdk/4.0.1">
-
 	<PropertyGroup>
-		<TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+		<TargetFrameworks>net6.0-windows;net8.0-windows;net10.0-windows</TargetFrameworks>
+		<UseWindowsForms>true</UseWindowsForms>
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>enable</Nullable>
@@ -11,8 +11,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\SujaySarma.Data.Core\SujaySarma.Data.Core.csproj" />
-		<ProjectReference Include="..\..\SujaySarma.Data.SqlServer\SujaySarma.Data.SqlServer.csproj" />
+	  <ProjectReference Include="..\..\SujaySarma.Data.Core\SujaySarma.Data.Core.csproj" />
+	  <ProjectReference Include="..\..\SujaySarma.Data.WinFormsUI\SujaySarma.Data.WinFormsUI.csproj" />
 	</ItemGroup>
-
 </Project>
