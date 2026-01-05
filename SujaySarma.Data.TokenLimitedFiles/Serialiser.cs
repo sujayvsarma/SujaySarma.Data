@@ -5,9 +5,9 @@ using System.Linq;
 
 using SujaySarma.Data.Core.ReflectionUtilities;
 using SujaySarma.Data.Core.TypeDiscovery;
-using SujaySarma.Data.Files.TokenLimitedFiles.Attributes;
+using SujaySarma.Data.TokenLimitedFiles.Attributes;
 
-namespace SujaySarma.Data.Files.TokenLimitedFiles;
+namespace SujaySarma.Data.TokenLimitedFiles;
 
 /// <summary>
 /// Serialises business entities into string arrays, ready to be written to token-delimited files or streams. And when 

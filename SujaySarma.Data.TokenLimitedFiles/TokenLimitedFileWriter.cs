@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace SujaySarma.Data.Files.TokenLimitedFiles;
+namespace SujaySarma.Data.TokenLimitedFiles;
 
 /// <summary>
 /// Writes token (comma, semi-colon, etc) limited records to a flatfile as per RFC 4180. 

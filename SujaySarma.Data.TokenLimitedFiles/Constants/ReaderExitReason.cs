@@ -1,4 +1,4 @@
-﻿namespace SujaySarma.Data.Files.TokenLimitedFiles.Constants;
+﻿namespace SujaySarma.Data.TokenLimitedFiles.Constants;
 
 /// <summary>
 /// The reason why a read operation exited.

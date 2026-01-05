@@ -2,10 +2,10 @@
 using System.IO;
 using System.Text;
 
-using SujaySarma.Data.Files.TokenLimitedFiles.Constants;
-using SujaySarma.Data.Files.TokenLimitedFiles.Types;
+using SujaySarma.Data.TokenLimitedFiles.Constants;
+using SujaySarma.Data.TokenLimitedFiles.Types;
 
-namespace SujaySarma.Data.Files.TokenLimitedFiles;
+namespace SujaySarma.Data.TokenLimitedFiles;
 
 /// <summary>
 /// Reads token (comma, semi-colon, etc) limited records from a flatfile as per RFC 4180. 

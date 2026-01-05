@@ -2,10 +2,10 @@
 using System.IO;
 using System.Text;
 
-using SujaySarma.Data.Files.TokenLimitedFiles.Attributes;
-using SujaySarma.Data.Files.TokenLimitedFiles.Constants;
+using SujaySarma.Data.TokenLimitedFiles.Attributes;
+using SujaySarma.Data.TokenLimitedFiles.Constants;
 
-namespace SujaySarma.Data.Files.TokenLimitedFiles;
+namespace SujaySarma.Data.TokenLimitedFiles;
 
 /// <summary>
 /// The TokenLimitedFileContext reads and writes entities to token-delimited files/streams without needing to 

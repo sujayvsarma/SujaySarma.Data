@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SujaySarma.Data.Files.TokenLimitedFiles.Types;
+namespace SujaySarma.Data.TokenLimitedFiles.Types;
 
 /// <summary>
 /// A buffer backed by a character array, optimised for performance.

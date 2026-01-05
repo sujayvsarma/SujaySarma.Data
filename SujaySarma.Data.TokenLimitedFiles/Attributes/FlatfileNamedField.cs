@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SujaySarma.Data.Files.TokenLimitedFiles.Attributes;
+namespace SujaySarma.Data.TokenLimitedFiles.Attributes;
 
 /// <summary>
 /// Marks the member property or field as a field in a flatfile that is mapped by a 

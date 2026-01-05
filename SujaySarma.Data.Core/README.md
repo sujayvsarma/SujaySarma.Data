@@ -1,79 +1,276 @@
-﻿SujaySarma.Data.Core
-==================
-This library is used as a dependency by other libraries named with the prefix `SujaySarma.Data.*`. `SujaySarma.Data.Core` provides core reflection attributes, attribute discovery, validation, data conversion, population, hydration and evaporation services to the upstream consuming libraries.
+﻿# SujaySarma.Data.Core
 
-## Version table
+**Core reflection, attribute discovery, validation, data conversion, and ORM services for the SujaySarma.Data.* library ecosystem.**
 
-Version | NuGet URL | Package link
---------|-----------|--------------------
-`10.0.0.0` | `https://www.nuget.org/packages/SujaySarma.Data.Core` | [NuGet](https://www.nuget.org/packages/SujaySarma.Data.Core)
+[![NuGet](https://img.shields.io/nuget/v/SujaySarma.Data.Core.svg)](https://www.nuget.org/packages/SujaySarma.Data.Core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Last updated: `Nov 28, 2025`
+---
 
-## API
-The following public-surface API is exposed by this library:
+## Overview
+
+`SujaySarma.Data.Core` is the foundational library for all `SujaySarma.Data.*` libraries. It provides a comprehensive set of attributes, reflection utilities, and ORM infrastructure that enable powerful object-relational mapping capabilities across various data backends including SQL Server, Azure Storage Tables, and flat files.
+
+This library focuses on **performance**, **stability**, and **API consistency** as its core principles.
+
+---
+
+## Installation
+
+```
+$ dotnet add package SujaySarma.Data.Core
+```
+
+
+**NuGet Package:** [SujaySarma.Data.Core](https://www.nuget.org/packages/SujaySarma.Data.Core)
+
+**Current Version:** `10.0.0.0`
+
+**Target Frameworks:** `.NET 6.0`, `.NET 8.0`, `.NET 10.0`
+
+---
+
+## Features
+
+- **Attribute-based ORM System** – Decorate your business entities with powerful attributes to enable automatic persistence
+- **Type Discovery & Caching** – Fast metadata discovery with intelligent caching for performance
+- **Data Conversion Utilities** – Extensive extension methods for type conversions, date/time handling, and data coercion
+- **Batch Transaction Support** – Efficient batch processing for bulk operations
+- **Dirty State Tracking** – Automatic change tracking for entities
+- **Soft Delete Support** – Built-in support for soft-delete patterns
+- **System-Populated Fields** – Automatic value generation for timestamps, GUIDs, and identity fields
+
+---
+
+## Quick Start
+
+### 1. Decorate Your Entity
+
+```c#
+using SujaySarma.Data.Core.Attributes;
+```
+
+```c#
+[PersistenceContainer(Name = "Users")]
+public class User { 
+	[PersistenceContainerMember(Name = "Id")] 
+	[OrmPopulatedGuidField]
+	public Guid Id { get; set; }
+
+	[PersistenceContainerMember(Name = "Username")]
+	public string Username { get; set; }
+
+	[PersistenceContainerMember(Name = "Email")]
+	public string Email { get; set; }
+
+	[PersistenceContainerMember(Name = "CreatedDate")]
+	[OrmPopulatedTimestampField]
+	public DateTime CreatedDate { get; set; }
+
+	[DirtyStateField]
+	public bool IsDirty { get; set; }
+}
+```
+
+### 2. Discover Type Metadata
+
+
+```c#
+using SujaySarma.Data.Core;
+PersistenceContainerInfo containerInfo = TypeDiscoveryFactory.Resolve<User>(); 
+
+// Access metadata about the User type, its members, and attributes
+```
+
+
+---
+
+## API Reference
 
 ### Attributes
-SujaySarma.Data.Core provides fully implemented base and specialist attributes. Upstream libraries utilising the `SujaySarma.Data.*` namespace extend these attributes for their purposes. Business entities (classes, structs and records) and their members (properties and fields) in applications must be decorated by one of these attributes to engage the powerful ORM capabilities of these libraries.
 
+#### Container-Level Attributes
+Attributes applied to classes, structs, or records:
 
-#### Object/Entity or Container level
-(These attributes are used at class, struct or record level)
+| Attribute | Type | Purpose |
+|-----------|------|---------|
+| `IPersistenceContainer` | Interface | Marks an entity as ORM-enabled with metadata about backend storage |
+| `PersistenceContainer` | Implementation | Concrete implementation of `IPersistenceContainer` |
 
-Nature | Attribute | Purpose
--------|-----------|-------------
-Interface | `IPersistenceContainer` | Marks the entity as something that can be hydrated and dehydrated by our ORM system, providing metadata about the backend storage mechanism.
-Implementation | `PersistenceContainer` | A concrete implementation of `IPersistenceContainer`.
+#### Member-Level Attributes
+Attributes applied to properties or fields:
 
+| Attribute | Type | Purpose |
+|-----------|------|---------|
+| `IOrmField` | Interface | Base interface for all member attributes |
+| `IPersistenceContainerMember` | Interface | Marks a member for hydration/dehydration with backend metadata |
+| `PersistenceContainerMember` | Implementation | Concrete implementation of `IPersistenceContainerMember` |
+| `ISystemPopulatedField` | Interface | Indicates the value is automatically supplied by the system |
+| `IBackendSystemPopulatedField` | Interface | Value supplied by the backend (e.g., `IDENTITY` columns) |
+| `IOrmPopulatedField` | Interface | Value supplied by the ORM (e.g., auto-generated GUIDs) |
+| `OrmPopulatedGuidField` | Implementation | Automatically generates new `Guid` values |
+| `OrmPopulatedTimestampField` | Implementation | Automatically generates `DateTime` timestamps |
+| `IDirtyStateField` | Interface | Enables dirty state tracking for the entity |
+| `DirtyStateField` | Implementation | Concrete implementation of `IDirtyStateField` |
+| `ISoftDeleteRecords` | Interface | Enables soft-delete pattern support |
 
-#### Object/Entity member or container member level
-(These attributes are used at property or field level)
-
-Nature | Attribute | Purpose
--------|-----------|---------------
-Interface | `IOrmField` | A base interface extended by all other member property/field attributes.
-Interface | `IPersistenceContainerMember` | Marks the entity member as a participant in the hydration/dehydration ORM process, providing metata about the backend storage field/column.
-Implementation | `PersistenceContainerMember` | A concrete implemetnation of `IPersistenceContainerMember`.
-Interface | `ISystemPopulatedField` | Marks that the value for the member would be supplied automatically by the system.
-Interface | `IBackendSystemPopulatedField` | Inherits `ISystemPopulatedField` -- the backend database would provide a value for such fields. Eg: an `IDENTITY` column.
-Interface | `IOrmPopulatedField` | Inherits `ISystemPopulatedField` -- the ORM library would provide a value for this field. Eg: a `LastModified` timestamp, or an `Id` that uses automatic `NewGuid` for new records.
-Implementation | `OrmPopulatedGuidField` | Inherits `IOrmPopulatedField > ISystemPopulatedField` -- implements metadata to allow for automatic new `Guid` population for the field. Eg: `Id` that uses automatic `NewGuid` for new records.
-Implementation | `OrmPopulatedTimestampField` | Inherits `IOrmPopulatedField > ISystemPopulatedField` -- implements metadata to allow for automatic new `DateTime` population for the field. Eg: `LastModified` that uses automatic `DateTime.(Utc)Now` for new records.
-Interface | `IDirtyStateField` | Marks that this member enables the business entity track its own "dirty state". The ORM can automatically check the value of this field to decide whether to insert, update or delete it from the backend database system when requested. (**NOTE:** The field or property annotated with this attribute must be of `bool` type).
-Implementation | `DirtyStateField` | A concrete implementation of `IDirtyStateField`.
-Interface | `ISoftDeleteRecords` | Marks that the backing database table supports the concept of "soft deletes", and provides metadata to deal with that. Soft-deleted records are never returned in normal queries (unless through an override) though they may be used to filter records in other ways.
-
-
-> **NOTE:** *that the attributes `OrmPopulatedGuidField`, `OrmPopulatedTimestampField` and `DirtyStateField` do not extend the `PersistenceContainerMember` attribute, and are instead independent attributes. This lets the implementing ORM library deal with them separately from the other persistence container members.*
----
-
-## Entry point
-The primary entry point for this library is the `TypeDiscoveryFactory` class. When provided a type through one of its three overloads, it returns a `PersistenceContainerInfo` structure -- returning useful metadata for the ORM system about the objects, its members and the attributes decorating them. Critically, the `TypeDiscoveryFactory` interacts with a class, structure or record that is anotated with an attribute inheriting from `IPersistenceContainer` and retrieves the entity object's members (properties and fields) only if they are anotated with an attribute inheriting from `IPersistenceContainerMember`.
-
-Metadata discovered through the `TypeDiscoveryFactory` are cached by the `TypeDiscoveryFactory`, resulting in faster future lookups. 
+> **Note:** `OrmPopulatedGuidField`, `OrmPopulatedTimestampField`, and `DirtyStateField` are independent attributes that don't extend `PersistenceContainerMember`, allowing ORM libraries to handle them separately.
 
 ---
 
-## Extension functions
-The `ReflectionUtilities` namespace provides about a hundred extension methods to perform common ORM and data related tasks such as Date/Time/DateTime/DateTimeOffset conversions, type conversions and coercion, etc. Each function is fully documented.
+### Core Classes
+
+#### `TypeDiscoveryFactory`
+
+The primary entry point for metadata discovery. Analyzes types decorated with `IPersistenceContainer` and returns comprehensive metadata.
+
+**Key Features:**
+- Discovers entity metadata from attributes
+- Caches results for performance
+- Validates attribute configurations
+
+**Usage:**
+
+```c#
+PersistenceContainerInfo info = TypeDiscoveryFactory.Resolve<MyEntity>(); 
+
+// OR...
+
+PersistenceContainerInfo info = TypeDiscoveryFactory.Resolve(typeof(MyEntity)); PersistenceContainerInfo info = TypeDiscoveryFactory.Resolve(myEntityInstance);
+```
+
+
+#### `BatchCollection`
+
+Manages batch transactions for bulk operations with configurable batch sizes.
+
+**Usage:**
+
+```c#
+BatchCollection<User> batches = new BatchCollection<User>(users, batchSize: 100); 
+foreach ((Batch<User> batch, int batchIndex) in batches) 
+{ 
+	// Process each batch 
+}
+```
+
+
+#### `Result`
+
+Provides a consistent structure for returning transaction results.
 
 ---
 
-## Transaction batching
+### Extension Methods
 
-This library provides a mechanism to manage batch transactions in data applications. The `BatchCollection` class provides the ability to iterate through a configurable number of elements per batch. This is useful when interacting with systems such as `Azure Storage Tables` and `Microsoft SQL Server` that allow data to be inserted, updated or deleted in batches.
+The `ReflectionUtilities` namespace contains approximately 100 extension methods for:
 
-The `Result` class (not connected to the `BatchCollection`) provides a consistent way of returning results from an operation that leverages transactions whether through the `BatchCollection` or otherwise.
+- **Date/Time Conversions** – Convert between `DateTime`, `DateTimeOffset`, and various formats
+- **Type Conversions & Coercion** – Safe type casting and conversion utilities
+- **String Manipulation** – Common string operations for data processing
+- **Collection Operations** – LINQ-style extensions for data collections
+- **Validation Helpers** – Check nullability, emptiness, and validity
+
+All extension methods are fully documented with XML comments.
 
 ---
 
-> **NOTE:** This library contains other members marked "public" that are only intended for use by a library implementing a data access mechanism. These members are part of the internal implementation and should not be used directly by consumers of the library. They are subject to change without notice and may not be available in future versions of the library. Please see the code and documentation within SujaySarma.Data.* data access implementation libraries.
+## Advanced Usage
+
+### Dirty State Tracking
+
+```c#
+[PersistenceContainer(Name = "Products")]
+public class Product 
+{ 
+	[PersistenceContainerMember(Name = "Id")] 
+	public int Id { get; set; }
+
+	[PersistenceContainerMember(Name = "Name")]
+	public string Name { get; set; }
+
+	[DirtyStateField]
+	public bool IsDirty { get; set; }
+	// The ORM can check IsDirty to determine if INSERT/UPDATE/DELETE is needed
+}
+```
+
+
+### Soft Delete Support
+
+```c#
+[PersistenceContainer(Name = "Orders")]
+[ISoftDeleteRecords(DeletedFieldName = "IsDeleted")]
+public class Order 
+{ 
+	[PersistenceContainerMember(Name = "Id")] 
+	public int Id { get; set; }
+
+	[PersistenceContainerMember(Name = "IsDeleted")]
+	public bool IsDeleted { get; set; }
+	// Soft-deleted records are excluded from queries unless explicitly requested
+}
+```
 
 
 ---
+
+## Architecture
+
+`SujaySarma.Data.Core` serves as the foundation for specialized data access libraries:
+
+- **[SujaySarma.Data.SqlServer](https://github.com/sujayvsarma/SujaySarma.Data)** – SQL Server ORM with full T-SQL feature parity
+- **[SujaySarma.Data.Files.TokenLimitedFiles](https://github.com/sujayvsarma/SujaySarma.Data)** – High-performance CSV/flat-file parser (84K records in <200ms)
+
+---
+
+## Version History
+
+| Version | Release Date | Notes |
+|---------|--------------|-------|
+| `10.0.0.0` | Nov 28, 2025 | Complete rewrite – NOT backwards compatible |
+
+---
+
+## Requirements
+
+- **.NET 6.0** or higher
+- **C# 10.0** or higher (nullable reference types enabled)
+
+---
+
+## Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Submit a pull request with clear descriptions
+
+For issues, feature requests, or feedback, please [create an issue](https://github.com/sujayvsarma/SujaySarma.Data/issues) on GitHub.
+
+---
+
+## License
+
+This library is licensed under the [MIT License](LICENSE).
 Copyright (c) 2025 and beyond, Sujay V. Sarma. All rights reserved.
-Licensed under the MIT License. See LICENSE file in the project root for full license information.
-Library authored and maintained by: Sujay V. Sarma.
-Issues/Feedback/Suggestions/Feature requests: Please create an issue on the GitHub repository.
+
+---
+
+## Author
+
+**Sujay V. Sarma**
+
+- GitHub: [@sujayvsarma](https://github.com/sujayvsarma)
+- Repository: [SujaySarma.Data](https://github.com/sujayvsarma/SujaySarma.Data)
+
+---
+
+## Important Notes
+
+> ⚠️ **Internal Members:** This library contains public members intended only for use by `SujaySarma.Data.*` implementation libraries. These are part of the internal implementation and should not be used directly by consumers. They are subject to change without notice.
+
+> 📊 **Performance Focus:** As the foundational layer, this library prioritizes performance, stability, and API consistency above all else.
 
 ---
