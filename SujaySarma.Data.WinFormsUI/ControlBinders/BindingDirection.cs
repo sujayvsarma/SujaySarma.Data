@@ -9,6 +9,7 @@ public enum BindingDirection
     /// <summary>
     /// One way binding: Data to control.
     /// </summary>
+    
     OneWay = 1,
 
     /// <summary>
