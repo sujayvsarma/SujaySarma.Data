@@ -4,12 +4,12 @@ This repository contains the source code for the following libraries available o
 
 All libraries and source code in this repo is: [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Package                                | Source code                        | Nuget Package             | Published version             |
----------------------------------------|------------------------------------|---------------------------|-------------------------------|
-SujaySarma.Data.Core                   | [Source](https://github.com/sujayvsarma/SujaySarma.Data/tree/master/SujaySarma.Data.Core) | [Package](https://www.nuget.org/packages/SujaySarma.Data.Core/) | [![NuGet](https://img.shields.io/nuget/v/SujaySarma.Data.Core.svg)](https://www.nuget.org/packages/SujaySarma.Data.Core)
-SujaySarma.Data.TokenLimitedFiles      | [Source](https://github.com/sujayvsarma/SujaySarma.Data/tree/master/SujaySarma.Data.TokenLimitedFiles) | [Package](https://www.nuget.org/packages/SujaySarma.Data.TokenLimitedFiles/) | [![NuGet](https://img.shields.io/nuget/v/SujaySarma.Data.TokenLimitedFiles.svg)](https://www.nuget.org/packages/SujaySarma.Data.TokenLimitedFiles)
-SujaySarma.Data.SqlServer              | [Source](https://github.com/sujayvsarma/SujaySarma.Data/tree/master/SujaySarma.Data.SqlServer) | [Package](https://www.nuget.org/packages/SujaySarma.Data.SqlServer/) | [![NuGet](https://img.shields.io/nuget/v/SujaySarma.Data.SqlServer.svg)](https://www.nuget.org/packages/SujaySarma.Data.SqlServer)
-SujaySarma.Data.WinFormsUI             | [Source](https://github.com/sujayvsarma/SujaySarma.Data/tree/master/SujaySarma.Data.WinFormsUI) | [Package](https://www.nuget.org/packages/SujaySarma.Data.WinFormsUI/) | [![NuGet](https://img.shields.io/nuget/v/SujaySarma.Data.WinFormsUI.svg)](https://www.nuget.org/packages/SujaySarma.Data.WinFormsUI)
+Package                                | Source code                        | Published version             |
+---------------------------------------|------------------------------------|-------------------------------|
+SujaySarma.Data.Core                   | [Source](https://github.com/sujayvsarma/SujaySarma.Data/tree/master/SujaySarma.Data.Core) | [![NuGet](https://img.shields.io/nuget/v/SujaySarma.Data.Core.svg)](https://www.nuget.org/packages/SujaySarma.Data.Core)
+SujaySarma.Data.TokenLimitedFiles      | [Source](https://github.com/sujayvsarma/SujaySarma.Data/tree/master/SujaySarma.Data.TokenLimitedFiles) | [![NuGet](https://img.shields.io/nuget/v/SujaySarma.Data.TokenLimitedFiles.svg)](https://www.nuget.org/packages/SujaySarma.Data.TokenLimitedFiles)
+SujaySarma.Data.SqlServer              | [Source](https://github.com/sujayvsarma/SujaySarma.Data/tree/master/SujaySarma.Data.SqlServer) | [![NuGet](https://img.shields.io/nuget/v/SujaySarma.Data.SqlServer.svg)](https://www.nuget.org/packages/SujaySarma.Data.SqlServer)
+SujaySarma.Data.WinFormsUI             | [Source](https://github.com/sujayvsarma/SujaySarma.Data/tree/master/SujaySarma.Data.WinFormsUI) | [![NuGet](https://img.shields.io/nuget/v/SujaySarma.Data.WinFormsUI.svg)](https://www.nuget.org/packages/SujaySarma.Data.WinFormsUI)
 
 Each folder linked to above has its own README that you must read before using that library.
 
