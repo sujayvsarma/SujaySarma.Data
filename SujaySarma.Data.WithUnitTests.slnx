@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/SujaySarma.Data.Core.Tests/SujaySarma.Data.Core.Tests.csproj" Id="410f9aad-eff4-490d-8a4f-06f8915adb81" />
+    <Project Path="Tests/SujaySarma.Data.TokenLimitedFiles.Tests/SujaySarma.Data.TokenLimitedFiles.Tests.csproj" Id="fe32c2f9-b280-4921-aa91-27419e2a916c" />
+    <Project Path="Tests/SujaySarma.Data.SqlServer.Tests/SujaySarma.Data.SqlServer.Tests.csproj" />
+    <Project Path="Tests/SujaySarma.Data.WinFormsUI.Tests/SujaySarma.Data.WinFormsUI.Tests.csproj" />
+  </Folder>
+  <Project Path="SujaySarma.Data.Core/SujaySarma.Data.Core.csproj" />
+  <Project Path="SujaySarma.Data.TokenLimitedFiles/SujaySarma.Data.TokenLimitedFiles.csproj" />
+  <Project Path="SujaySarma.Data.SqlServer/SujaySarma.Data.SqlServer.csproj" />
+  <Project Path="SujaySarma.Data.WinFormsUI/SujaySarma.Data.WinFormsUI.csproj" Id="ff8071eb-706f-493a-b61f-53a5a9d2f258" />
+</Solution>

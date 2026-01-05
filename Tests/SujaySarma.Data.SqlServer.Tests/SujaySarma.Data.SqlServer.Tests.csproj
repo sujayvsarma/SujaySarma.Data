@@ -7,7 +7,7 @@
 		<Nullable>enable</Nullable>
 		<TestingExtensionsProfile>AllMicrosoft</TestingExtensionsProfile>
 		<SignAssembly>True</SignAssembly>
-		<AssemblyOriginatorKeyFile>..\..\SujaySarma.Data.snk</AssemblyOriginatorKeyFile>
+		<AssemblyOriginatorKeyFile>D:\Sujay\OneDrive - Sujay Sarma\Documents\Keys\SujaySarma.Data.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<ItemGroup>

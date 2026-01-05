@@ -39,7 +39,7 @@ namespace SujaySarma.Data.Core.Tests.ReflectionUtilities
         [TestMethod(DisplayName = "TypeExtensions: Get type name (AssemblyQualifiedName or FullName or just Name)")]
         public void GetWellQualifiedTypeName_ReturnsAssemblyQualifiedName()
         {
-            string name = typeof(AttributedClass).GetWellQualifiedTypeName();
+            string name = typeof(AttributedClass).GetUsableTypeName();
             Assert.AreEqual(typeof(AttributedClass).AssemblyQualifiedName, name);
         }
 

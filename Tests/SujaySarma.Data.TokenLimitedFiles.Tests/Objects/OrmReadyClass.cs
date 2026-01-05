@@ -1,9 +1,9 @@
 ﻿using System;
 
 using SujaySarma.Data.Core.Attributes;
-using SujaySarma.Data.Files.TokenLimitedFiles.Attributes;
+using SujaySarma.Data.TokenLimitedFiles.Attributes;
 
-namespace SujaySarma.Data.Files.TokenLimitedFiles.Tests.Objects;
+namespace SujaySarma.Data.TokenLimitedFiles.Tests.Objects;
 
 /// <summary />
 [Flatfile(headerRowIndex: 1)]

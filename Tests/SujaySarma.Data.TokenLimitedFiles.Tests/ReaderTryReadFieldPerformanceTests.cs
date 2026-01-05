@@ -5,9 +5,9 @@ using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using SujaySarma.Data.Files.TokenLimitedFiles.Constants;
+using SujaySarma.Data.TokenLimitedFiles.Constants;
 
-namespace SujaySarma.Data.Files.TokenLimitedFiles.Tests;
+namespace SujaySarma.Data.TokenLimitedFiles.Tests;
 
 /// <summary>
 /// Performance tests for TokenLimitedFileReaderSync

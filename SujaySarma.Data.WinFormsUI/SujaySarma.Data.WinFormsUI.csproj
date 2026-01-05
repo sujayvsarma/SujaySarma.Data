@@ -9,7 +9,7 @@
 		<ApplicationIcon>SS - Favicon.ico</ApplicationIcon>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<SignAssembly>True</SignAssembly>
-		<AssemblyOriginatorKeyFile>D:\Sujay\src\SujaySarma.Data\SujaySarma.Data.snk</AssemblyOriginatorKeyFile>
+		<AssemblyOriginatorKeyFile>D:\Sujay\OneDrive - Sujay Sarma\Documents\Keys\SujaySarma.Data.snk</AssemblyOriginatorKeyFile>
 		<Title>Sujay Sarma's Windows Forms Data-binding Helper Library</Title>
 		<Authors>Sujay V. Sarma</Authors>
 		<Description>This library assists in painless data-binding a Windows Forms UI to the object entity model. This library is designed to work with my (SujaySarma.Data.*) ORM frameworks and will not work with any other ORM framework (like EF).</Description>
@@ -29,6 +29,16 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>[10.0.0.0] - Complete rewrite of the library! This version is NOT backwards compatible with previous versions.</PackageReleaseNotes>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
 		<DebugType>embedded</DebugType>
@@ -76,7 +86,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\SujaySarma.Data.Core\SujaySarma.Data.Core.csproj" />
+		<PackageReference Include="SujaySarma.Data.Core" Version="10.0.0" />
 	</ItemGroup>
+
+	<!--<ItemGroup>
+	  <ProjectReference Include="..\SujaySarma.Data.Core\SujaySarma.Data.Core.csproj" />
+	</ItemGroup>-->
 
 </Project>

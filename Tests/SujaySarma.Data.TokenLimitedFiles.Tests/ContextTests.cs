@@ -3,9 +3,9 @@ using System.IO;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using SujaySarma.Data.Files.TokenLimitedFiles.Tests.Objects;
+using SujaySarma.Data.TokenLimitedFiles.Tests.Objects;
 
-namespace SujaySarma.Data.Files.TokenLimitedFiles.Tests;
+namespace SujaySarma.Data.TokenLimitedFiles.Tests;
 
 
 [TestClass]

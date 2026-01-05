@@ -1,6 +1,6 @@
-using SujaySarma.Data.Files.TokenLimitedFiles.Attributes;
+using SujaySarma.Data.TokenLimitedFiles.Attributes;
 
-namespace SujaySarma.Data.Files.TokenLimitedFiles.Tests.Objects;
+namespace SujaySarma.Data.TokenLimitedFiles.Tests.Objects;
 
 /// <summary>
 /// Represents an airport record from the perfbenchmark.csv file

@@ -6,9 +6,9 @@ using System.Text;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using SujaySarma.Data.Files.TokenLimitedFiles.Types;
+using SujaySarma.Data.TokenLimitedFiles.Types;
 
-namespace SujaySarma.Data.Files.TokenLimitedFiles.Tests.Types;
+namespace SujaySarma.Data.TokenLimitedFiles.Tests.Types;
 
 [TestClass]
 public sealed class FastCharacterArrayBufferTests
