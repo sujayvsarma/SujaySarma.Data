@@ -127,6 +127,35 @@ internal abstract class ListValueBinderBase<TControl, TValue> : ControlBinderBas
     }
 
 
+    protected int IndexOf(TValue value)
+    {
+        for(int i = 0; i < _bindingSource.Count; i++)
+        {
+            BindingKeyValuePair pair = _bindingSource[i];
+            if (pair.Value is TValue val && EqualityComparer<TValue>.Default.Equals(val, value))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    protected int IndexOf(string value)
+    {
+        for (int i = 0; i < _bindingSource.Count; i++)
+        {
+            BindingKeyValuePair pair = _bindingSource[i];
+            if ((pair.Key == value) || (pair.Value.ToString() == value))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+
     private readonly List<BindingKeyValuePair> _bindingSource;
 }
 

@@ -32,7 +32,7 @@ internal sealed class CheckedListBoxBinder<TValue> : ListValueBinderBase<Checked
         foreach (TValue val in values)
         {
             // val is already validated as non-NULL in the IF above.
-            int index = ControlPartner.Items.IndexOf(val!);
+            int index = base.IndexOf(val!);
             if (index >= 0)
             {
                 ControlPartner.SetItemChecked(index, true);

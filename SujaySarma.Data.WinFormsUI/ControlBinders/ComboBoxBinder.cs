@@ -23,7 +23,7 @@ internal sealed class ComboBoxBinder<TValue> : ListValueBinderBase<ComboBox, TVa
             return;
         }
 
-        int index = ControlPartner.Items.IndexOf(value);
+        int index = base.IndexOf(value);
         if (index >= 0)
         {
             ControlPartner.SelectedIndex = index;
@@ -39,13 +39,13 @@ internal sealed class ComboBoxBinder<TValue> : ListValueBinderBase<ComboBox, TVa
             throw new InvalidOperationException($"'{base.ControlPartner.GetType().Name}.{base.ControlPartner.Name}': Control binding is one-way only.");
         }
 
-        object? selectedItem = ControlPartner.SelectedItem;
+        BindingKeyValuePair? selectedItem = (BindingKeyValuePair?)ControlPartner.SelectedItem;
         if (selectedItem is null)
         {
             return;
         }
 
-        dataContext.SetValue(EntityMemberPartner, (TValue)selectedItem);
+        dataContext.SetValue(EntityMemberPartner, selectedItem.Value);
     }
 
 
