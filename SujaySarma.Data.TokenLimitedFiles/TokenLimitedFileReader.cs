@@ -187,6 +187,18 @@ public class TokenLimitedFileReader : IDisposable
                             field = string.Empty;
                             return ReaderExitReason.FieldDelimiterEncountered;
                         }
+                        else if ((nextAfterNext is CR) || (nextAfterNext is LF) || (nextAfterNext is '\uffff'))
+                        {
+                            // "" as the final field in a record.
+                            _reader.Read();
+                            if (_reader.Peek() is LF)
+                            {
+                                // Eat the LF if present outside quotes.
+                                _reader.Read();
+                            }
+                            field = string.Empty;
+                            return ReaderExitReason.RecordDelimiterEncountered;
+                        }
                         else
                         {
                             // RFC: Error! Terminate immediately.

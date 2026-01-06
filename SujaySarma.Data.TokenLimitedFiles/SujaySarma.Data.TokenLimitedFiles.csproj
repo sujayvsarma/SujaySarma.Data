@@ -19,13 +19,13 @@
 		<PackageTags>data access,library,flatfiles,flat files,token-limited,token limited,comma,tab,semi-colon,semi colon,semicolon,json,databases</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>10.0.0.0</AssemblyVersion>
-		<FileVersion>10.0.0.0</FileVersion>
+		<AssemblyVersion>10.0.1.0</AssemblyVersion>
+		<FileVersion>10.0.1.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
 		<IncludeSymbols>False</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>[10.0.0.0] - Complete rewrite of the library! This version is NOT backwards compatible with previous versions.</PackageReleaseNotes>
+		<PackageReleaseNotes>[10.0.1.0] - BUGFIX: Fixed an issue writing and parsing quoted values in some cases.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup>

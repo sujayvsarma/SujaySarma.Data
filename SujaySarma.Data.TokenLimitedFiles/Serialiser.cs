@@ -215,7 +215,8 @@ public class Serialiser
 
         if (mustQuote)
         {
-            s = $"\"{s.Replace("\"\"", "\"")}\"";
+            //BUGFIX: escaping quotes was reversed!
+            s = $"\"{s.Replace("\"", "\"\"")}\"";
         }
 
         return s;
