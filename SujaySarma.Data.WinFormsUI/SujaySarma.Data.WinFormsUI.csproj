@@ -21,13 +21,13 @@
 		<PackageTags>data access,data binding, databinding,binding,library,sql,sqlserver,sql server,sql-server,msde,azuresql,azure sql,azure,localdb,json,databases</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>10.0.0.0</AssemblyVersion>
-		<FileVersion>10.0.0.0</FileVersion>
+		<AssemblyVersion>10.0.1.0</AssemblyVersion>
+		<FileVersion>10.0.1.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
 		<IncludeSymbols>False</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>[10.0.0.0] - Complete rewrite of the library! This version is NOT backwards compatible with previous versions.</PackageReleaseNotes>
+		<PackageReleaseNotes>[10.0.1.0] - Bug fixes: ListControl binders fail to set values or retrieve them correctly.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup>
