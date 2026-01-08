@@ -38,6 +38,12 @@ public class Serialiser
             case Flatfile.FieldReferencesAre.Indexes:
                 for (int i = 0; i < _headers.Length; i++)
                 {
+                    //BUGFIX: File may contain lesser fields than expected by the header row.
+                    if (values.Length <= i)
+                    {
+                        break;
+                    }
+
                     if (_headers[i] != string.Empty)
                     {
                         if (!_container.TryGetMember(_headers[i], out PersistenceContainerMemberInfo? member))
@@ -53,6 +59,12 @@ public class Serialiser
             case Flatfile.FieldReferencesAre.Names:
                 for (int i = 0; i < _headers.Length; i++)
                 {
+                    //BUGFIX:  File may contain lesser fields than expected by the header row.
+                    if (values.Length <= i)
+                    {
+                        break;
+                    }
+
                     if (_headers[i] != QUOTED_EMPTY_STRING)
                     {
                         if (!_container.TryGetMemberByPersistenceColumnName(_headers[i], out PersistenceContainerMemberInfo? member))
