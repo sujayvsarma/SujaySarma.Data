@@ -212,6 +212,7 @@ public class Serialiser
             }
         }
 
+
         // Some types serialised to string may end up containing ','s and other chars.
         // Eg: numerics converted using local culture info.
         if (s.Contains(fieldDelimiter) || s.Contains(recordDelimiter) || s.Contains('"'))
@@ -273,7 +274,8 @@ public class Serialiser
             string s = strings[i];
             if ((!string.IsNullOrEmpty(s)) && (s.Length >= 2) && (s[0] != '"') && (s[^1] != '"'))
             {
-                results[i] = $"\"{s.Replace("\"\"", "\"")}\"";
+                //BUGFIX: escaping quotes was reversed!
+                results[i] = $"\"{s.Replace("\"", "\"\"")}\"";
             }
             else
             {
@@ -362,14 +364,14 @@ public class Serialiser
                     if (!orderedNames.ContainsKey(indexed.Position))
                     {
                         orderedNames.Add(indexed.Position, member.Member.Name);
-                    }                    
+                    }
                     break;
 
                 case Flatfile.FieldReferencesAre.Names when member.PersistenceInfo is FlatfileNamedField named:
                     if (!orderedNames.ContainsKey(named.Position))
                     {
                         orderedNames.Add(named.Position, named.TableFieldName);
-                    }                    
+                    }
                     break;
 
                 default:
@@ -381,7 +383,7 @@ public class Serialiser
 
         if (orderedNames.Count == 0)
         {
-            _headers = Array.Empty<string>();            
+            _headers = Array.Empty<string>();
         }
         else
         {
