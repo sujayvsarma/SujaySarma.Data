@@ -8,8 +8,6 @@
 		<Nullable>enable</Nullable>
 		<ApplicationIcon>SS - Favicon.ico</ApplicationIcon>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<SignAssembly>True</SignAssembly>
-		<AssemblyOriginatorKeyFile>D:\Sujay\OneDrive - Sujay Sarma\Documents\Keys\SujaySarma.Data.snk</AssemblyOriginatorKeyFile>
 		<Title>Sujay Sarma's Windows Forms Data-binding Helper Library</Title>
 		<Authors>Sujay V. Sarma</Authors>
 		<Description>This library assists in painless data-binding a Windows Forms UI to the object entity model. This library is designed to work with my (SujaySarma.Data.*) ORM frameworks and will not work with any other ORM framework (like EF).</Description>
@@ -24,7 +22,6 @@
 		<AssemblyVersion>10.0.1.0</AssemblyVersion>
 		<FileVersion>10.0.1.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
-		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
 		<IncludeSymbols>False</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>[10.0.1.0] - Bug fixes: ListControl binders fail to set values or retrieve them correctly.</PackageReleaseNotes>

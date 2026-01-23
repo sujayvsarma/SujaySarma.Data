@@ -1,0 +1,29 @@
+<Project>
+	<PropertyGroup>
+		<SolutionRoot>$(MSBuildThisFileDirectory)</SolutionRoot>
+		
+		<!-- Enable targeting Windows -->
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
+
+		<!-- Redist folder mapping -->
+		<PackageOutputPath>$(SolutionRoot)Redist/</PackageOutputPath>
+
+		<!-- Nuget package cache location -->
+		<RestorePackagesPath Condition="'$(OS)' == 'Windows_NT'">D:/NuGetPackageCache</RestorePackagesPath>
+		<RestorePackagesPath Condition="'$(OS)' != 'Windows_NT'">$(HOME)/.nuget/packages/</RestorePackagesPath>
+
+		<!-- SNK file location -->
+		<OneDriveWindows>D:\Sujay\OneDrive - Sujay Sarma\Documents\Keys\</OneDriveWindows>
+		<OneDriveLinux>$(HOME)/OneDrive/Documents/Keys/</OneDriveLinux>
+		<ProposedKeyPath Condition="'$(OS)' == 'Windows_NT'">$(OneDriveWindows)</ProposedKeyPath>
+		<ProposedKeyPath Condition="'$(OS)' != 'Windows_NT'">$(OneDriveLinux)</ProposedKeyPath>
+		<SnkFileName>$(ProposedKeyPath)SujaySarma.CodesignKey.snk</SnkFileName>
+		<SignAssembly Condition="Exists('$(SnkFileName)')">true</SignAssembly>
+		<AssemblyOriginatorKeyFile Condition="Exists('$(SnkFileName)')">$(SnkFileName)</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
+
+	<Target Name="WarnNoKey" BeforeTargets="PrepareForBuild" Condition="!Exists('$(SnkFileName)')">
+		<Error ContinueOnError="false" Code="SUJNOSNK01" Text="No SNK file found at '$(SnkFileName)'. Signing will not be performed." />
+	</Target>
+	
+</Project>

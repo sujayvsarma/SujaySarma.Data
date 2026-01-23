@@ -7,8 +7,6 @@
 		<Nullable>enable</Nullable>
 		<ApplicationIcon>SS - Favicon.ico</ApplicationIcon>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<SignAssembly>True</SignAssembly>
-		<AssemblyOriginatorKeyFile>D:\Sujay\OneDrive - Sujay Sarma\Documents\Keys\SujaySarma.Data.snk</AssemblyOriginatorKeyFile>
 		<Title>Sujay Sarma's Sql Server Client SDK</Title>
 		<Authors>Sujay V. Sarma</Authors>
 		<Description>Use this SDK to avoid having to use Entity Framework (EF) and simplify your time to code complete. This library is built along the familiar lines of my Azure Tables package.  Use the attributes from the 'SujaySarma.Data.SqlServer.Attributes' namespace to decorate your business object classes/records/structs and their properties and fields. The 'SqlTableContext' is your starting point for firing any DML or query operations. To debug query generation, use the methods in the 'SQLScriptGenerator' class -- the outputs of these functions are used in the DML operations.</Description>
@@ -20,13 +18,12 @@
 		<PackageTags>data access,library,sql,sqlserver,sql server,sql-server,msde,azuresql,azure sql,azure,localdb,json,databases</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>10.0.0.0</AssemblyVersion>
-		<FileVersion>10.0.0.0</FileVersion>
+		<AssemblyVersion>10.0.1.0</AssemblyVersion>
+		<FileVersion>10.0.1.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
-		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
 		<IncludeSymbols>False</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>[10.0.0.0] - Complete rewrite of the library! This version is NOT backwards compatible with previous versions.</PackageReleaseNotes>
+		<PackageReleaseNotes>[10.0.1.0] - Bug fix: Renamed methods in SqlContext to include the 'Async' suffix.</PackageReleaseNotes>
 	</PropertyGroup>
 	
 	<PropertyGroup>
@@ -36,7 +33,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">

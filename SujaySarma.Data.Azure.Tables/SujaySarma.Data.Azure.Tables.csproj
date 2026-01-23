@@ -7,7 +7,7 @@
 		<ApplicationIcon>SS - Favicon.ico</ApplicationIcon>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<SignAssembly>True</SignAssembly>
-		<AssemblyOriginatorKeyFile>D:\Sujay\src\SujaySarma.Data\SujaySarma.Data.snk</AssemblyOriginatorKeyFile>
+		<AssemblyOriginatorKeyFile>D:\Sujay\OneDrive - Sujay Sarma\Documents\Keys\SujaySarma.CodesignKey.snk</AssemblyOriginatorKeyFile>
 		<Title>Sujay Sarma's Azure Tables Client SDK</Title>
 		<Authors>Sujay V. Sarma</Authors>
 		<Description>(Azure Storage Tables, Azure Development Storage, Azurite and CosmosDB compatible). This library provides data access and management capabilities for Azure Storage Tables.</Description>

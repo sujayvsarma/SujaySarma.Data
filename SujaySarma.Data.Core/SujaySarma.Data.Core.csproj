@@ -6,8 +6,6 @@
 		<Nullable>enable</Nullable>
 		<ApplicationIcon>SS - Favicon.ico</ApplicationIcon>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<SignAssembly>True</SignAssembly>
-		<AssemblyOriginatorKeyFile>D:\Sujay\OneDrive - Sujay Sarma\Documents\Keys\SujaySarma.Data.snk</AssemblyOriginatorKeyFile>
 		<Title>Sujay Sarma's Core assembly for data access</Title>
 		<Authors>Sujay V. Sarma</Authors>
 		<Description>This library is used as a dependency by other libraries named with the prefix `SujaySarma.Data.*`. `SujaySarma.Data.Core` provides core reflection attributes, attribute discovery, validation, data conversion, population, hydration and evaporation services to the upstream consuming libraries.</Description>
@@ -22,7 +20,6 @@
 		<AssemblyVersion>10.0.0.0</AssemblyVersion>
 		<FileVersion>10.0.0.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
-		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
 		<IncludeSymbols>False</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>[10.0.0.0] - Complete rewrite of the library! This version is NOT backwards compatible with previous versions.</PackageReleaseNotes>

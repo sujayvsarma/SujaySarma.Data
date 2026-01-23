@@ -38,7 +38,7 @@ public partial class SqlContext
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
     /// <param name="entities">Instances of entities of <typeparamref name="TEntity"/> type.</param>
     /// <returns>The number of rows affected. Must equal the number of <paramref name="entities"/> for a successful insert.</returns>
-    public async Task<int> InsertMany<TEntity>(CancellationToken cancellationToken, params IEnumerable<TEntity> entities)
+    public async Task<int> InsertManyAsync<TEntity>(CancellationToken cancellationToken, params IEnumerable<TEntity> entities)
     {
         Result result = await SqlExecuteAsync.NonQueryAsync(_connectionString, SqlInsertBuilder.InsertMany<TEntity>(entities), cancellationToken);
         if (result is ErrorResult error)
@@ -60,7 +60,7 @@ public partial class SqlContext
     /// <param name="entity">Instance of an entity of <typeparamref name="TEntity"/> type.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
     /// <returns>The number of rows affected. Must equal 1 for a successful update.</returns>
-    public async Task<int> Update<TEntity>(TEntity entity, CancellationToken cancellationToken)
+    public async Task<int> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken)
     {
         Result result = await SqlExecuteAsync.NonQueryAsync(_connectionString, SqlUpdateBuilder.Update<TEntity>(entity), cancellationToken);
         if (result is ErrorResult error)
@@ -78,7 +78,7 @@ public partial class SqlContext
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
     /// <param name="entities">Instances of entities of <typeparamref name="TEntity"/> type.</param>
     /// <returns>The number of rows affected. Must equal the number of <paramref name="entities"/> for a successful update.</returns>
-    public async Task<int> UpdateMany<TEntity>(CancellationToken cancellationToken, params IEnumerable<TEntity> entities)
+    public async Task<int> UpdateManyAsync<TEntity>(CancellationToken cancellationToken, params IEnumerable<TEntity> entities)
     {
         StringBuilder script = new StringBuilder();
         foreach(SqlUpdateBuilder builder in SqlUpdateBuilder.UpdateMany<TEntity>(entities))
@@ -106,7 +106,7 @@ public partial class SqlContext
     /// <param name="entity">Instance of an entity of <typeparamref name="TEntity"/> type.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
     /// <returns>The number of rows affected. Must equal 1 for a successful delete.</returns>
-    public async Task<int> Delete<TEntity>(TEntity entity, CancellationToken cancellationToken)
+    public async Task<int> DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken)
     {
         Result result = await SqlExecuteAsync.NonQueryAsync(_connectionString, SqlDeleteBuilder.Delete<TEntity>(entity), cancellationToken);
         if (result is ErrorResult error)
@@ -124,7 +124,7 @@ public partial class SqlContext
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
     /// <param name="entities">Instances of entities of <typeparamref name="TEntity"/> type.</param>
     /// <returns>The number of rows affected. Must equal the number of <paramref name="entities"/> for a successful delete.</returns>
-    public async Task<int> DeleteMany<TEntity>(CancellationToken cancellationToken, params IEnumerable<TEntity> entities)
+    public async Task<int> DeleteManyAsync<TEntity>(CancellationToken cancellationToken, params IEnumerable<TEntity> entities)
     {
         Result result = await SqlExecuteAsync.NonQueryAsync(_connectionString, SqlDeleteBuilder.DeleteMany<TEntity>(entities), cancellationToken);
         if (result is ErrorResult error)

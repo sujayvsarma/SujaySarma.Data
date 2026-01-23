@@ -6,8 +6,6 @@
 		<Nullable>enable</Nullable>
 		<ApplicationIcon>SS - Favicon.ico</ApplicationIcon>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<SignAssembly>True</SignAssembly>
-		<AssemblyOriginatorKeyFile>D:\Sujay\OneDrive - Sujay Sarma\Documents\Keys\SujaySarma.Data.snk</AssemblyOriginatorKeyFile>
 		<Title>Sujay Sarma's Token-limited files Parser/Writer SDK</Title>
 		<Authors>Sujay V. Sarma</Authors>
 		<Description>This library provides mechanisms to read from and write data to token delimited files -- such as comma, semi-colon, space, tab, etc seperated flat text files. These files may have file extensions of .csv or .txt. In addition to disk files, the library also supports reading from and writing to streams (eg: Http file download streams, Uploaded files from web-based forms, etc). This library is highly performance optimised. My benchmark: Parse and correctly load a flat text file with 20,000 records in less than 1 second. This file contains a mix of good data, erroroneous data, quoted, unquoted, badly quoted, wrongly quoted, etc. that interprets the RFC specification in both letter and spirit. Typically, this library surpasses this metric by finishing in less than 300ms.</Description>
@@ -22,7 +20,6 @@
 		<AssemblyVersion>10.0.2.0</AssemblyVersion>
 		<FileVersion>10.0.2.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
-		<PackageOutputPath>$(SolutionDir)Redist\</PackageOutputPath>
 		<IncludeSymbols>False</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>[10.0.2.0] - BUGFIX: Fixed an issue when entity defines more headers than file-data contains.</PackageReleaseNotes>
