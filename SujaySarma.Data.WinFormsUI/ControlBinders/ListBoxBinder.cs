@@ -19,6 +19,8 @@ internal sealed class ListBoxBinder<TValue> : ListValueBinderBase<ListBox, TValu
     /// <inheritdoc />
     public override void BindControl(object dataContext)
     {
+        base.BindControl(dataContext);
+
         IEnumerable<TValue>? values = (IEnumerable<TValue>?)dataContext.GetValue(EntityMemberPartner);
         if (values is null)
         {

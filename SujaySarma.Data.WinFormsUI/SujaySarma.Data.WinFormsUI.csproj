@@ -20,12 +20,12 @@
 		<PackageTags>data access,data binding, databinding,binding,library,sql,sqlserver,sql server,sql-server,msde,azuresql,azure sql,azure,localdb,json,databases</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>10.0.1.0</AssemblyVersion>
-		<FileVersion>10.0.1.0</FileVersion>
+		<AssemblyVersion>10.0.5.0</AssemblyVersion>
+		<FileVersion>10.0.5.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<IncludeSymbols>False</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>[10.0.1.0] - Bug fixes: ListControl binders fail to set values or retrieve them correctly.</PackageReleaseNotes>
+		<PackageReleaseNotes>[10.0.5.0] - Bug fixes: Checkbox keep synced issue fixed, Feature: Autosubscription to INotifyPropertyChanged and UI updates.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup>

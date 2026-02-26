@@ -17,6 +17,8 @@ internal sealed class ComboBoxBinder<TValue> : ListValueBinderBase<ComboBox, TVa
     /// <inheritdoc />
     public override void BindControl(object dataContext)
     {
+        base.BindControl(dataContext);
+
         TValue? value = (TValue?)dataContext.GetValue(EntityMemberPartner);
         if (value is null)
         {

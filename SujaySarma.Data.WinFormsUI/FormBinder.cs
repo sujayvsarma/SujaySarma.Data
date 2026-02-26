@@ -4,6 +4,7 @@ using SujaySarma.Data.WinFormsUI.ControlBinders;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows.Forms;
@@ -41,6 +42,24 @@ public class FormBinder<TEntity>
             controlBinder.BindControl(_entity!);
         }
     }
+
+    /// <summary>
+    /// Handles INotifyPropertyChanged if TEntity implements it.
+    /// </summary>
+    /// <param name="sender">(Unused)</param>
+    /// <param name="e">PropertyName contains the name of the property that was updated.</param>
+    private void Entity_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        foreach(IControlBinder controlBinder in _boundControls)
+        {
+            if ((e.PropertyName is null) || ((e.PropertyName is not null) && controlBinder.BindsProperty(e.PropertyName)))
+            {
+                controlBinder.RefreshControl();
+            }
+        }
+    }
+
+
 
     #region Add controls
 
@@ -221,7 +240,7 @@ public class FormBinder<TEntity>
                 nameof(memberSelector));
         }
 
-        _boundControls.Add(new RadioButtonGroupBinder<TValue>(groupParentControl, memberInfo, values, BindingDirection.TwoWay));
+        _boundControls.Add(new RadioButtonGroupBinder<TValue>(groupParentControl, memberInfo, valueSourceDictionary: values, bindingDirection: ControlBinders.BindingDirection.TwoWay));
         return this;
     }
 
@@ -247,7 +266,7 @@ public class FormBinder<TEntity>
                 nameof(memberSelector));
         }
 
-        _boundControls.Add(new RadioButtonGroupBinder<TValue>(groupParentControl, memberInfo, valueSource, displayMember, valueMember, BindingDirection.TwoWay));
+        _boundControls.Add(new RadioButtonGroupBinder<TValue>(groupParentControl, memberInfo, valueSource, displayMember, valueMember, ControlBinders.BindingDirection.TwoWay));
         return this;
     }
 
@@ -374,6 +393,12 @@ public class FormBinder<TEntity>
         _form = form;
         _entity = entity;
         _boundControls = new List<IControlBinder>();
+
+        // Bind to INotifyPropertyChanged if applicable.
+        if (entity is INotifyPropertyChanged npc)
+        {
+            npc.PropertyChanged += Entity_PropertyChanged;
+        }
     }
 
     #endregion

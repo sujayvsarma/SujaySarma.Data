@@ -41,6 +41,16 @@ internal sealed class RadioButtonGroupBinder<TValue> : IControlBinder
         get; init;
     }
 
+    /// <summary>
+    /// The data object (class/struct/record) that was originally bound 
+    /// to the control binder. This property is to be populated by the implementing binder.
+    /// </summary>
+    private object? DataContext
+    {
+        get; set;
+
+    } = null;
+
 
     /// <summary>
     /// Sets the value of the control using the current value of the specified member (<see cref="EntityMemberPartner"/>) 
@@ -87,16 +97,37 @@ internal sealed class RadioButtonGroupBinder<TValue> : IControlBinder
     }
 
     /// <summary>
+    /// Tests if this binder has a binding for the provided <paramref name="propertyName" />.
+    /// </summary>
+    /// <param name="propertyName">Name of the property to check for.</param>
+    /// <returns>True if the binding exists.</returns>
+    public bool BindsProperty(string propertyName)
+    {
+        return (EntityMemberPartner.Member.Name == propertyName);
+    }
+
+    /// <summary>
+    /// Refreshes the value displayed on the control from the instance of the entity/property.
+    /// </summary>
+    public void RefreshControl()
+    {
+        if (DataContext is not null)
+        {
+            BindControl(DataContext);
+        }
+    }
+
+    /// <summary>
     /// Initialise the binder.
     /// </summary>
     /// <param name="parentControl">The control that contains all the related <see cref="RadioButton"/> controls.</param>
     /// <param name="member">The member property or field participating in the binding.</param>
-    /// <param name="valueSource">An enumeration of source of type <typeparamref name="TValue"/> that are to be bound to the radio buttons in <paramref name="parentControl"/> as choices.</param>
+    /// <param name="valueSourceEnumerable">An enumeration of source of type <typeparamref name="TValue"/> that are to be bound to the radio buttons in <paramref name="parentControl"/> as choices.</param>
     /// <param name="displayMember">The property of <typeparamref name="TValue"/> that is to be displayed on the UI.</param>
     /// <param name="valueMember">The property of <typeparamref name="TValue"/> that is to be used as the member item's internal value.</param>
     /// <param name="bindingDirection">The direction of binding.</param>
     public RadioButtonGroupBinder(Control parentControl, PersistenceContainerMemberInfo member,
-        IEnumerable<TValue> valueSource, string? displayMember = null, string? valueMember = null, BindingDirection bindingDirection = BindingDirection.TwoWay)
+        IEnumerable<TValue> valueSourceEnumerable, string? displayMember = null, string? valueMember = null, BindingDirection bindingDirection = BindingDirection.TwoWay)
     {
         if (!member.Member.TryGetPropertyOrFieldDataType(out Type? type))
         {
@@ -104,10 +135,10 @@ internal sealed class RadioButtonGroupBinder<TValue> : IControlBinder
         }
 
         // materialise.
-        List<TValue> source = valueSource.Materialise<TValue>(acceptNullElements: false, throwExceptionOnNull: true);
+        List<TValue> source = valueSourceEnumerable.Materialise<TValue>(acceptNullElements: false, throwExceptionOnNull: true);
         if (source.Count == 0)
         {
-            throw new ArgumentException("The provided value source does not contain any elements.", nameof(valueSource));
+            throw new ArgumentException("The provided value source does not contain any elements.", nameof(valueSourceEnumerable));
         }
 
         if (parentControl.Controls.Count is 0)
@@ -202,9 +233,9 @@ internal sealed class RadioButtonGroupBinder<TValue> : IControlBinder
     /// </summary>
     /// <param name="parentControl">The control that contains all the related <see cref="RadioButton"/> controls.</param>
     /// <param name="member">The member property or field participating in the binding.</param>
-    /// <param name="valueSource">An enumeration of source of type <typeparamref name="TValue"/> that are to be bound to the radio buttons in <paramref name="parentControl"/> as choices.</param>
+    /// <param name="valueSourceDictionary">An enumeration of source of type <typeparamref name="TValue"/> that are to be bound to the radio buttons in <paramref name="parentControl"/> as choices.</param>
     /// <param name="bindingDirection">The direction of binding.</param>
-    public RadioButtonGroupBinder(Control parentControl, PersistenceContainerMemberInfo member, Dictionary<string, TValue> valueSource, BindingDirection bindingDirection)
+    public RadioButtonGroupBinder(Control parentControl, PersistenceContainerMemberInfo member, Dictionary<string, TValue> valueSourceDictionary, BindingDirection bindingDirection)
     {
         if (!member.Member.TryGetPropertyOrFieldDataType(out Type? type))
         {
@@ -227,7 +258,7 @@ internal sealed class RadioButtonGroupBinder<TValue> : IControlBinder
         Direction = bindingDirection;
 
         int radioButtonIndex = 0;
-        foreach (KeyValuePair<string, TValue> kvp in valueSource)
+        foreach (KeyValuePair<string, TValue> kvp in valueSourceDictionary)
         {
             RadioButton rb = _radioButtons[radioButtonIndex];
             rb.Text = kvp.Key;

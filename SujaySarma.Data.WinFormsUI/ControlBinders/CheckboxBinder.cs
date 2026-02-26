@@ -16,11 +16,12 @@ internal sealed class CheckboxBinder : ControlBinderBase<CheckBox>
     /// <inheritdoc />
     public override void BindControl(object dataContext)
     {
+        base.BindControl(dataContext);
+
         base.ControlPartner.Checked = (bool)(dataContext.GetValue(base.EntityMemberPartner) ?? false);
 
         if (_keepEntityInSync)
         {
-            DataContext = dataContext;
             base.ControlPartner.CheckedChanged += OnCheckboxChanged;
         }
     }
@@ -41,7 +42,10 @@ internal sealed class CheckboxBinder : ControlBinderBase<CheckBox>
     /// </summary>
     private void OnCheckboxChanged(object? sender, EventArgs e)
     {
-        throw new NotImplementedException();
+        if (DataContext is not null)
+        {
+            BindEntityMember(DataContext);
+        }
     }
 
     /// <summary>

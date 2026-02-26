@@ -16,6 +16,8 @@ internal sealed class LabelBinder : ControlBinderBase<Label>
     /// <inheritdoc />
     public override void BindControl(object dataContext)
     {
+        base.BindControl(dataContext);
+
         if (base.MemberDataType.IsEnum)
         {
             // For enums, we convert to string via ToString()

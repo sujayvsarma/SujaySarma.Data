@@ -3,6 +3,7 @@ using SujaySarma.Data.Core.TypeDiscovery;
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace SujaySarma.Data.WinFormsUI.ControlBinders;
@@ -66,7 +67,10 @@ internal abstract partial class ControlBinderBase<TControl> : IControlBinder
     /// <param name="dataContext">Instance of the entity whose member is being bound 
     /// (this should be the class/struct/record and not its member!). Implementers must always use this instance rather than 
     /// the <see cref="DataContext"/> property.</param>
-    public abstract void BindControl(object dataContext);
+    public virtual void BindControl(object dataContext)
+    {
+        DataContext = dataContext;
+    }
 
     /// <summary>
     /// Sets the value of the <see cref="EntityMemberPartner"/> member of the entity instance (<paramref name="dataContext"/>) 
@@ -85,6 +89,26 @@ internal abstract partial class ControlBinderBase<TControl> : IControlBinder
         dataContext.SetValue(EntityMemberPartner, ControlPartner.Text);
     }
 
+    /// <summary>
+    /// Tests if this binder has a binding for the provided <paramref name="propertyName" />.
+    /// </summary>
+    /// <param name="propertyName">Name of the property to check for.</param>
+    /// <returns>True if the binding exists.</returns>
+    public bool BindsProperty(string propertyName)
+    {
+        return (EntityMemberPartner.Member.Name == propertyName);
+    }
+
+    /// <summary>
+    /// Refreshes the value displayed on the control from the instance of the entity/property.
+    /// </summary>
+    public void RefreshControl()
+    {
+        if (DataContext is not null)
+        {
+            BindControl(DataContext);
+        }
+    }
 
     /// <summary>
     /// Initialise the control binder.

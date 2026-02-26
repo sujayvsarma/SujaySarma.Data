@@ -18,6 +18,8 @@ internal sealed class CheckedListBoxBinder<TValue> : ListValueBinderBase<Checked
     /// <inheritdoc />
     public override void BindControl(object dataContext)
     {
+        base.BindControl(dataContext);
+
         IEnumerable<TValue>? values = (IEnumerable<TValue>?)dataContext.GetValue(EntityMemberPartner);
         if (values is null)
         {

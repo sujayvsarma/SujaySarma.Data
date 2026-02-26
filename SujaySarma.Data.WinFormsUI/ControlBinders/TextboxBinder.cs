@@ -17,6 +17,8 @@ internal sealed class TextboxBinder : ControlBinderBase<TextBox>
     /// <inheritdoc />
     public override void BindControl(object dataContext)
     {
+        base.BindControl(dataContext);
+
         if (base.MemberDataType.IsEnum)
         {
             // For enums, we convert to string via ToString()
@@ -29,7 +31,6 @@ internal sealed class TextboxBinder : ControlBinderBase<TextBox>
 
         if (_keepEntityInSync)
         {
-            DataContext = dataContext;
             base.ControlPartner.TextChanged += OnTextboxChanged;
         }
     }
