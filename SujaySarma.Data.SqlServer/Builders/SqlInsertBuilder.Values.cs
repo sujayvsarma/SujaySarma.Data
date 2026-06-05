@@ -18,7 +18,7 @@ public sealed partial class SqlInsertBuilder
     /// <returns>Instance of self.</returns>
     public SqlInsertBuilder UsingDefaultValues()
     {
-        if (_insertFromQuery != null)
+        if (_insertFromQuery is not null)
         {
             throw new InvalidOperationException("Cannot set DEFAULT VALUES when INSERT FROM query is already specified.");
         }
@@ -47,7 +47,7 @@ public sealed partial class SqlInsertBuilder
             throw new InvalidOperationException("Cannot add VALUES when DEFAULT VALUES is already specified.");
         }
 
-        if (_insertFromQuery != null)
+        if (_insertFromQuery is not null)
         {
             throw new InvalidOperationException("Cannot add VALUES when INSERT FROM query is already specified.");
         }
@@ -82,7 +82,7 @@ public sealed partial class SqlInsertBuilder
             throw new InvalidOperationException("Cannot add VALUES when DEFAULT VALUES is already specified.");
         }
 
-        if (_insertFromQuery != null)
+        if (_insertFromQuery is not null)
         {
             throw new InvalidOperationException("Cannot add VALUES when INSERT FROM query is already specified.");
         }
@@ -124,7 +124,7 @@ public sealed partial class SqlInsertBuilder
             throw new InvalidOperationException("Cannot add VALUES when DEFAULT VALUES is already specified.");
         }
 
-        if (_insertFromQuery != null)
+        if (_insertFromQuery is not null)
         {
             throw new InvalidOperationException("Cannot add VALUES when INSERT FROM query is already specified.");
         }

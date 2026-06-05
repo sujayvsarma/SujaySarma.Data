@@ -18,12 +18,12 @@
 		<PackageTags>data access,library,sql,sqlserver,sql server,sql-server,msde,azuresql,azure sql,azure,localdb,json,databases</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>10.0.1.0</AssemblyVersion>
-		<FileVersion>10.0.1.0</FileVersion>
+		<AssemblyVersion>10.0.2.0</AssemblyVersion>
+		<FileVersion>10.0.2.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<IncludeSymbols>False</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>[10.0.1.0] - Bug fix: Renamed methods in SqlContext to include the 'Async' suffix.</PackageReleaseNotes>
+		<PackageReleaseNotes>[10.0.2.0] - Bug fix: Actually expose the debug logging (through SqlContext and SqlExecute), removed table/alias name from INSERT query (InsertQueryBuilder). NEW method to return new'ed up instance of TEntity when Querying using SqlContext.</PackageReleaseNotes>
 	</PropertyGroup>
 	
 	<PropertyGroup>
@@ -88,7 +88,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.3" Condition=" '$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'net10.0' " />
 		<PackageReference Include="System.Data.SqlClient" Version="4.9.0" Condition=" '$(TargetFramework)' == 'net6.0' " />
-		<PackageReference Include="SujaySarma.Data.Core" Version="10.0.0" />
+		<PackageReference Include="SujaySarma.Data.Core" Version="10.0" />
 	</ItemGroup>
 
 	<!--<ItemGroup>

@@ -59,8 +59,6 @@ public class FormBinder<TEntity>
         }
     }
 
-
-
     #region Add controls
 
     #region List Box
@@ -109,7 +107,42 @@ public class FormBinder<TEntity>
                 $"Member '{member.Name}' is not a valid property or field of type '{typeof(TEntity).GetUsableTypeName()}'.",
                 nameof(memberSelector));
         }
+
         _boundControls.Add(new ListBoxBinder<TValue>(listBox, memberInfo, valueSource, displayMember, valueMember));
+        return this;
+    }
+
+    //NEW FEATURE: Add dependency-binding.
+    /// <summary>
+    /// Bind a <see cref="ListBox"/> control to the provided enumeration of <paramref name="enumerableValueSourceFunction"/>.
+    /// </summary>
+    /// <typeparam name="TValue">Type of values that are to be bound to the <see cref="ListBox"/>.</typeparam>
+    /// <param name="listBox">The <see cref="ListBox"/> that is to be bound.</param>
+    /// <param name="memberSelector">A lambda expression selector that selects a member property or field from the <typeparamref name="TEntity"/> to be bound with 
+    /// the <paramref name="listBox"/>. The use of functions are not allowed.</param>
+    /// <param name="bindOnlyWhenChanged">Indicates to the binder that <paramref name="enumerableValueSourceFunction"/> should be evaluated only when this (<paramref name="bindOnlyWhenChanged"/>) control changes its current value or selection.</param>
+    /// <param name="enumerableValueSourceFunction">An enumeration of values of type <typeparamref name="TValue"/> that are to be bound to the <paramref name="listBox"/> as choices.</param>
+    /// <param name="displayMember">[optional] The property or field of <typeparamref name="TValue"/> that is to be displayed on the UI. Set to NULL if <typeparamref name="TValue"/> is a primitive (eg: string, int, etc).</param>
+    /// <param name="valueMember">[optional] The property or field of <typeparamref name="TValue"/> that is to be used as the member item's internal value. Set to NULL if <typeparamref name="TValue"/> is a primitive (eg: string, int, etc).</param>
+    /// <returns>Instance of self.</returns>
+    public FormBinder<TEntity> AddDependentListBox<TValue>(ListBox listBox, Expression<Func<TEntity, object>> memberSelector, 
+        Control bindOnlyWhenChanged, Func<object, IEnumerable<TValue>> enumerableValueSourceFunction, 
+            string? displayMember = null, string? valueMember = null)
+    {
+        MemberInfo member = MemberSelectorParser.ExtractMember(memberSelector);
+        if (!_entityInfo.TryGetMember(member.Name, out PersistenceContainerMemberInfo? memberInfo))
+        {
+            throw new ArgumentException(
+                $"Member '{member.Name}' is not a valid property or field of type '{typeof(TEntity).GetUsableTypeName()}'.",
+                nameof(memberSelector));
+        }
+
+        _boundControls.Add(new ListBoxBinder<TValue>(
+                listBox, memberInfo, bindOnlyWhenChanged, enumerableValueSourceFunction, 
+                    displayMember, valueMember, 
+                        ControlBinders.BindingDirection.TwoWay
+            ));
+
         return this;
     }
 
@@ -165,6 +198,40 @@ public class FormBinder<TEntity>
         return this;
     }
 
+    //NEW FEATURE: Add dependency-binding.
+    /// <summary>
+    /// Bind a <see cref="ComboBox"/> control to the provided enumeration of <paramref name="enumerableValueSourceFunction"/>.
+    /// </summary>
+    /// <typeparam name="TValue">Type of values that are to be bound to the <see cref="ComboBox"/>.</typeparam>
+    /// <param name="comboBox">The <see cref="ComboBox"/> that is to be bound.</param>
+    /// <param name="memberSelector">A lambda expression selector that selects a member property or field from the <typeparamref name="TEntity"/> to be bound with 
+    /// the <paramref name="comboBox"/>. The use of functions are not allowed.</param>
+    /// <param name="bindOnlyWhenChanged">Indicates to the binder that <paramref name="enumerableValueSourceFunction"/> should be evaluated only when this (<paramref name="bindOnlyWhenChanged"/>) control changes its current value or selection.</param>
+    /// <param name="enumerableValueSourceFunction">An enumeration of values of type <typeparamref name="TValue"/> that are to be bound to the <paramref name="comboBox"/> as choices.</param>
+    /// <param name="displayMember">[optional] The property or field of <typeparamref name="TValue"/> that is to be displayed on the UI. Set to NULL if <typeparamref name="TValue"/> is a primitive (eg: string, int, etc).</param>
+    /// <param name="valueMember">[optional] The property or field of <typeparamref name="TValue"/> that is to be used as the member item's internal value. Set to NULL if <typeparamref name="TValue"/> is a primitive (eg: string, int, etc).</param>
+    /// <returns>Instance of self.</returns>
+    public FormBinder<TEntity> AddDependentComboBox<TValue>(ComboBox comboBox, Expression<Func<TEntity, object>> memberSelector,
+        Control bindOnlyWhenChanged, Func<object, IEnumerable<TValue>> enumerableValueSourceFunction,
+            string? displayMember = null, string? valueMember = null)
+    {
+        MemberInfo member = MemberSelectorParser.ExtractMember(memberSelector);
+        if (!_entityInfo.TryGetMember(member.Name, out PersistenceContainerMemberInfo? memberInfo))
+        {
+            throw new ArgumentException(
+                $"Member '{member.Name}' is not a valid property or field of type '{typeof(TEntity).GetUsableTypeName()}'.",
+                nameof(memberSelector));
+        }
+
+        _boundControls.Add(new ComboBoxBinder<TValue>(
+                comboBox, memberInfo, bindOnlyWhenChanged, enumerableValueSourceFunction,
+                    displayMember, valueMember,
+                        ControlBinders.BindingDirection.TwoWay
+            ));
+
+        return this;
+    }
+
     #endregion
 
     #region CheckedListBox
@@ -214,6 +281,41 @@ public class FormBinder<TEntity>
                 nameof(memberSelector));
         }
         _boundControls.Add(new CheckedListBoxBinder<TValue>(checkedListBox, memberInfo, valueSource, displayMember, valueMember));
+        return this;
+    }
+
+
+    //NEW FEATURE: Add dependency-binding.
+    /// <summary>
+    /// Bind a <see cref="CheckedListBox"/> control to the provided enumeration of <paramref name="enumerableValueSourceFunction"/>.
+    /// </summary>
+    /// <typeparam name="TValue">Type of values that are to be bound to the <see cref="CheckedListBox"/>.</typeparam>
+    /// <param name="checkedListBox">The <see cref="CheckedListBox"/> that is to be bound.</param>
+    /// <param name="memberSelector">A lambda expression selector that selects a member property or field from the <typeparamref name="TEntity"/> to be bound with 
+    /// the <paramref name="checkedListBox"/>. The use of functions are not allowed.</param>
+    /// <param name="bindOnlyWhenChanged">Indicates to the binder that <paramref name="enumerableValueSourceFunction"/> should be evaluated only when this (<paramref name="bindOnlyWhenChanged"/>) control changes its current value or selection.</param>
+    /// <param name="enumerableValueSourceFunction">An enumeration of values of type <typeparamref name="TValue"/> that are to be bound to the <paramref name="checkedListBox"/> as choices.</param>
+    /// <param name="displayMember">[optional] The property or field of <typeparamref name="TValue"/> that is to be displayed on the UI. Set to NULL if <typeparamref name="TValue"/> is a primitive (eg: string, int, etc).</param>
+    /// <param name="valueMember">[optional] The property or field of <typeparamref name="TValue"/> that is to be used as the member item's internal value. Set to NULL if <typeparamref name="TValue"/> is a primitive (eg: string, int, etc).</param>
+    /// <returns>Instance of self.</returns>
+    public FormBinder<TEntity> AddDependentCheckedListBox<TValue>(CheckedListBox checkedListBox, Expression<Func<TEntity, object>> memberSelector,
+        Control bindOnlyWhenChanged, Func<object, IEnumerable<TValue>> enumerableValueSourceFunction,
+            string? displayMember = null, string? valueMember = null)
+    {
+        MemberInfo member = MemberSelectorParser.ExtractMember(memberSelector);
+        if (!_entityInfo.TryGetMember(member.Name, out PersistenceContainerMemberInfo? memberInfo))
+        {
+            throw new ArgumentException(
+                $"Member '{member.Name}' is not a valid property or field of type '{typeof(TEntity).GetUsableTypeName()}'.",
+                nameof(memberSelector));
+        }
+
+        _boundControls.Add(new CheckedListBoxBinder<TValue>(
+                checkedListBox, memberInfo, bindOnlyWhenChanged, enumerableValueSourceFunction,
+                    displayMember, valueMember,
+                        ControlBinders.BindingDirection.TwoWay
+            ));
+
         return this;
     }
 

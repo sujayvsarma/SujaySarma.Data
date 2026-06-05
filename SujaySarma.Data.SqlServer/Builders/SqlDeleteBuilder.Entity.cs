@@ -132,7 +132,7 @@ public sealed partial class SqlDeleteBuilder
             );
 
             // Combine conditions with OR
-            combinedCondition = ((combinedCondition == null) ? equality : Expression.OrElse(combinedCondition, equality));
+            combinedCondition = ((combinedCondition is null) ? equality : Expression.OrElse(combinedCondition, equality));
         }
 
         if (combinedCondition is null)

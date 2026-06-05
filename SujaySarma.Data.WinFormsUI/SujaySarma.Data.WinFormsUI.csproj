@@ -20,12 +20,12 @@
 		<PackageTags>data access,data binding, databinding,binding,library,sql,sqlserver,sql server,sql-server,msde,azuresql,azure sql,azure,localdb,json,databases</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>10.0.5.0</AssemblyVersion>
-		<FileVersion>10.0.5.0</FileVersion>
+		<AssemblyVersion>10.0.6.0</AssemblyVersion>
+		<FileVersion>10.0.6.0</FileVersion>
 		<Version>$(AssemblyVersion)</Version>
 		<IncludeSymbols>False</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>[10.0.5.0] - Bug fixes: Checkbox keep synced issue fixed, Feature: Autosubscription to INotifyPropertyChanged and UI updates.</PackageReleaseNotes>
+		<PackageReleaseNotes>[10.0.6.0] - Several bugs fixed, NEW feature to add dependency-bound controls (eg: one dropdown's binding depends on another control's value, like Country-State-City)</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -35,7 +35,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
@@ -84,7 +84,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="SujaySarma.Data.Core" Version="10.0.0" />
+		<PackageReference Include="SujaySarma.Data.Core" Version="10.0" />
 	</ItemGroup>
 
 	<!--<ItemGroup>

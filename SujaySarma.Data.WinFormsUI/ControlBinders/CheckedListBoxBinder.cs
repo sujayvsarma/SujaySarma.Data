@@ -20,6 +20,18 @@ internal sealed class CheckedListBoxBinder<TValue> : ListValueBinderBase<Checked
     {
         base.BindControl(dataContext);
 
+        //TODO: When dataContext.GetType() != TValue, the below code has the same bug as 
+        //      there was in ComboBoxBinder. Find and solve it whenever we use a CLB binding next!
+        /*  Scenario:
+         *      Form is bound to TEntity = Person
+         *      CLB is bound to {Hobby[]}
+         *      
+         *      In this case, Person.Hobbies[0] will most likely be an {(int32) Id} and not an instance of {Hobby}.
+         *        this results in the bug.
+         * 
+         */
+
+
         IEnumerable<TValue>? values = (IEnumerable<TValue>?)dataContext.GetValue(EntityMemberPartner);
         if (values is null)
         {
@@ -89,6 +101,23 @@ internal sealed class CheckedListBoxBinder<TValue> : ListValueBinderBase<Checked
     /// <param name="bindingDirection">The direction of binding.</param>
     internal CheckedListBoxBinder(CheckedListBox control, PersistenceContainerMemberInfo member, Dictionary<string, TValue> valueSource, BindingDirection bindingDirection = BindingDirection.TwoWay)
         : base(member, control, dictionarySource: valueSource, bindingDirection)
+    {
+    }
+
+    //NEW FEATURE: Add dependency-binding.
+    /// <summary>
+    /// Initialise the list of values based control binder.
+    /// </summary>
+    /// <param name="member">The member property or field participating in the binding.</param>
+    /// <param name="control">The control of type <see cref="CheckedListBox"/> participating in the binding.</param>
+    /// <param name="bindOnlyWhenChanged">Indicates to the binder that <paramref name="enumerableValueSourceFunction"/> should be evaluated only when this (<paramref name="bindOnlyWhenChanged"/>) control changes its current value or selection.</param>
+    /// <param name="enumerableValueSourceFunction">An enumeration of values of type <typeparamref name="TValue"/> that are to be bound to the <paramref name="control"/> as choices.</param>
+    /// <param name="displayMember">The property of <typeparamref name="TValue"/> that is to be displayed on the UI.</param>
+    /// <param name="valueMember">The property of <typeparamref name="TValue"/> that is to be used as the member item's internal value.</param>
+    /// <param name="bindingDirection">The direction of binding.</param>
+    internal CheckedListBoxBinder(CheckedListBox control, PersistenceContainerMemberInfo member, Control bindOnlyWhenChanged,
+        Func<object, IEnumerable<TValue>> enumerableValueSourceFunction, string? displayMember = null, string? valueMember = null, BindingDirection bindingDirection = BindingDirection.TwoWay)
+        : base(member, control, bindOnlyWhenChanged, enumerableValueSourceFunction, displayMember, valueMember, bindingDirection)
     {
     }
 }

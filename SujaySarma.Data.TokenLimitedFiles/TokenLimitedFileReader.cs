@@ -350,7 +350,7 @@ public class TokenLimitedFileReader : IDisposable
             throw new IOException("Provided stream is not initialised or cannot be read from.");
         }
 
-        bool autoDetect = (encoding == null);
+        bool autoDetect = (encoding is null);
 
         // 64KB buffer for I/O
         _reader = new StreamReader(stream, (encoding ?? Encoding.UTF8), autoDetect, bufferSize: 65536, leaveOpen: leaveStreamOpen);

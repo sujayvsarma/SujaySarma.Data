@@ -43,9 +43,11 @@ public sealed partial class SqlInsertBuilder
 
         // INTO [tablename] [alias]
         builder.Append(" INTO ")
-            .Append(_primaryTable.PersistenceInfo.CreateQualifiedName())
-            .Append(' ')
-            .Append(_primaryTable.ReferenceAlias);
+            .Append(_primaryTable.PersistenceInfo.CreateQualifiedName());
+
+            //BUGFIX: Remove table alias name from INSERT query.
+            //.Append(' ')
+            //.Append(_primaryTable.ReferenceAlias);
 
         // WITH (hints)
         if (_hints.Count > 0)

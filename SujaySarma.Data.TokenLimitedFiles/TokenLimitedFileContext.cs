@@ -36,7 +36,7 @@ public class TokenLimitedFileContext : IDisposable
     public void WritePreamble()
     {
         Flatfile flatfile = (Flatfile)_serialiser._container.PersistenceInfo;
-        if (flatfile.FieldReferenceMode is Flatfile.FieldReferencesAre.Names)
+        if (flatfile.FieldReferenceMode is FieldReferencesAre.Names)
         {
             if ((_writer is null) || (!_writer.CanWrite))
             {
@@ -101,7 +101,7 @@ public class TokenLimitedFileContext : IDisposable
     {
         // Try to read the header row.
         Flatfile flatfile = (Flatfile)_serialiser._container.PersistenceInfo;
-        if (flatfile.FieldReferenceMode is Flatfile.FieldReferencesAre.Names)
+        if (flatfile.FieldReferenceMode is FieldReferencesAre.Names)
         {
             if ((_reader is null) || (!_reader.CanRead))
             {
@@ -167,7 +167,7 @@ public class TokenLimitedFileContext : IDisposable
     /// <returns>An instance of self for method chaining.</returns>
     public TokenLimitedFileContext AddWriter(string path, char delimiter = ',', string recordDelimiter = "\r\n", Encoding? encoding = null, FileMode mode = FileMode.CreateNew, bool writeEmptyRows = false)
     {
-        if (_writer != null)
+        if (_writer is not null)
         {
             throw new InvalidOperationException("A writer has already been added to this context.");
         }
@@ -188,7 +188,7 @@ public class TokenLimitedFileContext : IDisposable
     /// <returns>An instance of self for method chaining.</returns>
     public TokenLimitedFileContext AddWriter(Stream stream, char delimiter = ',', string recordDelimiter = "\r\n", Encoding? encoding = null, bool leaveStreamOpen = false, bool writeEmptyRows = false)
     {
-        if (_writer != null)
+        if (_writer is not null)
         {
             throw new InvalidOperationException("A writer has already been added to this context.");
         }
@@ -204,7 +204,7 @@ public class TokenLimitedFileContext : IDisposable
     /// <returns>An instance of self for method chaining.</returns>
     public TokenLimitedFileContext AddWriter(TokenLimitedFileWriter writer)
     {
-        if (_writer != null)
+        if (_writer is not null)
         {
             throw new InvalidOperationException("A writer has already been added to this context.");
         }
@@ -227,7 +227,7 @@ public class TokenLimitedFileContext : IDisposable
     /// <returns>An instance of self for method chaining.</returns>
     public TokenLimitedFileContext AddReader(string path, char delimiter = ',', Encoding? encoding = null)
     {
-        if (_reader != null)
+        if (_reader is not null)
         {
             throw new InvalidOperationException("A reader has already been added to this context.");
         }
@@ -246,7 +246,7 @@ public class TokenLimitedFileContext : IDisposable
     /// <returns>An instance of self for method chaining.</returns>
     public TokenLimitedFileContext AddReader(Stream stream, char delimiter = ',', Encoding? encoding = null, bool leaveStreamOpen = false)
     {
-        if (_reader != null)
+        if (_reader is not null)
         {
             throw new InvalidOperationException("A reader has already been added to this context.");
         }
@@ -262,7 +262,7 @@ public class TokenLimitedFileContext : IDisposable
     /// <returns>An instance of self for method chaining.</returns>
     public TokenLimitedFileContext AddReader(TokenLimitedFileReader reader)
     {
-        if (_reader != null)
+        if (_reader is not null)
         {
             throw new InvalidOperationException("A reader has already been added to this context.");
         }

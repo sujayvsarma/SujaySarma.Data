@@ -42,6 +42,32 @@ public partial class SqlContext
         return MapRowToEntityAsync<TEntity>(data.Data.Tables[0].Rows[0], container, cancellationToken);
     }
 
+    //BUGFIX: Add method to return new'ed instance of TEntity if there were no records returned.
+    /// <summary>
+    /// Executes the provided SQL SELECT <paramref name="query"/> and returns a single hydrated instance 
+    /// of type <typeparamref name="TEntity"/> or returns a new instance of the entity.
+    /// </summary>
+    /// <typeparam name="TEntity">Type of entity to hydrate from the data returned by <paramref name="query"/>.</typeparam>
+    /// <param name="query">The SQL SELECT query to execute.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the async operation.</param>
+    /// <returns>An instance of type <typeparamref name="TEntity"/>. If the query returns multiple tables or rows, this function 
+    /// will use only the first row of the first table. If no data was returned, a <see cref="SqlContextException"/> is thrown.</returns>
+    public async Task<TEntity> SelectOneOrNewAsync<TEntity>(SqlQueryBuilder query, CancellationToken cancellationToken)
+    {
+        TEntity entity;
+        try
+        {
+            entity = await SelectOneAsync<TEntity>(query, cancellationToken);
+        }
+        catch (SqlContextException ex) when (ex.Message == "No data returned for select query.")
+        {
+            entity = (TEntity)(Activator.CreateInstance(typeof(TEntity), nonPublic: true)
+            ?? throw new TypeLoadException($"Unable to create an instance of type '{typeof(TEntity).GetUsableTypeName()}'."));
+        }
+
+        return entity;
+    }
+
     /// <summary>
     /// Executes the provided SQL SELECT <paramref name="query"/> and returns multiple hydrated instances 
     /// of type <typeparamref name="TEntity"/>.

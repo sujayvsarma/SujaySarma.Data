@@ -13,7 +13,7 @@
 		<RestorePackagesPath Condition="'$(OS)' != 'Windows_NT'">$(HOME)/.nuget/packages/</RestorePackagesPath>
 
 		<!-- SNK file location -->
-		<SnkLocationWindows>D:\Sujay\Documents\Keys\</SnkLocationWindows>
+		<SnkLocationWindows>D:\Sujay\OneDrive - Sujay Sarma\Documents\Keys\</SnkLocationWindows>
 		<SnkLocationLinux>$(HOME)/Documents/Keys/</SnkLocationLinux>
 		<ProposedKeyPath Condition="'$(OS)' == 'Windows_NT'">$(SnkLocationWindows)</ProposedKeyPath>
 		<ProposedKeyPath Condition="'$(OS)' != 'Windows_NT'">$(SnkLocationLinux)</ProposedKeyPath>

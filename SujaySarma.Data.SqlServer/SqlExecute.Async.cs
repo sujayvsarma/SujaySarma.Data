@@ -329,7 +329,7 @@ public static class SqlExecuteAsync
                                 return new ErrorResult(parameter.Key, new ArgumentException("Name of parameter cannot be null or empty."));
                             }
 
-                            if (parameter.Value == null)
+                            if (parameter.Value is null)
                             {
                                 throw new ArgumentException($"Value of [out] parameter [{parameter.Key}] cannot be passed as [NULL] since the underlying layer cannot guess the datatype.");
                             }
@@ -379,7 +379,7 @@ public static class SqlExecuteAsync
                         } while (await reader.NextResultAsync(cancellationToken));
                     }
 
-                    if (cmd.Parameters.Contains("@returnValue") && (cmd.Parameters["@returnValue"].Value != null) && int.TryParse(cmd.Parameters["@returnValue"].Value.ToString(), out returnValue))
+                    if (cmd.Parameters.Contains("@returnValue") && (cmd.Parameters["@returnValue"].Value is not null) && int.TryParse(cmd.Parameters["@returnValue"].Value.ToString(), out returnValue))
                     {
                         if (returnValue < 0)
                         {
@@ -478,7 +478,7 @@ public static class SqlExecuteAsync
                         } while (reader.NextResult());
                     }
 
-                    if (cmd.Parameters.Contains("@returnValue") && (cmd.Parameters["@returnValue"].Value != null) && int.TryParse(cmd.Parameters["@returnValue"].Value.ToString(), out returnValue))
+                    if (cmd.Parameters.Contains("@returnValue") && (cmd.Parameters["@returnValue"].Value is not null) && int.TryParse(cmd.Parameters["@returnValue"].Value.ToString(), out returnValue))
                     {
                         if (returnValue < 0)
                         {

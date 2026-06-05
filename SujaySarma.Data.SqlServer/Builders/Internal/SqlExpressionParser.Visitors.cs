@@ -159,7 +159,7 @@ internal sealed partial class SqlExpressionParser
                     node.Arguments,
                         (m, a) => new KeyValuePair<MemberInfo, Expression>(m, a));
 
-        if (memberExpressionMapping != null)
+        if (memberExpressionMapping is not null)
         {
             List<string> items = new List<string>();
             foreach (KeyValuePair<MemberInfo, Expression> meMap in memberExpressionMapping)
@@ -244,7 +244,7 @@ internal sealed partial class SqlExpressionParser
     {
         // CRITICAL CHECK: Is this method being called on a captured variable (client-side)
         // or on an entity property (SQL-side)?
-        if (node.Object != null && IsClientSideExpression(node.Object))
+        if (node.Object is not null && IsClientSideExpression(node.Object))
         {
             // This is a method call on a captured variable - evaluate it client-side
             // Example: foo.ToUpper() where foo is a captured string variable
@@ -352,7 +352,7 @@ internal sealed partial class SqlExpressionParser
                 }
 
                 // Check the parent expression recursively
-                return member.Expression != null && IsClientSideExpression(member.Expression);
+                return member.Expression is not null && IsClientSideExpression(member.Expression);
 
             case ParameterExpression param:
                 // Check if parameter is an entity type

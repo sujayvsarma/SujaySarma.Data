@@ -18,7 +18,7 @@ internal static class Logger
     /// <param name="content">Content or message to log.</param>
     public static void DebugLog(params string[] content)
     {
-        if (_isDebuggingEnabled && (_debuggingLogFile != null))
+        if (_isDebuggingEnabled && (_debuggingLogFile is not null))
         {
             _debuggingLogFile.Write($"{DateTime.Now:yyyy-MM-ddTHH:mm:ss}");
             foreach (string item in content)
@@ -30,6 +30,9 @@ internal static class Logger
                 }
             }
             _debuggingLogFile.WriteLine();
+
+            //BUGFIX: Without this, any lines written will not be in the file if the app exits suddenly.
+            _debuggingLogFile.Flush();
         }
     }
 
@@ -60,7 +63,7 @@ internal static class Logger
     public static void EndDebugging()
     {
         _isDebuggingEnabled = false;
-        if (_debuggingLogFile != null)
+        if (_debuggingLogFile is not null)
         {
             _debuggingLogFile.Flush();
             _debuggingLogFile.Dispose();
@@ -85,7 +88,7 @@ internal static class Logger
     /// </summary>
     static Logger()
     {
-        if ((Environment.GetEnvironmentVariable("SQLCONTEXT_DUMPSQL") != null))
+        if ((Environment.GetEnvironmentVariable("SQLCONTEXT_DUMPSQL") is not null))
         {
             string logfile = Environment.GetEnvironmentVariable("SQLCONTEXT_DUMPSQLFILE")
                 ?? Path.GetTempFileName();

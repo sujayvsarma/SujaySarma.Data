@@ -25,7 +25,7 @@ public sealed partial class SqlInsertBuilder
     {
         // If From() has already been called and column names were provided, _values[0] would have the column names.
         // therefore, the below exception will be confusing! THUS, we need to check _values AFTER we check _insertFromQuery.
-        if (_insertFromQuery != null)
+        if (_insertFromQuery is not null)
         {
             throw new InvalidOperationException("INSERT FROM query has already been set for this statement.");
         }

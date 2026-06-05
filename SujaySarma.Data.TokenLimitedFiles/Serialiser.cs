@@ -28,14 +28,14 @@ public class Serialiser
                         ?? throw new TypeLoadException($"Could not instantiate an object of type '{_container.EntityType.GetUsableTypeName()}'.");
 
         // Discovery options makes sure that we get this.
-        Flatfile.FieldReferencesAre referenceMode = ((Flatfile)_container.PersistenceInfo).FieldReferenceMode;
+        FieldReferencesAre referenceMode = ((Flatfile)_container.PersistenceInfo).FieldReferenceMode;
 
         // Ensure values are de-quoted, or they will fail deserialisation!
         values = UnquoteStrings(values);
 
         switch (referenceMode)
         {
-            case Flatfile.FieldReferencesAre.Indexes:
+            case FieldReferencesAre.Indexes:
                 for (int i = 0; i < _headers.Length; i++)
                 {
                     //BUGFIX: File may contain lesser fields than expected by the header row.
@@ -56,7 +56,7 @@ public class Serialiser
                 }
                 break;
 
-            case Flatfile.FieldReferencesAre.Names:
+            case FieldReferencesAre.Names:
                 for (int i = 0; i < _headers.Length; i++)
                 {
                     //BUGFIX:  File may contain lesser fields than expected by the header row.
@@ -118,12 +118,12 @@ public class Serialiser
         }
 
         // Discovery options makes sure that we get this.
-        Flatfile.FieldReferencesAre referenceMode = ((Flatfile)_container.PersistenceInfo).FieldReferenceMode;
+        FieldReferencesAre referenceMode = ((Flatfile)_container.PersistenceInfo).FieldReferenceMode;
         string[] values = Array.Empty<string>();
 
         switch (referenceMode)
         {
-            case Flatfile.FieldReferencesAre.Indexes:
+            case FieldReferencesAre.Indexes:
                 values = new string[_headers.Length];
                 for (int i = 0; i < _headers.Length; i++)
                 {
@@ -143,7 +143,7 @@ public class Serialiser
                 }
                 break;
 
-            case Flatfile.FieldReferencesAre.Names:
+            case FieldReferencesAre.Names:
                 values = new string[_headers.Length];
                 for (int i = 0; i < _headers.Length; i++)
                 {
@@ -344,6 +344,12 @@ public class Serialiser
             PersistenceContainerMemberAttributeRestriction = typeof(FlatfileField)
         };
 
+        TypeDiscoveryOptions refDiscoveryOptions = new TypeDiscoveryOptions()
+        {
+            PersistenceContainerAttributeRestriction = null,
+            PersistenceContainerMemberAttributeRestriction = typeof(FlatfileField)
+        };
+
         PersistenceContainerInfo? container;
         if (!TypeDiscoveryFactory.TryResolve(type, out container, options))
         {
@@ -353,24 +359,43 @@ public class Serialiser
         _container = container;
 
         // options above makes sure that we get this.
-        Flatfile.FieldReferencesAre referenceMode = ((Flatfile)container.PersistenceInfo).FieldReferenceMode;
-
+        FieldReferencesAre referenceMode = ((Flatfile)container.PersistenceInfo).FieldReferenceMode;
         Dictionary<uint, string> orderedNames = new Dictionary<uint, string>();
+        uint maxUndiscovered = (uint)container.Members.Count;
+
         foreach (PersistenceContainerMemberInfo member in container.Members)
         {
             switch (referenceMode)
             {
-                case Flatfile.FieldReferencesAre.Indexes when member.PersistenceInfo is FlatfileField indexed:
-                    if (!orderedNames.ContainsKey(indexed.Position))
+                case FieldReferencesAre.Indexes or FieldReferencesAre.Names when member.PersistenceInfo is FlatfileRefStructure refStructure:
+                    // Fields will be within the structure!
+                    PersistenceContainerInfo? refInfo;
+                    if (! TypeDiscoveryFactory.TryResolve(member.Member, out refInfo, refDiscoveryOptions))
                     {
-                        orderedNames.Add(indexed.Position, member.Member.Name);
+                        throw new InvalidOperationException($"The type '{member.Member.GetType().GetUsableTypeName()}' could not be discovered.");
                     }
                     break;
 
-                case Flatfile.FieldReferencesAre.Names when member.PersistenceInfo is FlatfileNamedField named:
-                    if (!orderedNames.ContainsKey(named.Position))
+                case FieldReferencesAre.Indexes when member.PersistenceInfo is FlatfileField indexed:
+                    if ((!orderedNames.ContainsKey(indexed.Position)) && (indexed.Position > 0))
+                    {
+                        orderedNames.Add(indexed.Position, member.Member.Name);
+                    }
+                    else
+                    {
+                        orderedNames.Add(maxUndiscovered++, member.Member.Name);
+                    }
+
+                    break;
+
+                case FieldReferencesAre.Names when member.PersistenceInfo is FlatfileNamedField named:
+                    if ((!orderedNames.ContainsKey(named.Position)) && (named.Position > 0))
                     {
                         orderedNames.Add(named.Position, named.TableFieldName);
+                    }
+                    else
+                    {
+                        orderedNames.Add(maxUndiscovered++, member.Member.Name);
                     }
                     break;
 
@@ -391,7 +416,7 @@ public class Serialiser
             uint expectedCount = orderedNames.Keys.Max() - min + 1;
 
             _headers = new string[expectedCount];
-            if (referenceMode is Flatfile.FieldReferencesAre.Names)
+            if (referenceMode is FieldReferencesAre.Names)
             {
                 _serialisableHeaders = new string[expectedCount];
             }
@@ -402,7 +427,7 @@ public class Serialiser
                 if (orderedNames.ContainsKey(position))
                 {
                     _headers[i] = orderedNames[position];
-                    if (referenceMode is Flatfile.FieldReferencesAre.Names)
+                    if (referenceMode is FieldReferencesAre.Names)
                     {
                         _serialisableHeaders[i] = $"\"{orderedNames[position]}\"";
                     }
@@ -410,7 +435,7 @@ public class Serialiser
                 else
                 {
                     _headers[i] = string.Empty;
-                    if (referenceMode is Flatfile.FieldReferencesAre.Names)
+                    if (referenceMode is FieldReferencesAre.Names)
                     {
                         _serialisableHeaders[i] = QUOTED_EMPTY_STRING;
                     }

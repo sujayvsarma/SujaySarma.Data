@@ -19,6 +19,28 @@ namespace SujaySarma.Data.SqlServer;
 public static class SqlExecute
 {
 
+    //BUGFIX: Surface debugging methods in SqlExecute.
+    #region Manage Debugging
+
+    /// <summary>
+    /// Begin debugging.
+    /// </summary>
+    /// <param name="debugFileAbsolutePath">Absolute path to the file to write to.</param>
+    public static void BeginDebugging(string debugFileAbsolutePath)
+    {
+        Logger.BeginDebugging(debugFileAbsolutePath);
+    }
+
+    /// <summary>
+    /// End debugging.
+    /// </summary>
+    public static void EndDebugging()
+    {
+        Logger.EndDebugging();
+    }
+
+    #endregion
+
     /// <summary>
     /// Execute a query and return the results as a <see cref="DataSet"/> of tables.
     /// </summary>
@@ -283,7 +305,7 @@ public static class SqlExecute
                                 return new ErrorResult(parameter.Key, new ArgumentException("Name of parameter cannot be null or empty."));
                             }
 
-                            if (parameter.Value == null)
+                            if (parameter.Value is null)
                             {
                                 throw new ArgumentException($"Value of [out] parameter [{parameter.Key}] cannot be passed as [NULL] since the underlying layer cannot guess the datatype.");
                             }
@@ -328,7 +350,7 @@ public static class SqlExecute
                         } while (reader.NextResult());
                     }
 
-                    if (cmd.Parameters.Contains("@returnValue") && (cmd.Parameters["@returnValue"].Value != null) && int.TryParse(cmd.Parameters["@returnValue"].Value.ToString(), out returnValue))
+                    if (cmd.Parameters.Contains("@returnValue") && (cmd.Parameters["@returnValue"].Value is not null) && int.TryParse(cmd.Parameters["@returnValue"].Value.ToString(), out returnValue))
                     {
                         if (returnValue < 0)
                         {
@@ -422,7 +444,7 @@ public static class SqlExecute
                         } while (reader.NextResult());
                     }
 
-                    if (cmd.Parameters.Contains("@returnValue") && (cmd.Parameters["@returnValue"].Value != null) && int.TryParse(cmd.Parameters["@returnValue"].Value.ToString(), out returnValue))
+                    if (cmd.Parameters.Contains("@returnValue") && (cmd.Parameters["@returnValue"].Value is not null) && int.TryParse(cmd.Parameters["@returnValue"].Value.ToString(), out returnValue))
                     {
                         if (returnValue < 0)
                         {
